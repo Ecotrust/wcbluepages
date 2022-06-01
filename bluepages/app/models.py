@@ -143,7 +143,7 @@ class Contact(models.Model):
 
 
 # Record (M2M support - ties contact to topic to geographies)
-class record(models.Model):
+class Record(models.Model):
     contact = models.ForeignKey(
         'Contact',
         on_delete=models.CASCADE,
