@@ -2,6 +2,10 @@
 django >=3.2.13,<3.3
 django-reversion
 psycopg2-binary
+uwsgi
+
+# TESTING
+coverage
 
 #OPTIONAL, BUT LOVELY FOR DEBUGGING
 ipdb
