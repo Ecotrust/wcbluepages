@@ -1,0 +1,8 @@
+# REQUIRED
+django >=3.2.13,<3.3
+django-reversion
+psycopg2-binary
+
+#OPTIONAL, BUT LOVELY FOR DEBUGGING
+ipdb
+ipython
