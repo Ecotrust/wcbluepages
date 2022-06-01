@@ -1,21 +1,19 @@
 from django.test import TestCase
-from app.models import *
+from app.models import Region
 # from django.utils import timezone
 from django.core.urlresolvers import reverse
 
 # Models Tests
 
 ## Geography
-class GeographyModelTest(TestCase):
-    def create_geography(self):
-        return True;
-    # def create_geography(self, title="only a test", body="yes, this is only a test"):
-    #     return Geography.objects.create()
+class RegionModelTest(TestCase):
+    def create_region(self, name="Test Region Name"):
+        return region.objects.create(name=name)
 
-    def test_geography_creation(self):
-        new_geography = self.create_geography()
-        self.assertTrue(isinstance(new_geography, Geography))
-        self.assertEqual(new_geography.__unicode__(), new_geography.title())
+    def test_region_creation(self):
+        new_region = self.create_geography()
+        self.assertTrue(isinstance(new_region, Region))
+        self.assertEqual(new_region.__unicode__(), new_region.title())
 
 ## Entity
 
