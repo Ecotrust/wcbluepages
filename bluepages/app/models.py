@@ -44,6 +44,7 @@ class Entity(models.Model):
         blank=True, default=None,
     )
     phone = PhoneField(blank=True, null=True, default=None,)
+    fax = PhoneField(blank=True, null=True, default=None,)
     parent = models.ForeignKey(
         'Entity', 
         blank=True, null=True, default=None,
@@ -53,9 +54,16 @@ class Entity(models.Model):
     class Meta:
         ordering = ['name']
 
+    def get_root_organization(self):
+        # recursively climb entity family tree to get to root, but don't  fall into infinite loop!
+        if self.parent and not self.parent == self:
+            return self.parent.get_root_organization()
+        else:
+            return self.name
+
     def __str__(self):
         if self.parent:
-            return "{} ({})".format(self.name, str(self.parent))
+            return "{} ({})".format(self.name, self.get_root_organization())
         return self.name
 
 # Topic
@@ -93,13 +101,13 @@ class Record(models.Model):
 class Contact(models.Model):
     title = models.CharField(
         max_length=254, 
-        blank=True, 
+        blank=True, default='',
         verbose_name='Title',
         help_text = 'Ms., Sir, Sra., etc...'
     )
     first_name = models.CharField(
         max_length=254, 
-        blank=True, 
+        blank=True, default='',
         verbose_name='First/Given Name'
     )
     last_name = models.CharField(
@@ -108,18 +116,18 @@ class Contact(models.Model):
     )
     middle_name = models.CharField(
         max_length=254, 
-        blank=True, 
+        blank=True, default='',
         verbose_name='Middle Name(s)/Initial(s)'
     )
     post_title = models.CharField(
         max_length=254, 
-        blank=True, 
+        blank=True, default='',
         verbose_name='Additional Titles',
         help_text = 'Esq., III, Jr., etc...'
     )
     preferred_pronouns = models.CharField(
         max_length=254, 
-        blank=True, 
+        blank=True, default='',
         verbose_name='Preferred Pronouns',
         help_text="She/Her, They/Them, etc...",
     )
@@ -130,19 +138,20 @@ class Contact(models.Model):
     )
     job_title = models.CharField(
         max_length=254, 
-        blank=True, 
+        blank=True, default='',
         verbose_name='Job Title/Position'
     )
     expertise = models.CharField(
         max_length=254, 
-        blank=True, 
+        blank=True, default='',
         verbose_name='Expertise',
     )
     email = models.EmailField(
         max_length=254,
-        blank=True, default=None,
+        blank=True, default='',
     )
     phone = PhoneField(blank=True, null=True, default=None,)
+    fax = PhoneField(blank=True, null=True, default=None,)
     address = models.ForeignKey(
         'address.Address',
         blank=True, null=True, default=None,
@@ -154,15 +163,15 @@ class Contact(models.Model):
 
     def __str__(self):
         full_name = self.last_name
-        if self.first_name:
+        if self.first_name and len(self.first_name) > 0:
             full_name = "{}, {}".format(full_name, self.first_name)
-            if self.middle_name:
+            if self.middle_name and len(self.middle_name) > 0:
                 full_name = "{} {}".format(full_name, self.middle_name)
-        elif self.middle_name:
+        elif self.middle_name and len(self.middle_name) > 0:
             full_name = "{}, {}".format(full_name, self.middle_name)
-        if self.title:
+        if self.title and len(self.title) > 0:
             full_name = "{} {}".format(self.title, full_name)
-        if self.post_title:
+        if self.post_title and len(self.post_title) > 0:
             full_name = "{} {}".format(full_name, self.post_title)
         
         return full_name
