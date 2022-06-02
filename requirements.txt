@@ -4,7 +4,7 @@ django-reversion
 psycopg2-binary
 uwsgi
 
-# 3rd Party Fields
+# 3rd Party Form Fields
 django-phone-field
 
 # TESTING

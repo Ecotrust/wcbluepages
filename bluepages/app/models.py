@@ -71,6 +71,24 @@ class Topic(models.Model):
     def __str__(self):
         return self.name
 
+# Record - ties contact to topic to geographies
+class Record(models.Model):
+    contact = models.ForeignKey(
+        'Contact',
+        on_delete=models.CASCADE,
+    )
+    topic = models.ForeignKey(
+        'Topic',
+        on_delete=models.CASCADE,
+    )
+    regions = models.ManyToManyField(Region)
+
+    class Meta:
+        ordering = ['topic', 'contact']
+
+    def __str__(self):
+        return "{}: {}".format(self.topic, self.contact)
+
 # Contact
 class Contact(models.Model):
     title = models.CharField(
@@ -131,7 +149,6 @@ class Contact(models.Model):
         on_delete=models.SET_NULL
     )
     
-
     class Meta:
         ordering = ['last_name', 'first_name', 'middle_name', 'entity', 'job_title']
 
@@ -151,20 +168,3 @@ class Contact(models.Model):
         return full_name
 
 
-# Record (M2M support - ties contact to topic to geographies)
-class Record(models.Model):
-    contact = models.ForeignKey(
-        'Contact',
-        on_delete=models.CASCADE,
-    )
-    topic = models.ForeignKey(
-        'Topic',
-        on_delete=models.CASCADE,
-    )
-    regions = models.ManyToManyField(Region)
-
-    class Meta:
-        ordering = ['topic', 'contact']
-
-    def __str__(self):
-        return "{}: {}".format(self.topic, self.contact)
