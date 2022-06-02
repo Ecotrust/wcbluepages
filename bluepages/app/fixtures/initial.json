@@ -1,0 +1,107 @@
+[
+{
+  "model": "app.topic",
+  "pk": 1,
+  "fields": {
+    "name": "Aquaculture"
+  }
+},
+{
+  "model": "app.topic",
+  "pk": 2,
+  "fields": {
+    "name": "Cables"
+  }
+},
+{
+  "model": "app.topic",
+  "pk": 3,
+  "fields": {
+    "name": "Conservation"
+  }
+},
+{
+  "model": "app.topic",
+  "pk": 4,
+  "fields": {
+    "name": "Dumping"
+  }
+},
+{
+  "model": "app.topic",
+  "pk": 5,
+  "fields": {
+    "name": "Energy"
+  }
+},
+{
+  "model": "app.topic",
+  "pk": 6,
+  "fields": {
+    "name": "Fisheries"
+  }
+},
+{
+  "model": "app.topic",
+  "pk": 7,
+  "fields": {
+    "name": "Military"
+  }
+},
+{
+  "model": "app.topic",
+  "pk": 8,
+  "fields": {
+    "name": "Mining"
+  }
+},
+{
+  "model": "app.topic",
+  "pk": 9,
+  "fields": {
+    "name": "Public Access"
+  }
+},
+{
+  "model": "app.topic",
+  "pk": 10,
+  "fields": {
+    "name": "Recreation"
+  }
+},
+{
+  "model": "app.topic",
+  "pk": 11,
+  "fields": {
+    "name": "Research"
+  }
+},
+{
+  "model": "app.topic",
+  "pk": 12,
+  "fields": {
+    "name": "Restoration"
+  }
+},
+{
+  "model": "app.topic",
+  "pk": 13,
+  "fields": {
+    "name": "Sediment Management"
+  }
+},
+{
+  "model": "app.topic",
+  "pk": 14,
+  "fields": {
+    "name": "Shipping"
+  }
+},
+{
+  "model": "app.topic",
+  "pk": 15,
+  "fields": {
+    "name": "Traditional Use"
+  }
+}
+]
