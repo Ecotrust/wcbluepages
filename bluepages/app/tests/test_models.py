@@ -1,6 +1,5 @@
 from django.test import TestCase
 from app.models import Region, Entity, Topic, Contact, Record
-from address.models import Address, City, State, Country
 
 # Models Tests
 
