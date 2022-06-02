@@ -7,6 +7,7 @@ class Country(models.Model):
 
     class Meta:
         ordering = ['name',]
+        verbose_name_plural = 'Countries'
 
     def __str__(self):
         return self.name
@@ -38,6 +39,7 @@ class City(models.Model):
 
     class Meta:
         ordering = ['name', 'state']
+        verbose_name_plural = 'Cities'
 
     def __str__(self):
         if self.state:
@@ -57,6 +59,7 @@ class Address(models.Model):
 
     class Meta:
         ordering = ['city', 'zip_code', 'line_1', 'line_2']
+        verbose_name_plural = 'Addresses'
 
     def __str__(self):
         full_address = self.line_1

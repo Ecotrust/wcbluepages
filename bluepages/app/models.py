@@ -53,6 +53,7 @@ class Entity(models.Model):
 
     class Meta:
         ordering = ['name']
+        verbose_name_plural = 'Entities'
 
     def get_root_organization(self):
         # recursively climb entity family tree to get to root, but don't  fall into infinite loop!
