@@ -1,0 +1,37 @@
+[
+{
+  "model": "address.country",
+  "pk": 1,
+  "fields": {
+    "name": "United States of America",
+    "postal_code": "USA"
+  }
+},
+{
+  "model": "address.state",
+  "pk": 1,
+  "fields": {
+    "name": "California",
+    "postal_code": "CA",
+    "country": 1
+  }
+},
+{
+  "model": "address.state",
+  "pk": 2,
+  "fields": {
+    "name": "Oregon",
+    "postal_code": "OR",
+    "country": 1
+  }
+},
+{
+  "model": "address.state",
+  "pk": 3,
+  "fields": {
+    "name": "Washington",
+    "postal_code": "WA",
+    "country": 1
+  }
+}
+]
