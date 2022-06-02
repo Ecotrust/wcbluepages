@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.gis.db.models import GeometryField
-from address.models import AddressField
+from address.models import Address
 from phone_field import PhoneField
 
 # Region
@@ -34,7 +34,11 @@ class Entity(models.Model):
         max_length=200,
         blank=True, default=None,
     )
-    address = AddressField(blank=True, default=None)
+    address = models.ForeignKey(
+        'address.Address',
+        blank=True, null=True, default=None,
+        on_delete=models.SET_NULL
+    )
     email = models.EmailField(
         max_length=254,
         blank=True, default=None,
@@ -121,7 +125,12 @@ class Contact(models.Model):
         blank=True, default=None,
     )
     phone = PhoneField(blank=True, null=True, default=None,)
-    address = AddressField(blank=True, default=None)
+    address = models.ForeignKey(
+        'address.Address',
+        blank=True, null=True, default=None,
+        on_delete=models.SET_NULL
+    )
+    
 
     class Meta:
         ordering = ['last_name', 'first_name', 'middle_name', 'entity', 'job_title']
