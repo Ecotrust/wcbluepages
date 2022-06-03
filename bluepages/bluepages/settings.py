@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'address',
     'app',
     'phone_field',
+    'reversion',
 ]
 
 MIDDLEWARE = [

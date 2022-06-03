@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib import admin
 from app.models import Region, Topic, Entity, Contact, Record
+from reversion.admin import VersionAdmin
 
 class RecordForm(forms.ModelForm):
     class Meta:
@@ -16,11 +17,20 @@ class RecordInline(admin.TabularInline):
     verbose_name = 'Contact Topic-Region Association'
     verbose_name_plural = 'Topic-Region Associations'
 
-class RecordAdmin(admin.ModelAdmin):
+class RegionAdmin(VersionAdmin):
+    pass
+
+class TopicAdmin(VersionAdmin):
+    pass
+
+class EntityAdmin(VersionAdmin):
+    pass
+
+class RecordAdmin(VersionAdmin):
     list_display = ('topic', 'contact')
     form = RecordForm
 
-class ContactAdmin(admin.ModelAdmin):
+class ContactAdmin(VersionAdmin):
     list_display = ('last_name','first_name','entity','job_title')
     fieldsets = (
         ('Name', {
@@ -48,8 +58,8 @@ class ContactAdmin(admin.ModelAdmin):
     ]
 
 # Register your models here.
-admin.site.register(Region)
-admin.site.register(Topic)
-admin.site.register(Entity)
+admin.site.register(Region, RegionAdmin)
+admin.site.register(Topic, TopicAdmin)
+admin.site.register(Entity, EntityAdmin)
 admin.site.register(Record, RecordAdmin)
 admin.site.register(Contact, ContactAdmin)
