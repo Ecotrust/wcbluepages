@@ -131,6 +131,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = '/usr/local/apps/wcbluepages/bluepages/static_root'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = '/usr/local/apps/wcbluepages/bluepages/media_root'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
