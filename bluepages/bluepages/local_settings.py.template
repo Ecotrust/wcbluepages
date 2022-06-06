@@ -8,3 +8,10 @@ DATABASES = {
         'PORT': 5432,
     }
 }
+
+ALLOWED_HOSTS = [
+    'localhost',
+    'your.site.com',
+]
+
+SECRET_KEY = 'button_mash_to_your_hearts_content_you_will_never_need_to_enter_this'

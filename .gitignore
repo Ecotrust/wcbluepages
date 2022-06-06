@@ -1,3 +1,8 @@
+# Custom project-specific blocks
+bluepages/static_root
+
+
+# Defaults for Python Projects [Everything Below]
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
