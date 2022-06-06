@@ -1,5 +1,6 @@
 # Custom project-specific blocks
 bluepages/static_root
+bluepages/media_root/*
 
 
 # Defaults for Python Projects [Everything Below]
