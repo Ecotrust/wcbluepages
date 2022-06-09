@@ -51,20 +51,34 @@ class Entity(models.Model):
         on_delete=models.SET_NULL,
     )
 
+    @property
+    def ancestor(self):
+        ancestor = self.get_root_organization()
+        return str(ancestor)
+
     class Meta:
         ordering = ['name']
         verbose_name_plural = 'Entities'
 
     def get_root_organization(self):
+        return self.get_hierarchy()[-1].name
+
+    def get_hierarchy(self, current_hierarchy=[]):
+        current_hierarchy.append(self)
         # recursively climb entity family tree to get to root, but don't  fall into infinite loop!
         if self.parent and not self.parent == self:
-            return self.parent.get_root_organization()
-        else:
-            return self.name
+            return self.parent.get_hierarchy(current_hierarchy)
+        return current_hierarchy
+
+    @property
+    def hierarchy_string(self):
+        hierarchy_list = self.get_hierarchy()
+        hierarchy_string = " > ".join([x.name for x in hierarchy_list])
+        return hierarchy_string
 
     def __str__(self):
         if self.parent:
-            return "{} ({})".format(self.name, self.get_root_organization())
+            return f"{self.name} ({self.ancestor})"
         return self.name
 
 # Topic
