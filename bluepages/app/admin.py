@@ -95,9 +95,19 @@ class ContactAdmin(VersionAdmin):
         }),
         ('Contact Information', {
             'fields': (
-                ('email','phone','address'),
+                'email',
+                ('phone', 'fax'), 
+                'address',
+                'preferred_contact_method',
+                'show_on_entity_page',
+                'is_test_data'
             )
         }),
+        ('Additional Information', {
+            'fields': (
+                'notes',
+            )
+        })
     )
 
     inlines = [

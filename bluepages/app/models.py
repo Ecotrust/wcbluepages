@@ -3,6 +3,12 @@ from django.contrib.gis.db.models import GeometryField
 from address.models import Address
 from phone_field import PhoneField
 
+PUBLIC_CHOICES = [
+    (None, 'Inherit'),
+    (True, 'Public'),
+    (False, 'Private'),
+]
+
 # Region
 class Region(models.Model):
     objects = models.Manager()
@@ -45,11 +51,20 @@ class Entity(models.Model):
     )
     phone = PhoneField(blank=True, null=True, default=None,)
     fax = PhoneField(blank=True, null=True, default=None,)
+    show_contacts = models.BooleanField(
+        null=True, blank=True, 
+        choices=PUBLIC_CHOICES, 
+        default=None,
+        help_text="Public: Display all known contacts for this entity on the entity page.<br />" +
+        "Private: Contacts only disoverable via region/topic search.<br />" +
+        "Inherit: Do whatever the parent entity does."
+    )
     parent = models.ForeignKey(
         'Entity', 
         blank=True, null=True, default=None,
         on_delete=models.SET_NULL,
     )
+    notes = models.TextField(null=True, blank=True, default=None)
 
     @property
     def ancestor(self):
@@ -87,6 +102,7 @@ class Topic(models.Model):
         max_length=254, 
         verbose_name='Name of Topic'
     )
+    notes = models.TextField(null=True, blank=True, default=None)
 
     class Meta:
         ordering = ['name']
@@ -151,6 +167,14 @@ class Contact(models.Model):
         null=True, blank=True, default=None,
         on_delete=models.SET_NULL
     )
+    show_on_entity_page = models.BooleanField(
+        null=True, blank=True, 
+        choices=PUBLIC_CHOICES, 
+        default=None,
+        help_text="Public: Display contact on the entity page.<br />" +
+        "Private: Contact only disoverable via region/topic search.<br />" +
+        "Inherit: Do whatever the entity does."
+    )
     job_title = models.CharField(
         max_length=254, 
         blank=True, default='',
@@ -172,6 +196,15 @@ class Contact(models.Model):
         blank=True, null=True, default=None,
         on_delete=models.SET_NULL
     )
+    preferred_contact_method = models.CharField(
+        max_length=254, 
+        blank=True, default='',
+        verbose_name='Preferred contact method(s)',
+    )
+    is_test_data = models.BooleanField(
+        default=False
+    )
+    notes = models.TextField(null=True, blank=True, default=None)
     
     class Meta:
         ordering = ['last_name', 'first_name', 'middle_name', 'entity', 'job_title']
