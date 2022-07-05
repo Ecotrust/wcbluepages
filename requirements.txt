@@ -3,6 +3,7 @@ django >=3.2.13,<3.3
 django-reversion
 psycopg2-binary
 uwsgi
+pyshp
 
 # 3rd Party Form Fields
 django-phone-field

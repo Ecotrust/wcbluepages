@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.gis.db.models import GeometryField
-from address.models import Address
+from address.models import Address, State
 from phone_field import PhoneField
 
 PUBLIC_CHOICES = [
@@ -9,9 +9,16 @@ PUBLIC_CHOICES = [
     (False, 'Private'),
 ]
 
+REGION_TYPE_CHOICES = [
+    ('N', 'Near Shore'),
+    ('M', 'Mid Water'),
+    ('O', 'Offshore')
+]
+
 # Region
 class Region(models.Model):
     objects = models.Manager()
+    id = models.CharField(max_length=6, primary_key=True, verbose_name='Region ID')
     name = models.CharField(
         max_length=254, 
         blank=True, null=True, default=None,
@@ -24,8 +31,13 @@ class Region(models.Model):
         default=None
     )
 
+    depth_type = models.CharField(max_length=1, default='N', choices=REGION_TYPE_CHOICES, verbose_name='Region Depth Type')
+    id_num = models.CharField(max_length=4, null=True, blank=True, default=None, verbose_name='Region Number')
+    states = models.ManyToManyField(State, verbose_name='States')
+
+
     class Meta:
-        ordering = ['name']
+        ordering = ['id']
 
     def __str__(self):
         return self.name

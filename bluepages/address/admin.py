@@ -5,13 +5,17 @@ from address.models import Address, Country, State, City
 from reversion.admin import VersionAdmin
 
 class CountryAdmin(VersionAdmin):
-    pass
+    list_display = ('name', 'postal_code')
+
 class StateAdmin(VersionAdmin):
-    pass
+    list_display = ('name', 'postal_code', 'country')
+
 class CityAdmin(VersionAdmin):
-    pass
+    list_display = ('name', 'state')
+
 class AddressAdmin(VersionAdmin):
     search_fields = ['line_1', 'line_2', 'city_search', 'zip_code']
+    list_display = ('line_1', 'line_2', 'city', 'state', 'zip_code', 'country')
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

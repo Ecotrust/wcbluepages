@@ -59,6 +59,14 @@ class Address(models.Model):
         ordering = ['city', 'zip_code', 'line_1', 'line_2']
         verbose_name_plural = 'Addresses'
 
+    @property
+    def state(self):
+        return self.city.state
+
+    @property
+    def country(self):
+        return self.city.state.country.postal_code
+
     def __str__(self):
         full_address = self.line_1
         if self.line_2:

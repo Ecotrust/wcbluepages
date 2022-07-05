@@ -138,6 +138,8 @@ MEDIA_ROOT = '/usr/local/apps/wcbluepages/bluepages/media_root'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+IMPORT_SRID = 3857
+
 try:
     from .local_settings import *
 except Exception as e:

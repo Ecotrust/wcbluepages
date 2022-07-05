@@ -47,7 +47,8 @@ class RecordInline(admin.TabularInline):
     verbose_name_plural = 'Topic-Region Associations'
 
 class RegionAdmin(VersionAdmin):
-    search_fields = ['name',]
+    search_fields = ['name', 'id', 'depth_type', 'states__postal_code', 'states__name', 'states__country__name']
+    list_display = ('id', 'name', 'depth_type')
 
 class TopicAdmin(VersionAdmin):
     search_fields = ['name',]
