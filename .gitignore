@@ -2,6 +2,9 @@
 bluepages/static_root
 bluepages/media_root/*
 
+.vagrant
+.DS_Store
+Vagrantfile
 
 # Defaults for Python Projects [Everything Below]
 # Byte-compiled / optimized / DLL files
