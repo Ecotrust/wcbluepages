@@ -6,3 +6,10 @@ def home(request):
     context = {}
 
     return render(request, "welcome.html", context)
+
+
+def wireframe(request):
+
+    context = {}
+
+    return render(request, "wireframe.html", context)
