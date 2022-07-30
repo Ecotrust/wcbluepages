@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'app',
     'phone_field',
     'reversion',
+    'sass_processor',
 ]
 
 MIDDLEWARE = [
@@ -130,6 +131,7 @@ USE_TZ = True
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'sass_processor.finders.CssFinder',
 ]
 
 # Static files (CSS, JavaScript, Images)
@@ -141,7 +143,23 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static_root")
 
 MEDIA_URL = '/media/'
 # MEDIA_ROOT = '/usr/local/apps/wcbluepages/bluepages/media_root'
-STATIC_ROOT = os.path.join(BASE_DIR, "media_root")
+MEDIA_ROOT = os.path.join(BASE_DIR, "media_root")
+
+# SASS settings
+# https://github.com/jrief/django-sass-processor
+
+
+SASS_PROCESSOR_INCLUDE_DIRS = [
+    os.path.join(BASE_DIR, 'static/app/scss'),
+]
+
+# Search for SASS files in other INSTALLED_APPS
+    # files matching regex pattern: ^_.+\.(scss|sass)$ are processed
+    # human pattern: _*.(scss|sass)
+    # A best practice is that SASS files which start with an underscore are meant to be 
+SASS_PROCESSOR_AUTO_INCLUDE = True
+
+SASS_PROCESSOR_ENABLED = True
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
