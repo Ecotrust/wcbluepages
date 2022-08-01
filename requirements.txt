@@ -11,6 +11,9 @@ django-phone-field
 # TESTING
 coverage
 
+# FOR STYLING USING SASS OR SCSS
+sass_processor
+
 #OPTIONAL, BUT LOVELY FOR DEBUGGING
 ipdb
 ipython

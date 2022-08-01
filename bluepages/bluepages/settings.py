@@ -148,7 +148,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media_root")
 # SASS settings
 # https://github.com/jrief/django-sass-processor
 
-
 SASS_PROCESSOR_INCLUDE_DIRS = [
     os.path.join(BASE_DIR, 'static/app/scss'),
 ]
@@ -158,8 +157,6 @@ SASS_PROCESSOR_INCLUDE_DIRS = [
     # human pattern: _*.(scss|sass)
     # A best practice is that SASS files which start with an underscore are meant to be 
 SASS_PROCESSOR_AUTO_INCLUDE = True
-
-SASS_PROCESSOR_ENABLED = True
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
