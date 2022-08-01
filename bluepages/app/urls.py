@@ -9,6 +9,6 @@ from django.urls import path, re_path, include
 from app.views import *
 
 urlpatterns = [
-    re_path(r'', wireframe),
+    re_path(r'wireframe', wireframe),
     re_path(r'', home),
 ]
