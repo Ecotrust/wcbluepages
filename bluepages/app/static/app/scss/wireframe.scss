@@ -1,7 +1,43 @@
 body {
-  background: pink;
+  background: skyblue;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.logo-bg {
+  background: blue;
+  border-radius: 2em;
+  color: white;
+  display: inline-block;
+  line-height: 1;
+  padding: .75em 1.75em;
+  position: relative;
+  width: auto;
+}
+
+main {
+
+}
+
+select {
+
+}
+
+#map {  
+  height: 100%;
+  width: 100%;
 }
 
 @mixin background-color($color) {
   background-color: $color;
 }
+
+
+
