@@ -31,8 +31,12 @@ select {
 }
 
 #map {  
-  height: 100%;
-  width: 100%;
+  position: relative;
+}
+
+#map svg {  
+  height: 70vh;
+  width: auto;
 }
 
 @mixin background-color($color) {
