@@ -29,8 +29,12 @@ def regionJSON(request):
             'id': region.id,
             'name': region.name,
             'depth': region.depth_type
-        };
-        regions['features'].append(region_json)
+        }
+        geojson['features'].append(region_json)
     
-    return JsonResponse(regions)
+    return JsonResponse(geojson)
 
+def regionPicker(request):
+    context = {}
+
+    return render(request, 'region_picker.html', context)

@@ -6,9 +6,11 @@ The `urlpatterns` list routes URLs to views. For more information please see:
 """
 
 from django.urls import path, re_path, include
-from app.views import home
+from app.views import home, regionJSON, regionPicker
 
 urlpatterns = [
     
+    re_path(r'regions.json', regionJSON),
+    re_path(r'region_picker', regionPicker),
     re_path(r'', home),
 ]
