@@ -1,0 +1,25 @@
+{% load static %}
+<!DOCTYPE html>
+<HTML lang="en">
+    <HEAD>
+        <meta charset="UTF-8">
+        <title>Region Picker</title>
+        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.15.1/css/ol.css"> -->
+        <link rel="stylesheet" href="{% static 'app/vendor/openlayers/v6.15.1-dist/ol.css' %}">
+        <link rel="stylesheet" href="{% static 'app/css/region_picker.css' %}">
+        
+    </HEAD>
+    <BODY>
+        <h1>Region Picker</h1>
+        <div id="map" class="map"></div>
+        <div id="right-panel">
+            <h2>Select your regions</h2>
+            <p>TODO: checkbox filter shortcuts for 'all', 'only x depth', or 'only x state'</p>
+            <p><label for='region-codes'>Your Codes:</label></p>
+            <textarea id="region-codes" name="region-codes" rows="5" cols="50"></textarea>
+        </div>
+        <!-- <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.15.1/build/ol.js"></script> -->
+        <script src="{% static 'app/vendor/openlayers/v6.15.1-dist/ol.js' %}"></script>
+        <script src="{% static 'app/js/region_picker.js' %}"></script>
+    </BODY>
+</HTML>
