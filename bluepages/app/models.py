@@ -40,7 +40,9 @@ class Region(models.Model):
         ordering = ['id']
 
     def __str__(self):
-        return self.name
+        states = ','.join([f'st:{x.postal_code}' for x in self.states.all().order_by('postal_code')])
+        verbose_name = f'{self.id} | {states} | {self.name} | depth:{self.depth_type}'
+        return verbose_name
 
 # Entity
 class Entity(models.Model):
