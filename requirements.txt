@@ -12,7 +12,9 @@ django-phone-field
 coverage
 
 # FOR STYLING USING SASS OR SCSS
-sass_processor
+libsass 
+django-compressor 
+django-sass-processor
 
 #OPTIONAL, BUT LOVELY FOR DEBUGGING
 ipdb
