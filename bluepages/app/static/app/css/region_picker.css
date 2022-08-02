@@ -1,0 +1,14 @@
+body {
+    text-align: center;
+}
+
+#right-panel {
+    float: right;
+}
+
+.map {
+    float: left;
+    width: 40%;
+    height: calc(100vh - 95px);
+    border: 1px solid black;
+}
