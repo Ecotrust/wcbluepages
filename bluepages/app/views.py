@@ -33,7 +33,8 @@ def regionJSON(request):
         properties = {
             'id': region.id,
             'name': region.name,
-            'depth': region.depth_type
+            'depth': region.depth_type,
+            'states': ','.join([f'{x.postal_code}' for x in region.states.all().order_by('postal_code')])
         }
         region_json = {
             'type': 'Feature',

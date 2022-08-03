@@ -15,7 +15,41 @@
         <div id="map" class="map"></div>
         <div id="right-panel">
             <h2>Select your regions</h2>
-            <p>TODO: checkbox filter shortcuts for 'all', 'only x depth', or 'only x state'</p>
+            <p><b>Option 1:</b> Click on each region on the map to select it. Click again to unselect.</p>
+            <p><b>Option 2:</b> Filter which regions are selected with these checkboxes:</p>
+            <div id="filter-boxes-wrapper">
+                <fieldset id="filter-boxes-fieldset">
+                    <div id="state-boxes-wrapper">
+                        <div class="state-box filter-box">
+                            <input type="checkbox" id="washington" name="washington" class="state-input filter-input" value="WA">
+                            <label for="washington">Washington</label>
+                        </div>
+                        <div class="state-box filter-box">
+                            <input type="checkbox" id="oregon" name="oregon" class="state-input filter-input" value="OR">
+                            <label for="oregon">Oregon</label>
+                        </div>
+                        <div class="state-box filter-box">
+                            <input type="checkbox" id="california" name="california" class="state-input filter-input" value="CA">
+                            <label for="california">California</label>
+                        </div>
+                    </div>
+                    <div id="depth-boxes-wrapper">
+                        <div class="depth-box filter-box">
+                            <input type="checkbox" id="offshore" name="offshore" class="depth-input filter-input" value="O">
+                            <label for="offshore">Offshore</label>
+                        </div>
+                        <div class="depth-box filter-box">
+                            <input type="checkbox" id="middepth" name="middepth" class="depth-input filter-input" value="M">
+                            <label for="middepth">Middle-depth</label>
+                        </div>
+                        <div class="depth-box filter-box">
+                            <input type="checkbox" id="nearshore" name="nearshore" class="depth-input filter-input" value="N">
+                            <label for="nearshore">Nearshore</label>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            
             <p><label for='region-codes'>Your Codes:</label></p>
             <textarea id="region-codes" name="region-codes" rows="5" cols="50" disabled></textarea>
             <p>Copy these codes and paste them into your Contact Form when ready.</p>

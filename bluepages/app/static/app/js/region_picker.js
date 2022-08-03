@@ -96,24 +96,87 @@ const updateSelectedRegionCodes = function() {
     // $('#region-name').val(name_array.join(';'));
 }
 
-
-map.on('singleclick', function(e) {
-    map.forEachFeatureAtPixel(e.pixel, function (f) {
-        const selIndex = selected.indexOf(f);
-        if (selIndex < 0) {
-            selected.push(f);
-            f.setStyle(selectedStyleFunction(f));
-        } else {
-            selected.splice(selIndex, 1);
-            f.setStyle(undefined);
-        }
-    });
-
+const toggleFeatureSelection = function(feature)  {
+    const selIndex = selected.indexOf(feature);
+    if (selIndex < 0) {
+        selected.push(feature);
+        feature.setStyle(selectedStyleFunction(feature));
+    } else {
+        selected.splice(selIndex, 1);
+        feature.setStyle(undefined);
+    }
     // manage 'selected codes' box now.
     updateSelectedRegionCodes();
+}
 
+// Map and Form interactions:
+map.on('singleclick', function(e) {
+    map.forEachFeatureAtPixel(e.pixel, toggleFeatureSelection);
 });
 
+const update_filters = function() {
+    let regions = vectorLayer.getSource().getFeatures();
+    let filtered_regions = [];
+    let states = [];
+    let depths = [];
+
+    if ($('#washington').is(":checked")) { states.push('WA')};
+    if ($('#oregon').is(":checked")) { states.push('OR')};
+    if ($('#california').is(":checked")) { states.push('CA')};
+
+    if ($('#offshore').is(":checked")) { depths.push('O')};
+    if ($('#middepth').is(":checked")) { depths.push('M')};
+    if ($('#nearshore').is(":checked")) { depths.push('N')};
+
+    if (states.length == 0 || states.length == 3) {
+        filtered_regions = regions;
+    } else {
+        for (var region_idx = 0; region_idx < regions.length; region_idx++) {
+            var region = regions[region_idx];
+            for (let state_idx = 0;  state_idx < states.length; state_idx++) {
+                var state = states[state_idx];
+                if (region.get('states').indexOf(state) >= 0 && filtered_regions.indexOf(region) < 0 ) {
+                    filtered_regions.push(region);
+                }
+            }
+        }
+    }
+
+    let final_regions = [];
+    if (depths.length == 0 || depths.length == 3) {
+        final_regions = filtered_regions;
+    } else {
+        for (var region_idx = 0; region_idx < filtered_regions.length; region_idx++) {
+            var region = filtered_regions[region_idx];
+            for (let depth_idx = 0; depth_idx < depths.length; depth_idx++) {
+                var depth = depths[depth_idx];
+                if (region.get('depth') == depth && final_regions.indexOf(region) < 0) {
+                    final_regions.push(region);
+                }
+            }
+        }
+    }
+
+    if (states.length == 0 && depths.length == 0) {
+        final_regions = [];
+    }
+
+    for (var region_idx = 0; region_idx < regions.length; region_idx++) {
+        var region = regions[region_idx];
+        if (final_regions.indexOf(region) >= 0 && selected.indexOf(region) < 0) {
+            //select unselected region:
+            toggleFeatureSelection(region);
+        } else if (final_regions.indexOf(region) < 0 && selected.indexOf(region) >= 0) {
+            // unselect previously selected region:
+            toggleFeatureSelection(region);
+        }
+    }
+
+}
+
+$('#filter-boxes-wrapper :checkbox').change(update_filters);
+
+// Load Regions onto map
 $.ajax({
     // url:'/regions.json',
     url:'/static/app/data/regions.json',
@@ -121,7 +184,5 @@ $.ajax({
 })
 .done(function(data) {
     var features = new ol.format.GeoJSON().readFeatures(data);
-    VectorSource.addFeatures(features);
-
-    
+    VectorSource.addFeatures(features);    
 });
