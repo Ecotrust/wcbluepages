@@ -186,3 +186,12 @@ $.ajax({
     var features = new ol.format.GeoJSON().readFeatures(data);
     VectorSource.addFeatures(features);    
 });
+
+const copyCodesToClipboard = function() {
+    let codes = $('#region-codes').val();
+    navigator.clipboard.writeText(codes);
+    $('#copy-button').html('Codes copied!')
+    window.setTimeout(function() {
+        $('#copy-button').html('Copy to clipboard');
+    }, 2000);
+}
