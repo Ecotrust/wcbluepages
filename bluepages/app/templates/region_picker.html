@@ -1,4 +1,4 @@
-{% load static %}
+{% load static sass_tags%}
 <!DOCTYPE html>
 <HTML lang="en">
     <HEAD>
@@ -6,7 +6,8 @@
         <title>Region Picker</title>
         <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.15.1/css/ol.css"> -->
         <link rel="stylesheet" href="{% static 'app/vendor/openlayers/v6.15.1-dist/ol.css' %}">
-        <link rel="stylesheet" href="{% static 'app/css/region_picker.css' %}">
+        <!-- <link rel="stylesheet" href="{% static 'app/css/region_picker.css' %}"> -->
+        <link rel="stylesheet" href="{% sass_src 'app/scss/region_picker.scss' %}" rel="stylesheet" type="text/css">
         
     </HEAD>
     <BODY>
@@ -19,6 +20,7 @@
             <textarea id="region-codes" name="region-codes" rows="5" cols="50"></textarea>
         </div>
         <!-- <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.15.1/build/ol.js"></script> -->
+        <script src="{% static 'app/vendor/jquery/jquery-3.6.0.min.js' %}"></script>
         <script src="{% static 'app/vendor/openlayers/v6.15.1-dist/ol.js' %}"></script>
         <script src="{% static 'app/js/region_picker.js' %}"></script>
     </BODY>
