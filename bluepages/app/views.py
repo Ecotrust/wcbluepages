@@ -29,11 +29,16 @@ def regionJSON(request):
     }
 
     for region in regions:
-        region_json = json.loads(region.geometry.json)
-        region_json['properties'] = {
+        geometry = json.loads(region.geometry.json)
+        properties = {
             'id': region.id,
             'name': region.name,
             'depth': region.depth_type
+        }
+        region_json = {
+            'type': 'Feature',
+            'geometry': geometry,
+            'properties': properties
         }
         geojson['features'].append(region_json)
     
