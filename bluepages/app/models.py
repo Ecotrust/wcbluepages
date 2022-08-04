@@ -15,6 +15,13 @@ REGION_TYPE_CHOICES = [
     ('O', 'Offshore')
 ]
 
+ENTITY_TYPE_CHOICES = [
+    (None, 'Unspecified'),
+    ('Tribal', 'Tribal'),
+    ('Federal', 'Federal'),
+    ('State', 'State'),
+]
+
 # Region
 class Region(models.Model):
     objects = models.Manager()
@@ -49,6 +56,13 @@ class Entity(models.Model):
     name = models.CharField(
         max_length=254, 
         verbose_name='Name of Entity'
+    )
+    entity_type = models.CharField(
+        null=True, blank=True,
+        max_length=15,
+        choices=ENTITY_TYPE_CHOICES,
+        default=None,
+        verbose_name='Type of Entity'
     )
     website = models.URLField(
         max_length=200,
