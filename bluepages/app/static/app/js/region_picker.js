@@ -110,10 +110,6 @@ const toggleFeatureSelection = function(feature)  {
 }
 
 // Map and Form interactions:
-map.on('singleclick', function(e) {
-    map.forEachFeatureAtPixel(e.pixel, toggleFeatureSelection);
-});
-
 const update_filters = function() {
     let regions = vectorLayer.getSource().getFeatures();
     let filtered_regions = [];
@@ -174,19 +170,26 @@ const update_filters = function() {
 
 }
 
-$('#filter-boxes-wrapper :checkbox').change(update_filters);
-
 // Load Regions onto map
-$.ajax({
-    // url:'/regions.json',
-    url:'/static/app/data/regions.json',
-    dataType: 'json'
-})
-.done(function(data) {
-    var features = new ol.format.GeoJSON().readFeatures(data);
-    VectorSource.addFeatures(features);    
-});
+const zoomToBufferedExtent = function(extent, buffer) {
+    if (buffer > 1.0) {
+      buffer = buffer/100.0;
+    }
+    width = Math.abs(extent[2]-extent[0]);
+    height = Math.abs(extent[3]-extent[1]);
+    w_buffer = width * buffer;
+    h_buffer = height * buffer;
+    buf_west = extent[0] - w_buffer;
+    buf_east = extent[2] + w_buffer;
+    buf_south = extent[1] - h_buffer;
+    buf_north = extent[3] + h_buffer;
+    buffered_extent = [buf_west, buf_south, buf_east, buf_north];
+    map.getView().fit(buffered_extent, {'duration': 1000});
+  }
 
+
+
+// utilities
 const copyCodesToClipboard = function() {
     let codes = $('#region-codes').val();
     navigator.clipboard.writeText(codes);
@@ -195,3 +198,30 @@ const copyCodesToClipboard = function() {
         $('#copy-button').html('Copy to clipboard');
     }, 2000);
 }
+
+const clearInputs = function() {
+    $('input').prop('checked', false);
+    $('textarea').val('');
+}
+
+// Load Site
+$( document ).ready(function() {
+    clearInputs();
+    
+    map.on('singleclick', function(e) {
+        map.forEachFeatureAtPixel(e.pixel, toggleFeatureSelection);
+    });
+    
+    $('#filter-boxes-wrapper :checkbox').change(update_filters);
+    
+    $.ajax({
+        // url:'/regions.json',
+        url:'/static/app/data/regions.json',
+        dataType: 'json'
+    })
+    .done(function(data) {
+        var features = new ol.format.GeoJSON().readFeatures(data);
+        VectorSource.addFeatures(features);
+        zoomToBufferedExtent(VectorSource.getExtent(), 0.1);
+    });
+})
