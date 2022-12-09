@@ -1,0 +1,5 @@
+{
+    "scripts": {
+        "build": "npm --prefix ./region_picker/ run build"
+    }
+}

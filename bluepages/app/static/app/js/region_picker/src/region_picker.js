@@ -1,3 +1,17 @@
+import Map from 'ol/Map';
+import OSM from 'ol/source/OSM';
+import VectorSource from 'ol/source/Vector';
+import VectorLayer from 'ol/layer/Vector';
+import TileLayer from 'ol/layer/Tile';
+import View from 'ol/View';
+import Style from 'ol/style/Style';
+import Stroke from 'ol/style/Stroke';
+import Fill from 'ol/style/Fill';
+import Text from 'ol/style/Text';
+import GeoJSON from 'ol/format/GeoJSON';
+
+var $ = require( "jquery" );
+
 const getLabel = function(feature) {
     let text = feature.get('name') + "\n(" + feature.get('id') + ")";
     return text;
@@ -5,17 +19,17 @@ const getLabel = function(feature) {
 
 const styleFunction = function(feature) {
     var label = getLabel(feature);
-    return new ol.style.Style({
-        stroke: new ol.style.Stroke({
+    return new Style({
+        stroke: new Stroke({
             color: 'rgba(0,55,255,1.0)',
             width: 1,
         }),
-        fill: new ol.style.Fill({
+        fill: new Fill({
             color: 'rgba(0, 155, 255, 0.3)',
         }),
-        text: new ol.style.Text({
+        text: new Text({
             text: label,
-            stroke: new ol.style.Stroke({
+            stroke: new Stroke({
                 color: 'white',
                 width: 1
             }),
@@ -24,27 +38,27 @@ const styleFunction = function(feature) {
     });
 }
 
-const VectorSource = new ol.source.Vector({
+const RegionSource = new VectorSource({
     features: []
     // url: '/regions.json',
     // url: '/static/app/data/regions.json',
     // format: new ol.format.GeoJSON()
 });
 
-const vectorLayer = new ol.layer.Vector({
-    source: VectorSource,
+const vectorLayer = new VectorLayer({
+    source: RegionSource,
     style: styleFunction,
 });
 
-const map = new ol.Map({
+const map = new Map({
     layers: [
-        new ol.layer.Tile({
-            source: new ol.source.OSM
+        new TileLayer({
+            source: new OSM
         }),
         vectorLayer
     ],
     target: 'map',
-    view: new ol.View({
+    view: new View({
         center: [
             -13803616.858365921,    // -124
             4865942.279503175       // 40 
@@ -61,17 +75,17 @@ let selected = [];
 
 function selectedStyleFunction(feature) {
     var label = getLabel(feature);
-    let selectedStyle = new ol.style.Style({
-        fill: new ol.style.Fill({
+    let selectedStyle = new Style({
+        fill: new Fill({
             color: 'rgba(255,255,255,0.1)'
         }),
-        stroke: new ol.style.Stroke({
+        stroke: new Stroke({
             color: 'rgba(255,0,255,1.0)',
             width: 2,
         }),
-        text: new ol.style.Text({
+        text: new Text({
             text: label,
-            stroke: new ol.style.Stroke({
+            stroke: new Stroke({
                 color: 'white',
                 width: 1
             }),
@@ -175,22 +189,20 @@ const zoomToBufferedExtent = function(extent, buffer) {
     if (buffer > 1.0) {
       buffer = buffer/100.0;
     }
-    width = Math.abs(extent[2]-extent[0]);
-    height = Math.abs(extent[3]-extent[1]);
-    w_buffer = width * buffer;
-    h_buffer = height * buffer;
-    buf_west = extent[0] - w_buffer;
-    buf_east = extent[2] + w_buffer;
-    buf_south = extent[1] - h_buffer;
-    buf_north = extent[3] + h_buffer;
-    buffered_extent = [buf_west, buf_south, buf_east, buf_north];
+    let width = Math.abs(extent[2]-extent[0]);
+    let height = Math.abs(extent[3]-extent[1]);
+    let w_buffer = width * buffer;
+    let h_buffer = height * buffer;
+    let buf_west = extent[0] - w_buffer;
+    let buf_east = extent[2] + w_buffer;
+    let buf_south = extent[1] - h_buffer;
+    let buf_north = extent[3] + h_buffer;
+    let buffered_extent = [buf_west, buf_south, buf_east, buf_north];
     map.getView().fit(buffered_extent, {'duration': 1000});
   }
 
-
-
 // utilities
-const copyCodesToClipboard = function() {
+region_picker.copyCodesToClipboard = function() {
     let codes = $('#region-codes').val();
     navigator.clipboard.writeText(codes);
     $('#copy-button').html('Codes copied!')
@@ -220,8 +232,12 @@ $( document ).ready(function() {
         dataType: 'json'
     })
     .done(function(data) {
-        var features = new ol.format.GeoJSON().readFeatures(data);
-        VectorSource.addFeatures(features);
-        zoomToBufferedExtent(VectorSource.getExtent(), 0.1);
+        var features = new GeoJSON().readFeatures(data);
+        RegionSource.addFeatures(features);
+        zoomToBufferedExtent(RegionSource.getExtent(), 0.1);
     });
 })
+
+// module.exports = {
+//     copyCodesToClipboard
+// }

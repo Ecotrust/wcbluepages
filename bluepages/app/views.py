@@ -7,6 +7,9 @@ def home(request):
 
     context = {}
 
+    if request.user.is_authenticated:
+        return wireframe(request)
+
     return render(request, "welcome.html", context)
 
 
