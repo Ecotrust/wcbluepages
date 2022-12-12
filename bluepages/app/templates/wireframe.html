@@ -1,5 +1,4 @@
-{% load sass_tags %}
-{% load static %}
+{% load sass_tags static %}
 
 <!doctype html>
 <html lang="en">
@@ -20,23 +19,10 @@
     </head>
     <body>
         <header>
-            <a href="/">
-                <div class="logo">
-                    <div class="logo-bg">
-                        <h1>BP</h1>
-                    </div>
-                    {% comment %} <img src="{% static 'img/logo.png' %}" alt="Blue Pages" /> {% endcomment %}
-                </div>
-            </a>
+            {% include "header.html" %}
         </header>
         <main>
             <div class="container-flex">
-                <div class="row">
-                    <div class="col-12 text-center">
-                        <h1>Blue Pages</h1>
-                        <p class="lead mb-4">Find what your are looking for</p>
-                    </div>
-                </div>
                 <div class="row">
                     <div class="col-4">
                         <h1>Entity</h1>

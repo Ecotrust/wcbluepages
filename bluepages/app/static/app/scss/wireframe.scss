@@ -11,6 +11,10 @@ header {
   width: 100%;
 }
 
+.header-flex {
+  display: flex;
+}
+
 .logo-bg {
   background: blue;
   border-radius: 2em;
@@ -20,6 +24,10 @@ header {
   padding: .75em 1.75em;
   position: relative;
   width: auto;
+}
+
+.header-title {
+  width: 100%
 }
 
 main {
