@@ -1,17 +1,24 @@
 {% load static %}
 <div class="header-flex">
+    <div class="logo header-logo">
     <a href="/">
-        <div class="logo header-logo">
+        {% comment %} <img src="{% static 'img/logo.png' %}" alt="Blue Pages" /> {% endcomment %}
             <div class="logo-bg">
                 <h1>WCBP</h1>
             </div>
-        </div>
-    </a>
+        </a>
+    </div>
     <div class="row header-title">
         <div class="col-12 text-center">
             <h1>West Coast Blue Pages</h1>
-            <p class="lead mb-4">Understand Your Impact</p>
+            <p class="lead mb-2">Understand Your Impact</p>
         </div>
     </div>
-    {% comment %} <img src="{% static 'img/logo.png' %}" alt="Blue Pages" /> {% endcomment %}
+    <div class="header-user">
+        {% if user.is_authenticated %}
+            <a href="/account">Account</a>
+        {% else %}
+            <a href="/account">login/register</a>
+        {% endif %}
+    </div>
 </div>
