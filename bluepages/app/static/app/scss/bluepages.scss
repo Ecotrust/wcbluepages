@@ -42,12 +42,18 @@ header {
   padding: 2rem;
 }
 
-main {
-
+.results-column {
+  display: flex;
+  flex-direction: column;
 }
 
-select {
+.contact-results {
+  flex: 1;
+}
 
+.add-contact-control {
+  position: sticky;
+  bottom: 0;
 }
 
 #map {  
