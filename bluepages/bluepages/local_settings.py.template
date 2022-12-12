@@ -15,3 +15,8 @@ ALLOWED_HOSTS = [
 ]
 
 SECRET_KEY = 'button_mash_to_your_hearts_content_you_will_never_need_to_enter_this'
+
+DEBUG = True
+DEBUG_JS = DEBUG
+
+REQUIRE_ACCOUNT = False

@@ -24,6 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'FIX_THIS_FOR_PRODUCTION'
 
 DEBUG = False
+DEBUG_JS = DEBUG
 
 ALLOWED_HOSTS = [
     '*',
@@ -164,6 +165,8 @@ SASS_PROCESSOR_AUTO_INCLUDE = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 IMPORT_SRID = 3857
+
+REQUIRE_ACCOUNT = True
 
 try:
     from .local_settings import *

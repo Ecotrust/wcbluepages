@@ -2,13 +2,14 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from app.models import Region
 import json
+from django.conf import settings
 # Create your views here.
 def home(request):
 
     context = {}
 
-    if request.user.is_authenticated:
-        return wireframe(request)
+    if request.user.is_authenticated or not settings.REQUIRE_ACCOUNT:
+        return render(request, "home.html", context)
 
     return render(request, "welcome.html", context)
 
