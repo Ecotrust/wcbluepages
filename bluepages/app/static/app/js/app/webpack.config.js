@@ -3,11 +3,11 @@ const path = require('path');
 module.exports = {
     target: 'web',
     entry: {
-        index: './src/region_picker.js',
+        index: './src/app.js',
     },
     // mode: 'development',
     output: {
-        filename: 'region_picker.min.js',
+        filename: 'app.min.js',
         // path: './dist',
         path: path.resolve(__dirname, './dist'),
     }

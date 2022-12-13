@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import render
-from app.models import Region
+from app.models import Region, Topic, Entity, Contact, Record
 import json
 from django.conf import settings
 # Create your views here.
@@ -9,6 +9,27 @@ def home(request):
     context = {}
 
     if request.user.is_authenticated or not settings.REQUIRE_ACCOUNT:
+
+
+        filters = {
+            'Entities': [],
+            'Topics': [],
+            'Regions': [
+                {'name': 'Washington', 'id': 'WA', 'count': 0},
+                {'name': 'Oregon', 'id': 'OR', 'count': 0},
+                {'name': 'California', 'id': 'CA', 'count': 0},
+                {'name': 'Offshore', 'id': 'OS', 'count': 0},
+                {'name': 'Middle-depth', 'id': 'MD', 'count': 0},
+                {'name': 'Nearshore', 'id': 'NS', 'count': 0},
+            ]
+        }
+
+        for entity in Entity.objects.all().order_by('name'):
+            filters['Entities'].append({'name': entity.name, 'id': entity.pk, 'count': entity.contact_set.count()})
+        for topic in Topic.objects.all().order_by('name'):
+            filters['Topics'].append({'name': topic.name, 'id': topic.pk, 'count': topic.record_set.count()})
+
+        context['filters'] = filters
         return render(request, "home.html", context)
 
     return render(request, "welcome.html", context)

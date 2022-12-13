@@ -1,25 +1,12 @@
 <p>Keyword filter: <input></input></p>
 
-<h1>Entity</h1>
-<select  class="form-select" name="entity">
-    <option value="">Entity</option>
-    <option value="1"></option>
-    <option value="2"></option>
-    <option value="3"></option>
-</select>  
 
-<h1>Topic</h1>
-<select  class="form-select" name="topic">
-    <option value="">Topic</option>
-    <option value="1"></option>
-    <option value="2"></option>
-    <option value="3"></option>
-</select>    
+{% for name, selections in filters.items %}
+<h1>{{ name }}</h1>
+<ul>
+    {% for selection in selections %}
+        <li>{{ selection.name }} ({{ selection.count }})</li>
+    {% endfor %}
+</ul>
 
-<h2>Region</h2>
-<select  class="form-select" name="region">
-    <option value="">Region</option>
-    <option value="1"></option>
-    <option value="2"></option>
-    <option value="3"></option>
-</select> 
+{% endfor %}

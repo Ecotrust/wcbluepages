@@ -1,6 +1,6 @@
 {
     "scripts": {
-        "build": "npm --prefix ./region_picker/ run build",
-        "install": "npm --prefix ./region_picker/ install"
+        "build": "npm --prefix ./region_picker/ run build; npm --prefix ./app/ run build",
+        "install": "npm --prefix ./region_picker/ install; npm --prefix ./app/ install"
     }
 }

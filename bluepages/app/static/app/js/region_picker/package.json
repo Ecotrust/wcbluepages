@@ -1,7 +1,9 @@
 {
   "name": "region_picker",
   "main": "./dist/region_picker.min.js",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "jquery": "^3.6.1",
     "npm-build": "^0.0.1",
@@ -11,8 +13,5 @@
   "scripts": {
     "build": "webpack",
     "postbuild": "mv ./dist/* ../dist/"
-  },
-  "devDependencies": {
-    "webpack-cli": "^5.0.1"
   }
 }

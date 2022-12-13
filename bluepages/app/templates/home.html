@@ -23,18 +23,19 @@
         </header>
         <main>
             <div class="container-flex">
-                <div class="row">
-                    <div class="col-4 filter-column">
+                <div id="home-columns-row" class="row">
+                    <div id="filter-column" class="col-4 home-column">
                         {% include "home_filter_column.html" %}
                     </div> 
-                    <div class="col-4 results-column">
+                    <div id="results-column" class="col-4 home-column">
                         {% include "home_results_column.html" %}
                     </div>
-                    <div class="col-4 map-column">
+                    <div id="map-column" class="col-4 home-column">
                         {% include "home_map_column.html" %}
                     </div>
                 </div>
             </div>
         </main>
+        <script src="{% static 'app/js/dist/app.min.js' %}"></script>
     </body>
 </html>

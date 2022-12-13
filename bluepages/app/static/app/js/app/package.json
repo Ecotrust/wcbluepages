@@ -1,0 +1,24 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "search and browse logic for West Coast Blue Pages",
+  "main": "./dist/app.min.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "postbuild": "mv ./dist/* ../dist/"
+  },
+  "author": "ksdev@ecotrust.org",
+  "license": "MIT",
+  "dependencies": {
+    "bootstrap": "^5.2.3",
+    "ol": "^7.1.0",
+    "webpack": "^5.75.0"
+  },
+  "devDependencies": {
+    "webpack-cli": "^5.0.1"
+  }
+}
