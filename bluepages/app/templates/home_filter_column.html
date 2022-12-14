@@ -2,11 +2,13 @@
 
 
 {% for name, selections in filters.items %}
-<h1>{{ name }}</h1>
-<ul>
+<h2 class="filter-header"><span data-bs-toggle="collapse" href="#{{ name }}FilterOptions" aria-expanded="false" aria-controls="collapse{{ name }}">{{ name }}</span></h2>
+<!-- <a class="filter-header" data-bs-toggle="collapse" href="#{{ name }}FilterOptions" aria-expanded="false" aria-controls="collapse{{ name }}" role="button">{{ name }}</a> -->
+<ul class="collapse" id="{{ name }}FilterOptions">
     {% for selection in selections %}
-        <li>{{ selection.name }} ({{ selection.count }})</li>
+        <li><span type="{{ name }}" value="{{ selection.id }}">{{ selection.name }} ({{ selection.count }})</span></li>
     {% endfor %}
 </ul>
+<br />
 
 {% endfor %}

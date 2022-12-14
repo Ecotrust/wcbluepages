@@ -1,38 +1,108 @@
 from django.http import JsonResponse
 from django.shortcuts import render
-from app.models import Region, Topic, Entity, Contact, Record
+from app.models import Region, Topic, Entity, Contact, Record, State
 import json
 from django.conf import settings
 # Create your views here.
 def home(request):
-
     context = {}
-
+    contacts = Contact.objects.all()
     if request.user.is_authenticated or not settings.REQUIRE_ACCOUNT:
-
-
         filters = {
-            'Entities': [],
-            'Topics': [],
-            'Regions': [
-                {'name': 'Washington', 'id': 'WA', 'count': 0},
-                {'name': 'Oregon', 'id': 'OR', 'count': 0},
-                {'name': 'California', 'id': 'CA', 'count': 0},
-                {'name': 'Offshore', 'id': 'OS', 'count': 0},
-                {'name': 'Middle-depth', 'id': 'MD', 'count': 0},
-                {'name': 'Nearshore', 'id': 'NS', 'count': 0},
-            ]
+            'Entities': getEntityFeacetFilters(contacts),
+            'Topics': getTopicFacetFilters(contacts),
+            'Regions': getRegionFacetFilters(contacts)
         }
-
-        for entity in Entity.objects.all().order_by('name'):
-            filters['Entities'].append({'name': entity.name, 'id': entity.pk, 'count': entity.contact_set.count()})
-        for topic in Topic.objects.all().order_by('name'):
-            filters['Topics'].append({'name': topic.name, 'id': topic.pk, 'count': topic.record_set.count()})
 
         context['filters'] = filters
         return render(request, "home.html", context)
 
     return render(request, "welcome.html", context)
+
+def getEntityFeacetFilters(contacts=None):
+    if not contacts:
+        contacts = Contact.objects.all()
+
+    entities = []
+    for entity in Entity.objects.all().order_by('name'):
+        entity_dict = {
+            'name': entity.name, 
+            'id': entity.pk, 
+            'count': contacts.filter(entity=entity).count()
+        }
+        if entity_dict['count'] > 0:
+            entities.append(entity_dict)
+    return entities
+
+def getTopicFacetFilters(contacts=None):
+    if not contacts:
+        contacts = Contact.objects.all()
+
+    topics_dict = {}
+    for contact in contacts:
+        contact_topics = []
+        for record in contact.record_set.all():
+            contact_topics.append(record.topic)
+        contact_topics = list(set(contact_topics))
+        for topic in contact_topics:
+            if topic.name not in topics_dict.keys():
+                topics_dict[topic.name] = {'name': topic.name, 'id': topic.pk, 'count':0}
+            topics_dict[topic.name]['count'] += 1
+    
+    topic_names = list(topics_dict.keys())
+    topic_names.sort()
+    final_topics = []
+    for topic_name in topic_names:
+        final_topics.append(topics_dict[topic_name])
+
+    return final_topics
+
+def getRegionFacetFilters(contacts=None):
+    if not contacts:
+        contacts = Contact.objects.all()
+
+    regions_dict = {
+        'Washington': {"id": 'WA', 'count': 0},
+        'Oregon': {"id": 'OR', 'count': 0},
+        'California': {"id": 'CA', 'count': 0},
+        'Offshore': {"id": 'O', 'count': 0},
+        'Middle-depth': {"id": 'M', 'count': 0},
+        'Nearshore': {"id": 'N', 'count': 0},
+    }
+    washington = State.objects.get(postal_code="WA")
+    oregon = State.objects.get(postal_code="OR")
+    california = State.objects.get(postal_code="CA")
+    states = [washington, oregon, california]
+    depths = ["O", "M", "N"]
+    for contact in contacts:
+        contact_regions = []
+        for record in contact.record_set.all():
+            if len(contact_regions) == 6:
+                break
+            for state in states:
+                if state.name not in contact_regions and record.regions.filter(states=state).count() > 0:
+                    contact_regions.append(state.postal_code)
+            for depth in depths:
+                if depth not in contact_regions and record.regions.filter(depth_type=depth).count() > 0:
+                    contact_regions.append(depth)
+        for region_index in regions_dict.keys():
+            region = regions_dict[region_index]
+            if region['id'] in contact_regions:
+                region['count'] += 1
+
+    final_regions = [
+        {'name': 'Washington', 'id': 'WA', 'count': regions_dict['Washington']['count']},
+        {'name': 'Oregon', 'id': 'OR', 'count': regions_dict['Oregon']['count']},
+        {'name': 'California', 'id': 'CA', 'count': regions_dict['California']['count']},
+        {'name': 'Offshore', 'id': 'OS', 'count': regions_dict['Offshore']['count']},
+        {'name': 'Middle-depth', 'id': 'MD', 'count': regions_dict['Middle-depth']['count']},
+        {'name': 'Nearshore', 'id': 'NS', 'count': regions_dict['Nearshore']['count']},
+    ]
+
+    return [x for x in final_regions if x['count'] > 0]
+        
+
+
 
 
 def wireframe(request):

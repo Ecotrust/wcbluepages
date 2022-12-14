@@ -59,6 +59,10 @@ header {
   height: 100%;
 }
 
+#filter-column .filter-header>span {
+  cursor: pointer;
+}
+
 #results-column {
   display: flex;
   flex-direction: column;
