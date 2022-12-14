@@ -11,7 +11,12 @@
     "webpack": "^5.75.0"
   },
   "scripts": {
-    "build": "webpack",
-    "postbuild": "mv ./dist/* ../dist/"
+    "build": "webpack --mode=production",
+    "postbuild": "mv ./dist/* ../dist/",
+    "devbuild": "webpack --mode=development",
+    "postdevbuild": "mv ./dist/* ../dist/"
+  },
+  "devDependencies": {
+    "webpack-cli": "^5.0.1"
   }
 }

@@ -252,4 +252,8 @@ class Contact(models.Model):
         
         return full_name
 
+    @property 
+    def full_name(self):
+        return str(self)
+
 

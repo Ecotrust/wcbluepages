@@ -7,6 +7,8 @@ from django.conf import settings
 def home(request):
     context = {}
     contacts = Contact.objects.all()
+    records = Record.objects.all()
+    # TODO: getTopic and getRegion should accept filtered records, NOT contacts
     if request.user.is_authenticated or not settings.REQUIRE_ACCOUNT:
         filters = {
             'Entities': getEntityFeacetFilters(contacts),
@@ -15,6 +17,15 @@ def home(request):
         }
 
         context['filters'] = filters
+        context['contacts'] = [
+            {
+                'id':x.pk, 
+                'name': x.full_name,
+                'role': x.job_title,
+                'entity': x.entity.name, 
+                'entity_id': x.entity.pk 
+            } for x in contacts.order_by('last_name', 'first_name', 'middle_name', 'title', 'post_title', 'entity__name')
+        ]
         return render(request, "home.html", context)
 
     return render(request, "welcome.html", context)
