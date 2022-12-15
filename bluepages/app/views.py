@@ -9,6 +9,8 @@ def home(request):
     contacts = Contact.objects.all()
     records = Record.objects.all()
     # TODO: getTopic and getRegion should accept filtered records, NOT contacts
+    # TODO: Faster smarter queries and facets
+    #   https://www.enterprisedb.com/postgres-tutorials/how-implement-faceted-search-django-and-postgresql
     if request.user.is_authenticated or not settings.REQUIRE_ACCOUNT:
         filters = {
             'Entities': getEntityFeacetFilters(contacts),
