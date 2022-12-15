@@ -121,14 +121,14 @@ def suggestionForm(request):
     # use formset illustration below to add a'record' formset so users can add up to three record suggestions at once.
     # ContactSuggestionFormSet = modelformset_factory(ContactSuggestion, form=ContactSuggestionForm)
     if request.method == 'POST':
-        # formset = ContactSuggestionFormSet(request,POST)
+        # formset = ContactSuggestionFormSet(request.POST)
         form = ContactSuggestionForm(request.POST)
         if form.is_valid():
             form.save()
 
     else:
         # formset = ContactSuggestionFormSet()
-        form = ContactSuggestionForm()
+        form = ContactSuggestionForm(initial={'user':request.user, 'status':'Pending'})
     context = {
         'form': form,
         'action': '/suggestion_form'
