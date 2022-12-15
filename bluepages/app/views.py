@@ -1,9 +1,11 @@
 from django.http import JsonResponse
 from django.shortcuts import render
-from app.models import Region, Topic, Entity, Contact, Record, State
+from app.models import Region, Topic, Entity, Contact, Record, State, ContactSuggestion
+from app.forms import ContactSuggestionForm
+from django.forms import modelformset_factory
 import json
 from django.conf import settings
-# Create your views here.
+
 def home(request):
     context = {}
     contacts = Contact.objects.all()
@@ -114,7 +116,19 @@ def getRegionFacetFilters(contacts=None):
 
     return [x for x in final_regions if x['count'] > 0]
         
-
+def suggestionForm(request):
+    # use formset illustration below to add a'record' formset so users can add up to three record suggestions at once.
+    # ContactSuggestionFormSet = modelformset_factory(ContactSuggestion, form=ContactSuggestionForm)
+    if request.method == 'POST':
+        # formset = ContactSuggestionFormSet(request,POST)
+        form = ContactSuggestionForm(request,POST)
+        if form.is_valid():
+            form.save()
+    else:
+        # formset = ContactSuggestionFormSet()
+        form = ContactSuggestionForm()
+    context = {'form': form.as_p}
+    return render(request, 'generic_form.html', context)
 
 
 
