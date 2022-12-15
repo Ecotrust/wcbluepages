@@ -22,6 +22,12 @@ ENTITY_TYPE_CHOICES = [
     ('State', 'State'),
 ]
 
+SUGGESTION_STATUS_CHOICES = [
+    ('Pending', 'Pending'),
+    ('Approved', 'Approved'),
+    ('Declined', 'Declined'),
+]
+
 # Region
 class Region(models.Model):
     objects = models.Manager()
@@ -139,11 +145,7 @@ class Topic(models.Model):
         return self.name
 
 # Record - ties contact to topic to geographies
-class Record(models.Model):
-    contact = models.ForeignKey(
-        'Contact',
-        on_delete=models.CASCADE,
-    )
+class RecordBase(models.Model):
     topic = models.ForeignKey(
         'Topic',
         on_delete=models.CASCADE,
@@ -151,13 +153,23 @@ class Record(models.Model):
     regions = models.ManyToManyField(Region)
 
     class Meta:
+        abstract = True
+
+class Record(RecordBase):
+    contact = models.ForeignKey(
+        'Contact',
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
         ordering = ['topic', 'contact']
+        abstract = False
 
     def __str__(self):
         return "{}: {}".format(self.topic, self.contact)
 
 # Contact
-class Contact(models.Model):
+class ContactBase(models.Model):
     title = models.CharField(
         max_length=254, 
         blank=True, default='',
@@ -195,14 +207,6 @@ class Contact(models.Model):
         null=True, blank=True, default=None,
         on_delete=models.SET_NULL
     )
-    show_on_entity_page = models.BooleanField(
-        null=True, blank=True, 
-        choices=PUBLIC_CHOICES, 
-        default=None,
-        help_text="Public: Display contact on the entity page.<br />" +
-        "Private: Contact only disoverable via region/topic search.<br />" +
-        "Inherit: Do whatever the entity does."
-    )
     job_title = models.CharField(
         max_length=254, 
         blank=True, default='',
@@ -229,13 +233,11 @@ class Contact(models.Model):
         blank=True, default='',
         verbose_name='Preferred contact method(s)',
     )
-    is_test_data = models.BooleanField(
-        default=False
-    )
     notes = models.TextField(null=True, blank=True, default=None)
     
     class Meta:
         ordering = ['last_name', 'first_name', 'middle_name', 'entity', 'job_title']
+        abstract = True
 
     def __str__(self):
         full_name = self.last_name
@@ -256,4 +258,60 @@ class Contact(models.Model):
     def full_name(self):
         return str(self)
 
+class Contact(ContactBase):
+    show_on_entity_page = models.BooleanField(
+        null=True, blank=True, 
+        choices=PUBLIC_CHOICES, 
+        default=None,
+        help_text="Public: Display contact on the entity page.<br />" +
+        "Private: Contact only disoverable via region/topic search.<br />" +
+        "Inherit: Do whatever the entity does."
+    )
+    is_test_data = models.BooleanField(
+        default=False
+    )
 
+    class Meta:
+        ordering = ['last_name', 'first_name', 'middle_name', 'entity', 'job_title']
+        abstract = False
+
+class ContactSuggestion(ContactBase):
+    last_name = models.CharField(
+        max_length=254, 
+        blank=True, default='',
+        verbose_name='Last/Family Name'
+    )
+    other_entity_name = models.CharField(max_length=254, blank=True, default='', verbose_name='Other Entity Name', help_text = 'If contact belongs to an unlisted entity, name it here.')
+    contact = models.ForeignKey('Contact', blank=True, null=True, default=None, on_delete=models.SET_NULL, verbose_name="Contact to edit", help_text="If suggesting edits for an existing contact, identify them here.")
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE, verbose_name="User proposing this change")
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
+    status = models.CharField(max_length=20, default='Pending', choices=SUGGESTION_STATUS_CHOICES, verbose_name="Suggestion is open", help_text="Suggestion has yet to be approved or declined")
+    description = models.TextField(null=True, blank=True, default=None, verbose_name="Describe the proposed update", help_text="If you are updating an existing contact, what specific changes are you trying to propose in this form?")
+
+
+    def __str__(self):
+        if self.contact:
+            contact_name= str(self.contact)
+        else:
+            contact_name = super().__str__()
+        return "{}: {}".format(str(self.user), contact_name)
+
+    @property
+    def contact_name(self):
+        if self.contact:
+            return str(self.contact)
+        else:
+            return 'new ({})'.format(super().__str__())
+
+    class Meta:
+        ordering = ['last_name', 'first_name', 'middle_name', 'entity', 'job_title', 'user__username']
+
+class RecordSuggestion(RecordBase):
+    contact_suggestion = models.ForeignKey('ContactSuggestion', on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ['topic', 'contact_suggestion']
+
+    def __str__(self):
+        return "{}: {}".format(self.topic, self.contact_suggestion)

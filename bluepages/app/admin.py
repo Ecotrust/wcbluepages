@@ -2,7 +2,7 @@ from django import forms
 from django.contrib import admin
 from django.db.models import Value
 from django.db.models.functions import Concat
-from app.models import Region, Topic, Entity, Contact, Record
+from app.models import Region, Topic, Entity, Contact, Record, ContactSuggestion, RecordSuggestion
 from reversion.admin import VersionAdmin
 
 # This is dumb, but to be able to search with Django's default tool, only field names are allowed: no properties, and no functions.
@@ -45,6 +45,20 @@ class RecordInline(admin.TabularInline):
     form = RecordForm
     verbose_name = 'Contact Topic-Region Association'
     verbose_name_plural = 'Topic-Region Associations'
+
+class RecordSuggestionForm(forms.ModelForm):
+    class Meta:
+        model = RecordSuggestion
+        widgets = {
+            'regions': admin.widgets.FilteredSelectMultiple('Region', False)
+        }
+        fields = '__all__'
+
+class RecordSuggestionInline(admin.TabularInline):
+    model = RecordSuggestion
+    form = RecordSuggestionForm
+    verbose_name = 'Contact Suggestion Topic-Region Association'
+    verbose_name_plural = 'Suggested Topic-Region Associations'
 
 class RegionAdmin(VersionAdmin):
     search_fields = ['name', 'id', 'depth_type', 'states__postal_code', 'states__name', 'states__country__name']
@@ -122,6 +136,67 @@ class ContactAdmin(VersionAdmin):
         )
         return qs
 
+class ContactSuggestionAdmin(VersionAdmin):
+    list_display = ('status', 'user', 'contact_name','description')
+    search_fields = ['status', 'last_name','first_name','job_title','expertise','email', 'entity_hierarchy']
+    readonly_fields = ('user', 'status', 'date_created', 'date_modified')
+    fieldsets = (
+        ('Request', {
+            'fields': (
+                ('user', 'status'),
+                'description',
+                ('date_created', 'date_modified',)
+            )
+        }),
+        ('Contact', {
+            'fields': (
+                'contact',
+            )
+        }),
+        ('Name', {
+            'fields': (
+                'title',
+                ('last_name', 'first_name', 'middle_name'),
+                'post_title',
+                'preferred_pronouns'
+            )
+        }),
+        ('Position', {
+            'fields': (
+                ('entity', 'other_entity_name'),
+                ('job_title','expertise'),
+            )
+        }),
+        ('Contact Information', {
+            'fields': (
+                'email',
+                ('phone', 'fax'), 
+                'address',
+                'preferred_contact_method'
+            )
+        }),
+        ('Additional Information', {
+            'fields': (
+                'notes',
+            )
+        })
+    )
+
+    inlines = [
+        RecordSuggestionInline
+    ]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.alias(
+            entity_hierarchy=get_entity_hierarchy_alias('entity__')
+        )
+        return qs
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.user = request.user
+        obj.save()
 
 # Register your models here.
 admin.site.register(Region, RegionAdmin)
@@ -129,3 +204,4 @@ admin.site.register(Topic, TopicAdmin)
 admin.site.register(Entity, EntityAdmin)
 admin.site.register(Record, RecordAdmin)
 admin.site.register(Contact, ContactAdmin)
+admin.site.register(ContactSuggestion, ContactSuggestionAdmin)
