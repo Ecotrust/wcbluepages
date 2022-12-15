@@ -1,0 +1,196 @@
+{% load sass_tags static %}
+
+<html>
+    <head>
+        <link href="{% static 'app/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% sass_src 'app/scss/suggestion_form.scss' %}" rel="stylesheet" type="text/css" />
+    </head>
+    <body>
+        <form method="post" action="{{action}}">
+            {% csrf_token %}
+            {# {{ form.as_p }} #}
+
+            <!-- ABOUT SUGGESTION -->
+            <!-- <div class="well" id="suggestion-form-details">
+                <h3>Suggestion Details</h3>
+                <div class="fieldWrapper">
+                    {{ form.user.errors }}
+                    {{ form.user.label_tag }}
+                    {{ form.user }}
+                </div>
+                <div class="fieldWrapper">
+                    {{ form.status.errors }}
+                    {{ form.status.label_tag }}
+                    {{ form.status }}
+                </div> -->
+                <!-- <div class="fieldWrapper full-width-rows">
+                    {{ form.description.errors }}
+                    {{ form.description.label_tag }}<br />
+                    {{ form.description }}
+                    {% if form.description.help_text %}<br /><span class="help-text">{{ form.description.help_text }}</span>{% endif %}
+                </div> 
+            </div> -->
+
+            <!-- About Contact being suggested -->
+            <div class="well" id="suggestion-form-person">
+                <h3>Contact Person</h3>
+                <div class="fieldWrapper">
+                    {{ form.contact.errors }}
+                    {{ form.contact.label_tag }}
+                    {{ form.contact }}
+                    {% if form.contact.help_text %}<span class="help-text">{{ form.contact.help_text }}</span>{% endif %}
+                </div>
+                <div class="fieldWrapper">
+                    {{ form.title.errors }}
+                    {{ form.title.label_tag }}
+                    {{ form.title }}
+                    {% if form.title.help_text %}<span class="help-text">{{ form.title.help_text }}</span>{% endif %}
+                </div>
+                <div class="fieldWrapper">
+                    {{ form.last_name.errors }}
+                    {{ form.last_name.label_tag }}
+                    {{ form.last_name }}
+                    {% if form.last_name.help_text %}<span class="help-text">{{ form.last_name.help_text }}</span>{% endif %}
+                </div>
+                <div class="fieldWrapper">
+                    {{ form.first_name.errors }}
+                    {{ form.first_name.label_tag }}
+                    {{ form.first_name }}
+                    {% if form.first_name.help_text %}<span class="help-text">{{ form.first_name.help_text }}</span>{% endif %}
+                </div>
+                <div class="fieldWrapper">
+                    {{ form.middle_name.errors }}
+                    {{ form.middle_name.label_tag }}
+                    {{ form.middle_name }}
+                    {% if form.middle_name.help_text %}<span class="help-text">{{ form.middle_name.help_text }}</span>{% endif %}
+                </div>
+                <div class="fieldWrapper">
+                    {{ form.post_title.errors }}
+                    {{ form.post_title.label_tag }}
+                    {{ form.post_title }}
+                    {% if form.post_title.help_text %}<span class="help-text">{{ form.post_title.help_text }}</span>{% endif %}
+                </div>
+                <div class="fieldWrapper">
+                    {{ form.preferred_pronouns.errors }}
+                    {{ form.preferred_pronouns.label_tag }}
+                    {{ form.preferred_pronouns }}
+                    {% if form.preferred_pronouns.help_text %}<span class="help-text">{{ form.preferred_pronouns.help_text }}</span>{% endif %}
+                </div>
+
+            </div>
+
+            <!-- Job/Role -->
+            <div class="well" id="suggestion-form-role">
+                <h3>Job/Role</h3>
+                <div class="fieldWrapper">
+                    {{ form.entity.errors }}
+                    {{ form.entity.label_tag }}
+                    {{ form.entity }}
+                    {% if form.entity.help_text %}<span class="help-text">{{ form.entity.help_text }}</span>{% endif %}
+                </div>
+                <div class="fieldWrapper">
+                    {{ form.other_entity_name.errors }}
+                    {{ form.other_entity_name.label_tag }}
+                    {{ form.other_entity_name }}
+                    {% if form.other_entity_name.help_text %}<span class="help-text">{{ form.other_entity_name.help_text }}</span>{% endif %}
+                </div>
+                <div class="fieldWrapper">
+                    {{ form.job_title.errors }}
+                    {{ form.job_title.label_tag }}
+                    {{ form.job_title }}
+                    {% if form.job_title.help_text %}<span class="help-text">{{ form.job_title.help_text }}</span>{% endif %}
+                </div>
+                <div class="fieldWrapper">
+                    {{ form.expertise.errors }}
+                    {{ form.expertise.label_tag }}
+                    {{ form.expertise }}
+                    {% if form.expertise.help_text %}<span class="help-text">{{ form.expertise.help_text }}</span>{% endif %}
+                </div>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="well" id="suggestion-form-contact">
+                <h3>Contact Info</h3>
+                <div class="fieldWrapper">
+                    {{ form.email.errors }}
+                    {{ form.email.label_tag }}
+                    {{ form.email }}
+                    {% if form.email.help_text %}<span class="help-text">{{ form.email.help_text }}</span>{% endif %}
+                </div>
+                <div class="fieldWrapper">
+                    {{ form.phone.errors }}
+                    {{ form.phone.label_tag }}
+                    {{ form.phone }}
+                    {% if form.phone.help_text %}<span class="help-text">{{ form.phone.help_text }}</span>{% endif %}
+                </div>
+                <div class="fieldWrapper">
+                    {{ form.fax.errors }}
+                    {{ form.fax.label_tag }}
+                    {{ form.fax }}
+                    {% if form.fax.help_text %}<span class="help-text">{{ form.fax.help_text }}</span>{% endif %}
+                </div>
+                <div class="fieldWrapper">
+                    {{ form.address_line_1.errors }}
+                    {{ form.address_line_1.label_tag }}
+                    {{ form.address_line_1 }}
+                    {% if form.address_line_1.help_text %}<span class="help-text">{{ form.address_line_1.help_text }}</span>{% endif %}
+                </div>
+                <div class="fieldWrapper">
+                    {{ form.address_line_2.errors }}
+                    {{ form.address_line_2.label_tag }}
+                    {{ form.address_line_2 }}
+                    {% if form.address_line_2.help_text %}<span class="help-text">{{ form.address_line_2.help_text }}</span>{% endif %}
+                </div>
+                <div class="fieldWrapper">
+                    {{ form.address_city.errors }}
+                    {{ form.address_city.label_tag }}
+                    {{ form.address_city }}
+                    {% if form.address_city.help_text %}<span class="help-text">{{ form.address_city.help_text }}</span>{% endif %}
+                </div>
+                <div class="fieldWrapper">
+                    {{ form.address_state.errors }}
+                    {{ form.address_state.label_tag }}
+                    {{ form.address_state }}
+                    {% if form.address_state.help_text %}<span class="help-text">{{ form.address_state.help_text }}</span>{% endif %}
+                </div>
+                <div class="fieldWrapper">
+                    {{ form.address_country.errors }}
+                    {{ form.address_country.label_tag }}
+                    {{ form.address_country }}
+                    {% if form.address_country.help_text %}<span class="help-text">{{ form.address_country.help_text }}</span>{% endif %}
+                </div>
+                <div class="fieldWrapper">
+                    {{ form.address_zip_code.errors }}
+                    {{ form.address_zip_code.label_tag }}
+                    {{ form.address_zip_code }}
+                    {% if form.address_zip_code.help_text %}<span class="help-text">{{ form.address_zip_code.help_text }}</span>{% endif %}
+                </div>
+                <div class="fieldWrapper">
+                    {{ form.preferred_contact_method.errors }}
+                    {{ form.preferred_contact_method.label_tag }}
+                    {{ form.preferred_contact_method }}
+                    {% if form.preferred_contact_method.help_text %}<span class="help-text">{{ form.preferred_contact_method.help_text }}</span>{% endif %}
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="well" id="suggestion-form-notes">
+                <h3>Additional Information</h3>
+                <div class="fieldWrapper full-width-rows">
+                    {{ form.description.errors }}
+                    {{ form.description.label_tag }}<br />
+                    {{ form.description }}
+                    {% if form.description.help_text %}<br /><span class="help-text">{{ form.description.help_text }}</span>{% endif %}
+                </div>
+                <div class="fieldWrapper full-width-rows">
+                    {{ form.notes.errors }}
+                    {{ form.notes.label_tag }}<br />
+                    {{ form.notes }}
+                    {% if form.notes.help_text %}<span class="help-text">{{ form.notes.help_text }}</span>{% endif %}
+                </div>
+            </div>
+            
+            <input type="submit" value="Submit">
+        </form>
+    </body>
+</html>

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db.models import Value
 from django.db.models.functions import Concat
-from address.models import Address#, Country, State, City
+from address.models import Address, Country
 from reversion.admin import VersionAdmin
 
 class CountryAdmin(VersionAdmin):

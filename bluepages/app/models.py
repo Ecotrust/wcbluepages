@@ -237,11 +237,6 @@ class ContactBase(models.Model):
     )
     phone = PhoneField(blank=True, null=True, default=None,)
     fax = PhoneField(blank=True, null=True, default=None,)
-    address = models.ForeignKey(
-        'address.Address',
-        blank=True, null=True, default=None,
-        on_delete=models.SET_NULL
-    )
     preferred_contact_method = models.CharField(
         max_length=254, 
         blank=True, default='',
@@ -273,6 +268,11 @@ class ContactBase(models.Model):
         return str(self)
 
 class Contact(ContactBase):
+    address = models.ForeignKey(
+        'address.Address',
+        blank=True, null=True, default=None,
+        on_delete=models.SET_NULL
+    )
     show_on_entity_page = models.BooleanField(
         null=True, blank=True, 
         choices=PUBLIC_CHOICES, 
@@ -290,16 +290,22 @@ class Contact(ContactBase):
         abstract = False
 
 class ContactSuggestion(ContactBase):
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE, verbose_name="User proposing this change")
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
+    contact = models.ForeignKey('Contact', blank=True, null=True, default=None, on_delete=models.SET_NULL, verbose_name="Contact to edit", help_text="If suggesting edits for an existing contact, identify them here.")
     last_name = models.CharField(
         max_length=254, 
         blank=True, default='',
         verbose_name='Last/Family Name'
     )
+    address_line_1 = models.CharField(max_length=254, blank=True, null=True, default=None)
+    address_line_2 = models.CharField(max_length=254, blank=True, null=True, default=None)
+    address_city = models.CharField(max_length=150, blank=True, null=True, default=None)
+    address_state = models.CharField(max_length=150, verbose_name='State/Province', blank=True, null=True, default=None)
+    address_country = models.CharField(max_length=150, blank=True, null=True, default=None)
+    address_zip_code = models.CharField(max_length=25, blank=True, null=True, default=None, verbose_name='Zip/Postal Code')
     other_entity_name = models.CharField(max_length=254, blank=True, default='', verbose_name='Other Entity Name', help_text = 'If contact belongs to an unlisted entity, name it here.')
-    contact = models.ForeignKey('Contact', blank=True, null=True, default=None, on_delete=models.SET_NULL, verbose_name="Contact to edit", help_text="If suggesting edits for an existing contact, identify them here.")
-    user = models.ForeignKey('auth.User', on_delete=models.CASCADE, verbose_name="User proposing this change")
-    date_created = models.DateTimeField(auto_now_add=True)
-    date_modified = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=20, default='Pending', choices=SUGGESTION_STATUS_CHOICES, verbose_name="Suggestion status", help_text="Has suggestion been approved or declined?")
     description = models.TextField(null=True, blank=True, default=None, verbose_name="Describe the proposed update", help_text="If you are updating an existing contact, what specific changes are you trying to propose in this form?")
 

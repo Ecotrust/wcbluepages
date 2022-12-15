@@ -1,0 +1,13 @@
+label {
+    width: 10rem;
+    display: inline-block;
+}
+
+.full-width-rows label {
+    width: unset;
+}
+
+.help-text {
+    font-size: small;
+    color: gray;
+}

@@ -26,7 +26,12 @@ class ContactSuggestionForm(ModelForm):
             'email',
             'phone', 
             'fax',
-            'address',
+            'address_line_1',
+            'address_line_2',
+            'address_city',
+            'address_state',
+            'address_country',
+            'address_zip_code',
             'preferred_contact_method',
             'notes',
         ]

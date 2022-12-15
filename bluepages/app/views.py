@@ -133,7 +133,7 @@ def suggestionForm(request):
         'form': form,
         'action': '/suggestion_form'
     }
-    return render(request, 'generic_form.html', context)
+    return render(request, 'suggestion_form.html', context)
 
 
 
