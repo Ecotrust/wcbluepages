@@ -12,60 +12,17 @@ class Country(models.Model):
     def __str__(self):
         return self.name
 
-class State(models.Model):
-    name = models.CharField(max_length=254)
-    postal_code = models.CharField(max_length=4, help_text="i.e. 'WA'")
-    country = models.ForeignKey(
-        'Country',
-        null=True, blank=True, default=None,
-        on_delete = models.SET_NULL
-    )
-
-    class Meta:
-        ordering = ['name', 'country']
-
-    def __str__(self):
-        return self.name
-
-class City(models.Model):
-    name = models.CharField(max_length=254)
-    state = models.ForeignKey(
-        'State',
-        blank=True, null=True, default=None,
-        on_delete=models.SET_NULL
-    )
-
-    class Meta:
-        ordering = ['name', 'state']
-        verbose_name_plural = 'Cities'
-
-    def __str__(self):
-        if self.state:
-            return "{}, {}".format(self.name, self.state.postal_code)
-        else:
-            return self.name
-
 class Address(models.Model):
     line_1 = models.CharField(max_length=254)
     line_2 = models.CharField(max_length=254, blank=True, default=None)
-    city = models.ForeignKey(
-        'City',
-        null=True, blank=True, default=None,
-        on_delete=models.SET_NULL
-    )
-    zip_code = models.CharField(max_length=254)
+    city = models.CharField(max_length=150, blank=True, null=True, default=None)
+    state = models.CharField(max_length=150, verbose_name='State/Province', blank=True, null=True, default=None)
+    country = models.CharField(max_length=150, blank=True, null=True, default=None)
+    zip_code = models.CharField(max_length=25, verbose_name='Zip/Postal Code')
 
     class Meta:
         ordering = ['city', 'zip_code', 'line_1', 'line_2']
         verbose_name_plural = 'Addresses'
-
-    @property
-    def state(self):
-        return self.city.state
-
-    @property
-    def country(self):
-        return self.city.state.country.postal_code
 
     def __str__(self):
         full_address = self.line_1
@@ -73,8 +30,10 @@ class Address(models.Model):
             full_address = "{} {}".format(full_address, self.line_2)
         if self.city:
             full_address = "{} {}".format(full_address, self.city)
+        if self.state:
+            full_address = "{}, {}".format(full_address, self.state)
         full_address = "{} {}".format(full_address, self.zip_code)
-        if self.city and self.city.state and self.city.state.country:
-            full_address = "{} {}".format(full_address, self.city.state.country.postal_code)
+        if self.city and self.state and self.country:
+            full_address = "{} {}".format(full_address, self.country)
         
         return full_address

@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.gis.db.models import GeometryField
-from address.models import Address, State
 from phone_field import PhoneField
 
 PUBLIC_CHOICES = [
@@ -29,6 +28,21 @@ SUGGESTION_STATUS_CHOICES = [
 ]
 
 # Region
+class RegionState(models.Model):
+    name = models.CharField(max_length=254)
+    postal_code = models.CharField(max_length=4, help_text="i.e. 'WA'")
+    country = models.ForeignKey(
+        'address.Country',
+        null=True, blank=True, default=None,
+        on_delete = models.SET_NULL
+    )
+
+    class Meta:
+        ordering = ['name', 'country']
+
+    def __str__(self):
+        return self.name
+
 class Region(models.Model):
     objects = models.Manager()
     id = models.CharField(max_length=6, primary_key=True, verbose_name='Region ID')
@@ -46,7 +60,7 @@ class Region(models.Model):
 
     depth_type = models.CharField(max_length=1, default='N', choices=REGION_TYPE_CHOICES, verbose_name='Region Depth Type')
     id_num = models.CharField(max_length=4, null=True, blank=True, default=None, verbose_name='Region Number')
-    states = models.ManyToManyField(State, verbose_name='States')
+    states = models.ManyToManyField(RegionState, verbose_name='States')
 
 
     class Meta:
@@ -286,7 +300,7 @@ class ContactSuggestion(ContactBase):
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE, verbose_name="User proposing this change")
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
-    status = models.CharField(max_length=20, default='Pending', choices=SUGGESTION_STATUS_CHOICES, verbose_name="Suggestion is open", help_text="Suggestion has yet to be approved or declined")
+    status = models.CharField(max_length=20, default='Pending', choices=SUGGESTION_STATUS_CHOICES, verbose_name="Suggestion status", help_text="Has suggestion been approved or declined?")
     description = models.TextField(null=True, blank=True, default=None, verbose_name="Describe the proposed update", help_text="If you are updating an existing contact, what specific changes are you trying to propose in this form?")
 
 

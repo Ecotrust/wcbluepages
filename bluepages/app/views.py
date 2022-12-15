@@ -1,10 +1,11 @@
+from django.conf import settings
+from django.forms import modelformset_factory
 from django.http import JsonResponse
 from django.shortcuts import render
-from app.models import Region, Topic, Entity, Contact, Record, State, ContactSuggestion
-from app.forms import ContactSuggestionForm
-from django.forms import modelformset_factory
 import json
-from django.conf import settings
+
+from app.models import Region, Topic, Entity, Contact, Record, RegionState, ContactSuggestion
+from app.forms import ContactSuggestionForm
 
 def home(request):
     context = {}
@@ -84,9 +85,9 @@ def getRegionFacetFilters(contacts=None):
         'Middle-depth': {"id": 'M', 'count': 0},
         'Nearshore': {"id": 'N', 'count': 0},
     }
-    washington = State.objects.get(postal_code="WA")
-    oregon = State.objects.get(postal_code="OR")
-    california = State.objects.get(postal_code="CA")
+    washington = RegionState.objects.get(postal_code="WA")
+    oregon = RegionState.objects.get(postal_code="OR")
+    california = RegionState.objects.get(postal_code="CA")
     states = [washington, oregon, california]
     depths = ["O", "M", "N"]
     for contact in contacts:
@@ -121,13 +122,17 @@ def suggestionForm(request):
     # ContactSuggestionFormSet = modelformset_factory(ContactSuggestion, form=ContactSuggestionForm)
     if request.method == 'POST':
         # formset = ContactSuggestionFormSet(request,POST)
-        form = ContactSuggestionForm(request,POST)
+        form = ContactSuggestionForm(request.POST)
         if form.is_valid():
             form.save()
+
     else:
         # formset = ContactSuggestionFormSet()
         form = ContactSuggestionForm()
-    context = {'form': form.as_p}
+    context = {
+        'form': form,
+        'action': '/suggestion_form'
+    }
     return render(request, 'generic_form.html', context)
 
 

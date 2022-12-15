@@ -2,7 +2,7 @@ from django import forms
 from django.contrib import admin
 from django.db.models import Value
 from django.db.models.functions import Concat
-from app.models import Region, Topic, Entity, Contact, Record, ContactSuggestion, RecordSuggestion
+from app.models import RegionState, Region, Topic, Entity, Contact, Record, ContactSuggestion, RecordSuggestion
 from reversion.admin import VersionAdmin
 
 # This is dumb, but to be able to search with Django's default tool, only field names are allowed: no properties, and no functions.
@@ -59,6 +59,9 @@ class RecordSuggestionInline(admin.TabularInline):
     form = RecordSuggestionForm
     verbose_name = 'Contact Suggestion Topic-Region Association'
     verbose_name_plural = 'Suggested Topic-Region Associations'
+
+class RegionStateAdmin(VersionAdmin):
+    list_display = ('name', 'postal_code', 'country')
 
 class RegionAdmin(VersionAdmin):
     search_fields = ['name', 'id', 'depth_type', 'states__postal_code', 'states__name', 'states__country__name']
@@ -137,7 +140,7 @@ class ContactAdmin(VersionAdmin):
         return qs
 
 class ContactSuggestionAdmin(VersionAdmin):
-    list_display = ('status', 'user', 'contact_name','description')
+    list_display = ('status', 'user', 'contact_name', 'date_created', 'description')
     search_fields = ['status', 'last_name','first_name','job_title','expertise','email', 'entity_hierarchy']
     readonly_fields = ('user', 'status', 'date_created', 'date_modified')
     fieldsets = (
@@ -199,6 +202,7 @@ class ContactSuggestionAdmin(VersionAdmin):
         obj.save()
 
 # Register your models here.
+admin.site.register(RegionState, RegionStateAdmin)
 admin.site.register(Region, RegionAdmin)
 admin.site.register(Topic, TopicAdmin)
 admin.site.register(Entity, EntityAdmin)
