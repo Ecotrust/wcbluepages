@@ -1,7 +1,7 @@
 {
     "scripts": {
-        "build": "npm --prefix ./region_picker/ run build; npm --prefix ./app/ run build",
-        "devbuild": "npm --prefix ./region_picker/ run devbuild; npm --prefix ./app/ run devbuild",
-        "install": "npm --prefix ./region_picker/ install; npm --prefix ./app/ install"
+        "build": "npm --prefix ./region_picker/ run build; npm --prefix ./app/ run build; npm --prefix ./record_suggestion/ run build",
+        "devbuild": "npm --prefix ./region_picker/ run devbuild; npm --prefix ./app/ run devbuild; npm --prefix ./record_suggestion/ run devbuild",
+        "install": "npm --prefix ./region_picker/ install; npm --prefix ./app/ install; npm --prefix ./record_suggestion/ install"
     }
 }

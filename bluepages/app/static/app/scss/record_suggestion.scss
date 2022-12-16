@@ -1,0 +1,41 @@
+#title-div {
+    text-align: center;
+}
+
+.map {
+    float: left;
+    width: 40vw;
+    height: calc(90vh - 85px);
+    border: 1px solid black;
+}
+
+#filter-boxes-wrapper,
+#flex-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.left-panel,
+#right-panel {
+    margin: 0 4vw;
+    max-width: 50vw;
+    min-width: 250px;
+}
+
+#state-boxes-wrapper,
+#depth-boxes-wrapper {
+    margin: 0.1rem 1rem;
+    min-width: 15vw;
+}
+
+#filter-boxes-wrapper fieldset {
+    border-color: black;
+    border-radius: 0.5rem;
+}
+
+textarea:disabled {
+    background-color: #EEEEEE;
+    color: black;
+    font-size: 14px;
+}

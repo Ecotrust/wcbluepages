@@ -137,15 +137,17 @@ def contactSuggestionForm(request):
 
 def recordSuggestionForm(request, contact_id):
     contact_suggestion = ContactSuggestion.objects.get(pk=contact_id)
-    # RecordSuggestionFormSet = modelformset_factory(RecordSuggestion, form=RecordSuggestionForm)
     if request.method == 'POST':
-        pass
+        record_form = RecordSuggestionForm(request.POST)
+        if record_form.is_valid():
+            record_form.save()
     else:
         record_form = RecordSuggestionForm(initial={'user': request.user, 'status': 'Pending', 'contact_suggestion':contact_suggestion})
 
     context = {
+        'contact_name': contact_suggestion.contact_name,
         'record_form': record_form,
-        'action': '/record_suggestion_form'
+        'action': '/record_suggestion_form/{}/'.format(contact_id)
     }
     return render(request, 'record_suggestion_form.html', context)
 

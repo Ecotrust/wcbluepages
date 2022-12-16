@@ -39,4 +39,5 @@ class ContactSuggestionForm(ModelForm):
 class RecordSuggestionForm(ModelForm):
     class Meta:
         model = RecordSuggestion
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ['date_created', 'date_modified']
