@@ -22,7 +22,13 @@
 </div>
 <div class="add-contact-control">
     <p>
-        Know someone missing?
-        <button>Suggest Contact</button>
+        Know of someone missing?
+        {% if user.is_authenticated %}
+            <button type="button" class="btn btn-primary" onclick="app.loadSuggestionForm()">
+                Suggest Contact
+            </button>
+        {% else %}
+            Log in to suggest updates.
+        {% endif %}
     </p>
 </div>

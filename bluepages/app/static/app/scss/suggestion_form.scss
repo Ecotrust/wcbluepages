@@ -1,4 +1,3 @@
-
 ul.errorlist {
     color: rgb(100,0,0);
     border: 2px solid red;
@@ -26,4 +25,15 @@ label {
 .help-text {
     font-size: small;
     color: gray;
+}
+
+/* MODAL */
+.modal-dialog {
+    max-width: 80vw;
+    width: 80vw;
+}
+
+.modal-body {
+    overflow: auto;
+    max-height: calc(100vh - 150px);
 }
