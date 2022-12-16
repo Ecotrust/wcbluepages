@@ -35,3 +35,8 @@ class ContactSuggestionForm(ModelForm):
             'preferred_contact_method',
             'notes',
         ]
+
+class RecordSuggestionForm(ModelForm):
+    class Meta:
+        model = RecordSuggestion
+        fields = '__all__'

@@ -1,0 +1,15 @@
+{% load sass_tags static %}
+
+<html>
+    <head>
+        <link href="{% static 'app/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% sass_src 'app/scss/suggestion_form.scss' %}" rel="stylesheet" type="text/css" />
+    </head>
+    <body>
+        <form method="post" action="{{action}}">
+            {% csrf_token %}
+            {{ record_form.as_p }}
+            <input type="submit" value="Submit">
+        </form>
+    </body>
+</html>

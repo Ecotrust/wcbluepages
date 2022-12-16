@@ -203,6 +203,18 @@ class ContactSuggestionAdmin(VersionAdmin):
             obj.user = request.user
         obj.save()
 
+class RecordSuggestionAdmin(VersionAdmin):
+    list_display = ('status', 'user', 'topic', 'contact_suggestion')
+    search_fields = ('status', 'user', 'topic__name', 'contact_suggestion__last_name', 'contact_suggestion__first_name', 'contact_suggestion__email', 'entity_hierarchy')
+    form = RecordSuggestionForm
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.alias(
+            entity_hierarchy=get_entity_hierarchy_alias(prefix='contact_suggestion__entity__')
+        )
+        return qs
+
 # Register your models here.
 admin.site.register(RegionState, RegionStateAdmin)
 admin.site.register(Region, RegionAdmin)
@@ -211,3 +223,4 @@ admin.site.register(Entity, EntityAdmin)
 admin.site.register(Record, RecordAdmin)
 admin.site.register(Contact, ContactAdmin)
 admin.site.register(ContactSuggestion, ContactSuggestionAdmin)
+admin.site.register(RecordSuggestion, RecordSuggestionAdmin)

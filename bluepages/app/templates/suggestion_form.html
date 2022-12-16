@@ -8,20 +8,19 @@
     <body>
         <form method="post" action="{{action}}">
             {% csrf_token %}
-            {# {{ form.as_p }} #}
 
             <!-- ABOUT SUGGESTION -->
             <div class="well hidden-fields" id="suggestion-form-details">
                 <h3>Suggestion Details</h3>
                 <div class="fieldWrapper">
-                    {{ form.user.errors }}
-                    {{ form.user.label_tag }}
-                    {{ form.user }}
+                    {{ contact_form.user.errors }}
+                    {{ contact_form.user.label_tag }}
+                    {{ contact_form.user }}
                 </div>
                 <div class="fieldWrapper">
-                    {{ form.status.errors }}
-                    {{ form.status.label_tag }}
-                    {{ form.status }}
+                    {{ contact_form.status.errors }}
+                    {{ contact_form.status.label_tag }}
+                    {{ contact_form.status }}
                 </div>
             </div>
 
@@ -29,53 +28,53 @@
             <div class="well" id="suggestion-form-person">
                 <h3>Contact Person</h3>
                 <div class="fieldWrapper">
-                    {{ form.contact.errors }}
-                    {{ form.contact.label_tag }}
-                    {{ form.contact }}
-                    {% if form.contact.help_text %}<span class="help-text">{{ form.contact.help_text }}</span>{% endif %}
-                    {% if form.contact.errors %}{{ form.contact.errors }}{% endif %}
+                    {{ contact_form.contact.errors }}
+                    {{ contact_form.contact.label_tag }}
+                    {{ contact_form.contact }}
+                    {% if contact_form.contact.help_text %}<span class="help-text">{{ contact_form.contact.help_text }}</span>{% endif %}
+                    {% if contact_form.contact.errors %}{{ contact_form.contact.errors }}{% endif %}
                 </div>
                 <div class="fieldWrapper">
-                    {{ form.title.errors }}
-                    {{ form.title.label_tag }}
-                    {{ form.title }}
-                    {% if form.title.help_text %}<span class="help-text">{{ form.title.help_text }}</span>{% endif %}
-                    {% if form.title.errors %}{{ form.title.errors }}{% endif %}
+                    {{ contact_form.title.errors }}
+                    {{ contact_form.title.label_tag }}
+                    {{ contact_form.title }}
+                    {% if contact_form.title.help_text %}<span class="help-text">{{ contact_form.title.help_text }}</span>{% endif %}
+                    {% if contact_form.title.errors %}{{ contact_form.title.errors }}{% endif %}
                 </div>
                 <div class="fieldWrapper">
-                    {{ form.last_name.errors }}
-                    {{ form.last_name.label_tag }}
-                    {{ form.last_name }}
-                    {% if form.last_name.help_text %}<span class="help-text">{{ form.last_name.help_text }}</span>{% endif %}
-                    {% if form.last_name.errors %}{{ form.last_name.errors }}{% endif %}
+                    {{ contact_form.last_name.errors }}
+                    {{ contact_form.last_name.label_tag }}
+                    {{ contact_form.last_name }}
+                    {% if contact_form.last_name.help_text %}<span class="help-text">{{ contact_form.last_name.help_text }}</span>{% endif %}
+                    {% if contact_form.last_name.errors %}{{ contact_form.last_name.errors }}{% endif %}
                 </div>
                 <div class="fieldWrapper">
-                    {{ form.first_name.errors }}
-                    {{ form.first_name.label_tag }}
-                    {{ form.first_name }}
-                    {% if form.first_name.help_text %}<span class="help-text">{{ form.first_name.help_text }}</span>{% endif %}
-                    {% if form.first_name.errors %}{{ form.first_name.errors }}{% endif %}
+                    {{ contact_form.first_name.errors }}
+                    {{ contact_form.first_name.label_tag }}
+                    {{ contact_form.first_name }}
+                    {% if contact_form.first_name.help_text %}<span class="help-text">{{ contact_form.first_name.help_text }}</span>{% endif %}
+                    {% if contact_form.first_name.errors %}{{ contact_form.first_name.errors }}{% endif %}
                 </div>
                 <div class="fieldWrapper">
-                    {{ form.middle_name.errors }}
-                    {{ form.middle_name.label_tag }}
-                    {{ form.middle_name }}
-                    {% if form.middle_name.help_text %}<span class="help-text">{{ form.middle_name.help_text }}</span>{% endif %}
-                    {% if form.middle_name.errors %}{{ form.middle_name.errors }}{% endif %}
+                    {{ contact_form.middle_name.errors }}
+                    {{ contact_form.middle_name.label_tag }}
+                    {{ contact_form.middle_name }}
+                    {% if contact_form.middle_name.help_text %}<span class="help-text">{{ contact_form.middle_name.help_text }}</span>{% endif %}
+                    {% if contact_form.middle_name.errors %}{{ contact_form.middle_name.errors }}{% endif %}
                 </div>
                 <div class="fieldWrapper">
-                    {{ form.post_title.errors }}
-                    {{ form.post_title.label_tag }}
-                    {{ form.post_title }}
-                    {% if form.post_title.help_text %}<span class="help-text">{{ form.post_title.help_text }}</span>{% endif %}
-                    {% if form.post_title.errors %}{{ form.post_title.errors }}{% endif %}
+                    {{ contact_form.post_title.errors }}
+                    {{ contact_form.post_title.label_tag }}
+                    {{ contact_form.post_title }}
+                    {% if contact_form.post_title.help_text %}<span class="help-text">{{ contact_form.post_title.help_text }}</span>{% endif %}
+                    {% if contact_form.post_title.errors %}{{ contact_form.post_title.errors }}{% endif %}
                 </div>
                 <div class="fieldWrapper">
-                    {{ form.preferred_pronouns.errors }}
-                    {{ form.preferred_pronouns.label_tag }}
-                    {{ form.preferred_pronouns }}
-                    {% if form.preferred_pronouns.help_text %}<span class="help-text">{{ form.preferred_pronouns.help_text }}</span>{% endif %}
-                    {% if form.preferred_pronouns.errors %}{{ form.preferred_pronouns.errors }}{% endif %}
+                    {{ contact_form.preferred_pronouns.errors }}
+                    {{ contact_form.preferred_pronouns.label_tag }}
+                    {{ contact_form.preferred_pronouns }}
+                    {% if contact_form.preferred_pronouns.help_text %}<span class="help-text">{{ contact_form.preferred_pronouns.help_text }}</span>{% endif %}
+                    {% if contact_form.preferred_pronouns.errors %}{{ contact_form.preferred_pronouns.errors }}{% endif %}
                 </div>
 
             </div>
@@ -84,32 +83,32 @@
             <div class="well" id="suggestion-form-role">
                 <h3>Job/Role</h3>
                 <div class="fieldWrapper">
-                    {{ form.entity.errors }}
-                    {{ form.entity.label_tag }}
-                    {{ form.entity }}
-                    {% if form.entity.help_text %}<span class="help-text">{{ form.entity.help_text }}</span>{% endif %}
-                    {% if form.entity.errors %}{{ form.entity.errors }}{% endif %}
+                    {{ contact_form.entity.errors }}
+                    {{ contact_form.entity.label_tag }}
+                    {{ contact_form.entity }}
+                    {% if contact_form.entity.help_text %}<span class="help-text">{{ contact_form.entity.help_text }}</span>{% endif %}
+                    {% if contact_form.entity.errors %}{{ contact_form.entity.errors }}{% endif %}
                 </div>
                 <div class="fieldWrapper">
-                    {{ form.other_entity_name.errors }}
-                    {{ form.other_entity_name.label_tag }}
-                    {{ form.other_entity_name }}
-                    {% if form.other_entity_name.help_text %}<span class="help-text">{{ form.other_entity_name.help_text }}</span>{% endif %}
-                    {% if form.other_entity_name.errors %}{{ form.other_entity_name.errors }}{% endif %}
+                    {{ contact_form.other_entity_name.errors }}
+                    {{ contact_form.other_entity_name.label_tag }}
+                    {{ contact_form.other_entity_name }}
+                    {% if contact_form.other_entity_name.help_text %}<span class="help-text">{{ contact_form.other_entity_name.help_text }}</span>{% endif %}
+                    {% if contact_form.other_entity_name.errors %}{{ contact_form.other_entity_name.errors }}{% endif %}
                 </div>
                 <div class="fieldWrapper">
-                    {{ form.job_title.errors }}
-                    {{ form.job_title.label_tag }}
-                    {{ form.job_title }}
-                    {% if form.job_title.help_text %}<span class="help-text">{{ form.job_title.help_text }}</span>{% endif %}
-                    {% if form.job_title.errors %}{{ form.job_title.errors }}{% endif %}
+                    {{ contact_form.job_title.errors }}
+                    {{ contact_form.job_title.label_tag }}
+                    {{ contact_form.job_title }}
+                    {% if contact_form.job_title.help_text %}<span class="help-text">{{ contact_form.job_title.help_text }}</span>{% endif %}
+                    {% if contact_form.job_title.errors %}{{ contact_form.job_title.errors }}{% endif %}
                 </div>
                 <div class="fieldWrapper">
-                    {{ form.expertise.errors }}
-                    {{ form.expertise.label_tag }}
-                    {{ form.expertise }}
-                    {% if form.expertise.help_text %}<span class="help-text">{{ form.expertise.help_text }}</span>{% endif %}
-                    {% if form.expertise.errors %}{{ form.expertise.errors }}{% endif %}
+                    {{ contact_form.expertise.errors }}
+                    {{ contact_form.expertise.label_tag }}
+                    {{ contact_form.expertise }}
+                    {% if contact_form.expertise.help_text %}<span class="help-text">{{ contact_form.expertise.help_text }}</span>{% endif %}
+                    {% if contact_form.expertise.errors %}{{ contact_form.expertise.errors }}{% endif %}
                 </div>
             </div>
 
@@ -117,74 +116,74 @@
             <div class="well" id="suggestion-form-contact">
                 <h3>Contact Info</h3>
                 <div class="fieldWrapper">
-                    {{ form.email.errors }}
-                    {{ form.email.label_tag }}
-                    {{ form.email }}
-                    {% if form.email.help_text %}<span class="help-text">{{ form.email.help_text }}</span>{% endif %}
-                    {% if form.email.errors %}{{ form.email.errors }}{% endif %}
+                    {{ contact_form.email.errors }}
+                    {{ contact_form.email.label_tag }}
+                    {{ contact_form.email }}
+                    {% if contact_form.email.help_text %}<span class="help-text">{{ contact_form.email.help_text }}</span>{% endif %}
+                    {% if contact_form.email.errors %}{{ contact_form.email.errors }}{% endif %}
                 </div>
                 <div class="fieldWrapper">
-                    {{ form.phone.errors }}
-                    {{ form.phone.label_tag }}
-                    {{ form.phone }}
-                    {% if form.phone.help_text %}<span class="help-text">{{ form.phone.help_text }}</span>{% endif %}
-                    {% if form.phone.errors %}{{ form.phone.errors }}{% endif %}
+                    {{ contact_form.phone.errors }}
+                    {{ contact_form.phone.label_tag }}
+                    {{ contact_form.phone }}
+                    {% if contact_form.phone.help_text %}<span class="help-text">{{ contact_form.phone.help_text }}</span>{% endif %}
+                    {% if contact_form.phone.errors %}{{ contact_form.phone.errors }}{% endif %}
                 </div>
                 <div class="fieldWrapper">
-                    {{ form.fax.errors }}
-                    {{ form.fax.label_tag }}
-                    {{ form.fax }}
-                    {% if form.fax.help_text %}<span class="help-text">{{ form.fax.help_text }}</span>{% endif %}
-                    {% if form.fax.errors %}{{ form.fax.errors }}{% endif %}
+                    {{ contact_form.fax.errors }}
+                    {{ contact_form.fax.label_tag }}
+                    {{ contact_form.fax }}
+                    {% if contact_form.fax.help_text %}<span class="help-text">{{ contact_form.fax.help_text }}</span>{% endif %}
+                    {% if contact_form.fax.errors %}{{ contact_form.fax.errors }}{% endif %}
                 </div>
                 <div class="fieldWrapper">
-                    {{ form.address_line_1.errors }}
-                    {{ form.address_line_1.label_tag }}
-                    {{ form.address_line_1 }}
-                    {% if form.address_line_1.help_text %}<span class="help-text">{{ form.address_line_1.help_text }}</span>{% endif %}
-                    {% if form.address_line_1.errors %}{{ form.address_line_1.errors }}{% endif %}
+                    {{ contact_form.address_line_1.errors }}
+                    {{ contact_form.address_line_1.label_tag }}
+                    {{ contact_form.address_line_1 }}
+                    {% if contact_form.address_line_1.help_text %}<span class="help-text">{{ contact_form.address_line_1.help_text }}</span>{% endif %}
+                    {% if contact_form.address_line_1.errors %}{{ contact_form.address_line_1.errors }}{% endif %}
                 </div>
                 <div class="fieldWrapper">
-                    {{ form.address_line_2.errors }}
-                    {{ form.address_line_2.label_tag }}
-                    {{ form.address_line_2 }}
-                    {% if form.address_line_2.help_text %}<span class="help-text">{{ form.address_line_2.help_text }}</span>{% endif %}
-                    {% if form.address_line_2.errors %}{{ form.address_line_2.errors }}{% endif %}
+                    {{ contact_form.address_line_2.errors }}
+                    {{ contact_form.address_line_2.label_tag }}
+                    {{ contact_form.address_line_2 }}
+                    {% if contact_form.address_line_2.help_text %}<span class="help-text">{{ contact_form.address_line_2.help_text }}</span>{% endif %}
+                    {% if contact_form.address_line_2.errors %}{{ contact_form.address_line_2.errors }}{% endif %}
                 </div>
                 <div class="fieldWrapper">
-                    {{ form.address_city.errors }}
-                    {{ form.address_city.label_tag }}
-                    {{ form.address_city }}
-                    {% if form.address_city.help_text %}<span class="help-text">{{ form.address_city.help_text }}</span>{% endif %}
-                    {% if form.address_city.errors %}{{ form.address_city.errors }}{% endif %}
+                    {{ contact_form.address_city.errors }}
+                    {{ contact_form.address_city.label_tag }}
+                    {{ contact_form.address_city }}
+                    {% if contact_form.address_city.help_text %}<span class="help-text">{{ contact_form.address_city.help_text }}</span>{% endif %}
+                    {% if contact_form.address_city.errors %}{{ contact_form.address_city.errors }}{% endif %}
                 </div>
                 <div class="fieldWrapper">
-                    {{ form.address_state.errors }}
-                    {{ form.address_state.label_tag }}
-                    {{ form.address_state }}
-                    {% if form.address_state.help_text %}<span class="help-text">{{ form.address_state.help_text }}</span>{% endif %}
-                    {% if form.address_state.errors %}{{ form.address_state.errors }}{% endif %}
+                    {{ contact_form.address_state.errors }}
+                    {{ contact_form.address_state.label_tag }}
+                    {{ contact_form.address_state }}
+                    {% if contact_form.address_state.help_text %}<span class="help-text">{{ contact_form.address_state.help_text }}</span>{% endif %}
+                    {% if contact_form.address_state.errors %}{{ contact_form.address_state.errors }}{% endif %}
                 </div>
                 <div class="fieldWrapper">
-                    {{ form.address_country.errors }}
-                    {{ form.address_country.label_tag }}
-                    {{ form.address_country }}
-                    {% if form.address_country.help_text %}<span class="help-text">{{ form.address_country.help_text }}</span>{% endif %}
-                    {% if form.address_country.errors %}{{ form.address_country.errors }}{% endif %}
+                    {{ contact_form.address_country.errors }}
+                    {{ contact_form.address_country.label_tag }}
+                    {{ contact_form.address_country }}
+                    {% if contact_form.address_country.help_text %}<span class="help-text">{{ contact_form.address_country.help_text }}</span>{% endif %}
+                    {% if contact_form.address_country.errors %}{{ contact_form.address_country.errors }}{% endif %}
                 </div>
                 <div class="fieldWrapper">
-                    {{ form.address_zip_code.errors }}
-                    {{ form.address_zip_code.label_tag }}
-                    {{ form.address_zip_code }}
-                    {% if form.address_zip_code.help_text %}<span class="help-text">{{ form.address_zip_code.help_text }}</span>{% endif %}
-                    {% if form.address_zip_code.errors %}{{ form.address_zip_code.errors }}{% endif %}
+                    {{ contact_form.address_zip_code.errors }}
+                    {{ contact_form.address_zip_code.label_tag }}
+                    {{ contact_form.address_zip_code }}
+                    {% if contact_form.address_zip_code.help_text %}<span class="help-text">{{ contact_form.address_zip_code.help_text }}</span>{% endif %}
+                    {% if contact_form.address_zip_code.errors %}{{ contact_form.address_zip_code.errors }}{% endif %}
                 </div>
                 <div class="fieldWrapper">
-                    {{ form.preferred_contact_method.errors }}
-                    {{ form.preferred_contact_method.label_tag }}
-                    {{ form.preferred_contact_method }}
-                    {% if form.preferred_contact_method.help_text %}<span class="help-text">{{ form.preferred_contact_method.help_text }}</span>{% endif %}
-                    {% if form.preferred_contact_method.errors %}{{ form.preferred_contact_method.errors }}{% endif %}
+                    {{ contact_form.preferred_contact_method.errors }}
+                    {{ contact_form.preferred_contact_method.label_tag }}
+                    {{ contact_form.preferred_contact_method }}
+                    {% if contact_form.preferred_contact_method.help_text %}<span class="help-text">{{ contact_form.preferred_contact_method.help_text }}</span>{% endif %}
+                    {% if contact_form.preferred_contact_method.errors %}{{ contact_form.preferred_contact_method.errors }}{% endif %}
                 </div>
             </div>
 
@@ -192,22 +191,22 @@
             <div class="well" id="suggestion-form-notes">
                 <h3>Additional Information</h3>
                 <div class="fieldWrapper full-width-rows">
-                    {{ form.description.errors }}
-                    {{ form.description.label_tag }}<br />
-                    {{ form.description }}
-                    {% if form.description.help_text %}<br /><span class="help-text">{{ form.description.help_text }}</span>{% endif %}
-                    {% if form.description.errors %}{{ form.description.errors }}{% endif %}
+                    {{ contact_form.description.errors }}
+                    {{ contact_form.description.label_tag }}<br />
+                    {{ contact_form.description }}
+                    {% if contact_form.description.help_text %}<br /><span class="help-text">{{ contact_form.description.help_text }}</span>{% endif %}
+                    {% if contact_form.description.errors %}{{ contact_form.description.errors }}{% endif %}
                 </div>
                 <div class="fieldWrapper full-width-rows">
-                    {{ form.notes.errors }}
-                    {{ form.notes.label_tag }}<br />
-                    {{ form.notes }}
-                    {% if form.notes.help_text %}<span class="help-text">{{ form.notes.help_text }}</span>{% endif %}
-                    {% if form.notes.errors %}{{ form.notes.errors }}{% endif %}
+                    {{ contact_form.notes.errors }}
+                    {{ contact_form.notes.label_tag }}<br />
+                    {{ contact_form.notes }}
+                    {% if contact_form.notes.help_text %}<span class="help-text">{{ contact_form.notes.help_text }}</span>{% endif %}
+                    {% if contact_form.notes.errors %}{{ contact_form.notes.errors }}{% endif %}
                 </div>
             </div>
 
-            {{ form.non_field_errors }}
+            {{ contact_form.non_field_errors }}
             
             <input type="submit" value="Submit">
         </form>

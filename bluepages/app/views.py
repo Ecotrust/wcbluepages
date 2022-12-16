@@ -5,7 +5,7 @@ from django.shortcuts import render
 import json
 
 from app.models import Region, Topic, Entity, Contact, Record, RegionState, ContactSuggestion
-from app.forms import ContactSuggestionForm
+from app.forms import ContactSuggestionForm, RecordSuggestionForm
 
 def home(request):
     context = {}
@@ -117,24 +117,37 @@ def getRegionFacetFilters(contacts=None):
 
     return [x for x in final_regions if x['count'] > 0]
         
-def suggestionForm(request):
+def contactSuggestionForm(request):
     # use formset illustration below to add a'record' formset so users can add up to three record suggestions at once.
     # ContactSuggestionFormSet = modelformset_factory(ContactSuggestion, form=ContactSuggestionForm)
     if request.method == 'POST':
         # formset = ContactSuggestionFormSet(request.POST)
-        form = ContactSuggestionForm(request.POST)
-        if form.is_valid():
-            form.save()
+        contact_form = ContactSuggestionForm(request.POST)
+        if contact_form.is_valid():
+            contact_form.save()
 
     else:
         # formset = ContactSuggestionFormSet()
-        form = ContactSuggestionForm(initial={'user':request.user, 'status':'Pending'})
+        contact_form = ContactSuggestionForm(initial={'user':request.user, 'status':'Pending'})
     context = {
-        'form': form,
+        'contact_form': contact_form,
         'action': '/suggestion_form'
     }
     return render(request, 'suggestion_form.html', context)
 
+def recordSuggestionForm(request, contact_id):
+    contact_suggestion = ContactSuggestion.objects.get(pk=contact_id)
+    # RecordSuggestionFormSet = modelformset_factory(RecordSuggestion, form=RecordSuggestionForm)
+    if request.method == 'POST':
+        pass
+    else:
+        record_form = RecordSuggestionForm(initial={'user': request.user, 'status': 'Pending', 'contact_suggestion':contact_suggestion})
+
+    context = {
+        'record_form': record_form,
+        'action': '/record_suggestion_form'
+    }
+    return render(request, 'record_suggestion_form.html', context)
 
 
 def wireframe(request):

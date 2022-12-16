@@ -329,6 +329,10 @@ class ContactSuggestion(ContactBase):
 
 class RecordSuggestion(RecordBase):
     contact_suggestion = models.ForeignKey('ContactSuggestion', on_delete=models.CASCADE)
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE, verbose_name="User proposing this change")
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
+    status = models.CharField(max_length=20, default='Pending', choices=SUGGESTION_STATUS_CHOICES, verbose_name="Suggestion status", help_text="Has suggestion been approved or declined?")
 
     class Meta:
         ordering = ['topic', 'contact_suggestion']
