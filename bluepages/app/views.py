@@ -124,7 +124,15 @@ def contactSuggestionForm(request):
         # formset = ContactSuggestionFormSet(request.POST)
         contact_form = ContactSuggestionForm(request.POST)
         if contact_form.is_valid():
-            contact_form.save()
+            contact_suggestion = contact_form.save()
+            return JsonResponse({'contact_suggestion': {
+                'id': contact_suggestion.id,
+                'name': str(contact_suggestion),
+                'contact_name': contact_suggestion.contact_name,
+                'topics': [{'id': x.pk, 'topic': str(x.topic), 'topic_id': x.topic.pk} for x in contact_suggestion.recordsuggestion_set.all()]
+                }
+            })
+
 
     else:
         # formset = ContactSuggestionFormSet()

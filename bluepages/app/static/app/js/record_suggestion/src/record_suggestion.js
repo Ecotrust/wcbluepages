@@ -12,13 +12,13 @@ import GeoJSON from 'ol/format/GeoJSON';
 
 var $ = require( "jquery" );
 
-const getLabel = function(feature) {
+app.getRecordMapLabel = function(feature) {
     let text = feature.get('name');
     return text;
 }
 
-const styleFunction = function(feature) {
-    var label = getLabel(feature);
+app.recordMapStyleFunction = function(feature) {
+    var label = getRecordMapLabel(feature);
     return new Style({
         stroke: new Stroke({
             color: 'rgba(0,55,255,1.0)',
@@ -38,39 +38,22 @@ const styleFunction = function(feature) {
     });
 }
 
-const RegionSource = new VectorSource({
+app.recordMapRegionSource = new VectorSource({
     features: []
 });
 
-const vectorLayer = new VectorLayer({
-    source: RegionSource,
-    style: styleFunction,
-});
-
-const map = new Map({
-    layers: [
-        new TileLayer({
-            source: new OSM
-        }),
-        vectorLayer
-    ],
-    target: 'map',
-    view: new View({
-        center: [
-            -13803616.858365921,    // -124
-            4865942.279503175       // 40 
-        ],
-        zoom: 5,
-    })
+app.recordMapVectorLayer = new VectorLayer({
+    source: app.recordMapRegionSource,
+    style: app.recordMapStyleFunction,
 });
 
 // Selection logic largely taken from OL examples:
 //  https://openlayers.org/en/latest/examples/select-features.html
 //  https://openlayers.org/en/latest/examples/select-multiple-features.html
 
-let selected = [];
+app.recordMapSelected = [];
 
-function selectedStyleFunction(feature) {
+app.recordMapSelectedStyleFunction = function(feature) {
     var label = getLabel(feature);
     let selectedStyle = new Style({
         fill: new Fill({
@@ -92,22 +75,22 @@ function selectedStyleFunction(feature) {
     return selectedStyle;
 }
 
-const toggleFeatureSelection = function(feature)  {
-    const selIndex = selected.indexOf(feature);
+app.recordMapToggleFeatureSelection = function(feature)  {
+    const selIndex = app.recordMapSelected.indexOf(feature);
     if (selIndex < 0) {
-        selected.push(feature);
-        feature.setStyle(selectedStyleFunction(feature));
+        app.recordMapSelected.push(feature);
+        feature.setStyle(app.recordMapSelectedStyleFunction(feature));
         $("#id_regions option[value='" + feature.get('id') + "']").prop("selected", true);
     } else {
-        selected.splice(selIndex, 1);
+        app.recordMapSelected.splice(selIndex, 1);
         feature.setStyle(undefined);
         $("#id_regions option[value='" + feature.get('id') + "']").prop("selected", false);
     }
 }
 
 // Map and Form interactions:
-const update_filters = function() {
-    let regions = vectorLayer.getSource().getFeatures();
+app.recordMapUpdateFilters = function() {
+    let regions = app.recordMapVectorLayer.getSource().getFeatures();
     let filtered_regions = [];
     let states = [];
     let depths = [];
@@ -155,19 +138,19 @@ const update_filters = function() {
 
     for (var region_idx = 0; region_idx < regions.length; region_idx++) {
         var region = regions[region_idx];
-        if (final_regions.indexOf(region) >= 0 && selected.indexOf(region) < 0) {
+        if (final_regions.indexOf(region) >= 0 && app.recordMapSelected.indexOf(region) < 0) {
             //select unselected region:
-            toggleFeatureSelection(region);
-        } else if (final_regions.indexOf(region) < 0 && selected.indexOf(region) >= 0) {
+            app.recordMapToggleFeatureSelection(region);
+        } else if (final_regions.indexOf(region) < 0 && app.recordMapSelected.indexOf(region) >= 0) {
             // unselect previously selected region:
-            toggleFeatureSelection(region);
+            app.recordMapToggleFeatureSelection(region);
         }
     }
 
 }
 
 // Load Regions onto map
-const zoomToBufferedExtent = function(extent, buffer) {
+app.recordMapZoomToBufferedExtent = function(extent, buffer) {
     if (buffer > 1.0) {
       buffer = buffer/100.0;
     }
@@ -180,23 +163,41 @@ const zoomToBufferedExtent = function(extent, buffer) {
     let buf_south = extent[1] - h_buffer;
     let buf_north = extent[3] + h_buffer;
     let buffered_extent = [buf_west, buf_south, buf_east, buf_north];
-    map.getView().fit(buffered_extent, {'duration': 1000});
+    record_map.getView().fit(buffered_extent, {'duration': 1000});
   }
 
-const clearInputs = function() {
-    $('input').prop('checked', false);
-    $('textarea').val('');
-}
+// const clearInputs = function() {
+//     $('input').prop('checked', false);
+//     $('textarea').val('');
+// }
 
-// Load Site
-$( document ).ready(function() {
-    clearInputs();
+// Prep Form
+app.loadRecordSuggestionForm = function() {
+    app.recordMapSelected = [];
+    app.record_map = new Map({
+        layers: [
+            new TileLayer({
+                source: new OSM
+            }),
+            app.recordMapVectorLayer
+        ],
+        target: 'record_map',
+        view: new View({
+            center: [
+                -13803616.858365921,    // -124
+                4865942.279503175       // 40 
+            ],
+            zoom: 5,
+        })
+    });
+
+    // clearInputs();
     
-    map.on('singleclick', function(e) {
-        map.forEachFeatureAtPixel(e.pixel, toggleFeatureSelection);
+    record_map.on('singleclick', function(e) {
+        record_map.forEachFeatureAtPixel(e.pixel, app.recordMapToggleFeatureSelection);
     });
     
-    $('#filter-boxes-wrapper :checkbox').change(update_filters);
+    $('#filter-boxes-wrapper :checkbox').change(app.recordMapUpdateFilters);
     
     $.ajax({
         url:'/static/app/data/regions.json',
@@ -204,7 +205,11 @@ $( document ).ready(function() {
     })
     .done(function(data) {
         var features = new GeoJSON().readFeatures(data);
-        RegionSource.addFeatures(features);
-        zoomToBufferedExtent(RegionSource.getExtent(), 0.1);
+        // Flush any pre-existing features to clear out selection.
+        debugger;
+        if (app.recordMapRegionSource.getFeatures.length < 1) {
+            app.recordMapRegionSource.addFeatures(features);
+        }
+        app.recordMapZoomToBufferedExtent(app.recordMapRegionSource.getExtent(), 0.1);
     });
-})
+}

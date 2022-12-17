@@ -1,117 +1,98 @@
-{% load sass_tags static %}
+<form method="post" action="{{action}}">
+    {% csrf_token %}
 
-<html>
-    <head>
-        <link rel="stylesheet" href="{% static 'app/vendor/openlayers/v6.15.1-dist/ol.css' %}">
-        <link href="{% static 'app/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
-        <link href="{% sass_src 'app/scss/suggestion_form.scss' %}" rel="stylesheet" type="text/css" />
-        <link rel="stylesheet" href="{% sass_src 'app/scss/record_suggestion.scss' %}" rel="stylesheet" type="text/css">
-    </head>
-    <body>
-        <div id="title-div">
-            <h1>Record Suggestion for: {{ contact_name }}</h1>
+    <!-- ABOUT SUGGESTION -->
+    <div class="well hidden-fields" id="suggestion-form-details">
+        <h3>Suggestion Details</h3>
+        <div class="fieldWrapper">
+            {{ record_form.user.errors }}
+            {{ record_form.user.label_tag }}
+            {{ record_form.user }}
         </div>
-        <form method="post" action="{{action}}">
-            {% csrf_token %}
+        <div class="fieldWrapper">
+            {{ record_form.status.errors }}
+            {{ record_form.status.label_tag }}
+            {{ record_form.status }}
+        </div>
+        <div class="fieldWrapper">
+            {{ record_form.contact_suggestion.errors }}
+            {{ record_form.contact_suggestion.label_tag }}
+            {{ record_form.contact_suggestion }}
+            {% if record_form.contact_suggestion.help_text %}<span class="help-text">{{ record_form.contact_suggestion.help_text }}</span>{% endif %}
+            {% if record_form.contact_suggestion.errors %}{{ record_form.contact_suggestion.errors }}{% endif %}
+        </div>
+    </div>
+    <div class="well hidden-fields" id="suggestion-form-regions">
+        <div class="fieldWrapper">
+            {{ record_form.regions.errors }}
+            {{ record_form.regions.label_tag }}
+            {{ record_form.regions }}
+            {% if record_form.regions.help_text %}<span class="help-text">{{ record_form.regions.help_text }}</span>{% endif %}
+            {% if record_form.regions.errors %}{{ record_form.regions.errors }}{% endif %}
+        </div>
+    </div>
 
-            <!-- ABOUT SUGGESTION -->
-            <div class="well hidden-fields" id="suggestion-form-details">
-                <h3>Suggestion Details</h3>
-                <div class="fieldWrapper">
-                    {{ record_form.user.errors }}
-                    {{ record_form.user.label_tag }}
-                    {{ record_form.user }}
-                </div>
-                <div class="fieldWrapper">
-                    {{ record_form.status.errors }}
-                    {{ record_form.status.label_tag }}
-                    {{ record_form.status }}
-                </div>
-                <div class="fieldWrapper">
-                    {{ record_form.contact_suggestion.errors }}
-                    {{ record_form.contact_suggestion.label_tag }}
-                    {{ record_form.contact_suggestion }}
-                    {% if record_form.contact_suggestion.help_text %}<span class="help-text">{{ record_form.contact_suggestion.help_text }}</span>{% endif %}
-                    {% if record_form.contact_suggestion.errors %}{{ record_form.contact_suggestion.errors }}{% endif %}
-                </div>
-            </div>
-            <div class="well hidden-fields" id="suggestion-form-regions">
-                <div class="fieldWrapper">
-                    {{ record_form.regions.errors }}
-                    {{ record_form.regions.label_tag }}
-                    {{ record_form.regions }}
-                    {% if record_form.regions.help_text %}<span class="help-text">{{ record_form.regions.help_text }}</span>{% endif %}
-                    {% if record_form.regions.errors %}{{ record_form.regions.errors }}{% endif %}
-                </div>
-            </div>
+    <!-- About Contact being suggested -->
+    <div class="well" id="suggestion-form-topic">
+        <div class="fieldWrapper">
+            {{ record_form.topic.errors }}
+            {{ record_form.topic.label_tag }}
+            {{ record_form.topic }}
+            {% if record_form.topic.help_text %}<span class="help-text">{{ record_form.topic.help_text }}</span>{% endif %}
+            {% if record_form.topic.errors %}{{ record_form.topic.errors }}{% endif %}
+        </div>
+    </div>
 
-            <!-- About Contact being suggested -->
-            <div class="well" id="suggestion-form-topic">
-                <div class="fieldWrapper">
-                    {{ record_form.topic.errors }}
-                    {{ record_form.topic.label_tag }}
-                    {{ record_form.topic }}
-                    {% if record_form.topic.help_text %}<span class="help-text">{{ record_form.topic.help_text }}</span>{% endif %}
-                    {% if record_form.topic.errors %}{{ record_form.topic.errors }}{% endif %}
-                </div>
-            </div>
+    <div id="flex-container">
 
-            <div id="flex-container">
-
-                <div id="map" class="map left-panel"></div>
-                <div id="right-panel">
-                    <h2>Select your regions</h2>
-                    <p>
-                        You can select specific regions to define the proposed contact's area of interest for the given topic 
-                        using the map and either of the two methods below:
-                    </p>
-                    <p><b>Option 1:</b> Click on each region on the map to select it. Click again to unselect.</p>
-                    <p><b>Option 2:</b> Filter which regions are selected with these checkboxes:</p>
-                    <div id="filter-boxes-wrapper">
-                        <fieldset id="state-boxes-fieldset">
-                            <b>States:</b>
-                            <div id="state-boxes-wrapper">
-                                <div class="state-box filter-box">
-                                    <input type="checkbox" id="washington" name="washington" class="state-input filter-input" value="WA">
-                                    <label for="washington">Washington</label>
-                                </div>
-                                <div class="state-box filter-box">
-                                    <input type="checkbox" id="oregon" name="oregon" class="state-input filter-input" value="OR">
-                                    <label for="oregon">Oregon</label>
-                                </div>
-                                <div class="state-box filter-box">
-                                    <input type="checkbox" id="california" name="california" class="state-input filter-input" value="CA">
-                                    <label for="california">California</label>
-                                </div>
-                            </div>
-                        </fieldset>
-                        <fieldset id="depth-boxes-fieldset">
-                            <b>Depth:</b>
-                            <div id="depth-boxes-wrapper">
-                                <div class="depth-box filter-box">
-                                    <input type="checkbox" id="offshore" name="offshore" class="depth-input filter-input" value="O">
-                                    <label for="offshore">Offshore</label>
-                                </div>
-                                <div class="depth-box filter-box">
-                                    <input type="checkbox" id="middepth" name="middepth" class="depth-input filter-input" value="M">
-                                    <label for="middepth">Middle-depth</label>
-                                </div>
-                                <div class="depth-box filter-box">
-                                    <input type="checkbox" id="nearshore" name="nearshore" class="depth-input filter-input" value="N">
-                                    <label for="nearshore">Nearshore</label>
-                                </div>
-                            </div>
-                        </fieldset>
+        <div id="record_map" class="map left-panel"></div>
+        <div id="right-panel">
+            <h2>Select your regions</h2>
+            <p>
+                You can select specific regions to define the proposed contact's area of interest for the given topic 
+                using the map and either of the two methods below:
+            </p>
+            <p><b>Option 1:</b> Click on each region on the map to select it. Click again to unselect.</p>
+            <p><b>Option 2:</b> Filter which regions are selected with these checkboxes:</p>
+            <div id="filter-boxes-wrapper">
+                <fieldset id="state-boxes-fieldset">
+                    <b>States:</b>
+                    <div id="state-boxes-wrapper">
+                        <div class="state-box filter-box">
+                            <input type="checkbox" id="washington" name="washington" class="state-input filter-input" value="WA">
+                            <label for="washington">Washington</label>
+                        </div>
+                        <div class="state-box filter-box">
+                            <input type="checkbox" id="oregon" name="oregon" class="state-input filter-input" value="OR">
+                            <label for="oregon">Oregon</label>
+                        </div>
+                        <div class="state-box filter-box">
+                            <input type="checkbox" id="california" name="california" class="state-input filter-input" value="CA">
+                            <label for="california">California</label>
+                        </div>
                     </div>
-                </div>
+                </fieldset>
+                <fieldset id="depth-boxes-fieldset">
+                    <b>Depth:</b>
+                    <div id="depth-boxes-wrapper">
+                        <div class="depth-box filter-box">
+                            <input type="checkbox" id="offshore" name="offshore" class="depth-input filter-input" value="O">
+                            <label for="offshore">Offshore</label>
+                        </div>
+                        <div class="depth-box filter-box">
+                            <input type="checkbox" id="middepth" name="middepth" class="depth-input filter-input" value="M">
+                            <label for="middepth">Middle-depth</label>
+                        </div>
+                        <div class="depth-box filter-box">
+                            <input type="checkbox" id="nearshore" name="nearshore" class="depth-input filter-input" value="N">
+                            <label for="nearshore">Nearshore</label>
+                        </div>
+                    </div>
+                </fieldset>
             </div>
+        </div>
+    </div>
 
 
-            <input type="submit" value="Submit">
-        </form>
-        <script>
-            let record_suggestion = {};
-        </script>
-        <script src="{% static 'app/js/dist/record_suggestion.min.js' %}"></script>
-    </body>
-</html>
+    <input type="submit" value="Submit">
+</form>
