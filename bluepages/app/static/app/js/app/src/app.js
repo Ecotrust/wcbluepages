@@ -39,6 +39,7 @@ app.loadRecordSuggestionModal = function(form_html) {
     app.suggestionModal.hide();
     $('#recordSuggestionModalWrapper').html(form_html);
     $("#topicSuggestionContactName").html(app.suggested_contact.contact_name);
+    app.loadRecordSuggestionForm();
     app.recordSuggestionModal.show();
 }
 

@@ -18,7 +18,7 @@ app.getRecordMapLabel = function(feature) {
 }
 
 app.recordMapStyleFunction = function(feature) {
-    var label = getRecordMapLabel(feature);
+    var label = app.getRecordMapLabel(feature);
     return new Style({
         stroke: new Stroke({
             color: 'rgba(0,55,255,1.0)',
@@ -54,7 +54,7 @@ app.recordMapVectorLayer = new VectorLayer({
 app.recordMapSelected = [];
 
 app.recordMapSelectedStyleFunction = function(feature) {
-    var label = getLabel(feature);
+    var label = app.getRecordMapLabel(feature);
     let selectedStyle = new Style({
         fill: new Fill({
             color: 'rgba(255,255,255,0.1)'
@@ -163,7 +163,7 @@ app.recordMapZoomToBufferedExtent = function(extent, buffer) {
     let buf_south = extent[1] - h_buffer;
     let buf_north = extent[3] + h_buffer;
     let buffered_extent = [buf_west, buf_south, buf_east, buf_north];
-    record_map.getView().fit(buffered_extent, {'duration': 1000});
+    app.record_map.getView().fit(buffered_extent, {'duration': 1000});
   }
 
 // const clearInputs = function() {
@@ -174,28 +174,6 @@ app.recordMapZoomToBufferedExtent = function(extent, buffer) {
 // Prep Form
 app.loadRecordSuggestionForm = function() {
     app.recordMapSelected = [];
-    app.record_map = new Map({
-        layers: [
-            new TileLayer({
-                source: new OSM
-            }),
-            app.recordMapVectorLayer
-        ],
-        target: 'record_map',
-        view: new View({
-            center: [
-                -13803616.858365921,    // -124
-                4865942.279503175       // 40 
-            ],
-            zoom: 5,
-        })
-    });
-
-    // clearInputs();
-    
-    record_map.on('singleclick', function(e) {
-        record_map.forEachFeatureAtPixel(e.pixel, app.recordMapToggleFeatureSelection);
-    });
     
     $('#filter-boxes-wrapper :checkbox').change(app.recordMapUpdateFilters);
     
@@ -204,9 +182,30 @@ app.loadRecordSuggestionForm = function() {
         dataType: 'json'
     })
     .done(function(data) {
+        app.record_map = new Map({
+            layers: [
+                new TileLayer({
+                    source: new OSM
+                }),
+                app.recordMapVectorLayer
+            ],
+            target: 'record_map',
+            view: new View({
+                center: [
+                    -13803616.858365921,    // -124
+                    4865942.279503175       // 40 
+                ],
+                zoom: 5,
+            })
+        });
+    
+        // clearInputs();
+        
+        app.record_map.on('singleclick', function(e) {
+            app.record_map.forEachFeatureAtPixel(e.pixel, app.recordMapToggleFeatureSelection);
+        });
         var features = new GeoJSON().readFeatures(data);
         // Flush any pre-existing features to clear out selection.
-        debugger;
         if (app.recordMapRegionSource.getFeatures.length < 1) {
             app.recordMapRegionSource.addFeatures(features);
         }
