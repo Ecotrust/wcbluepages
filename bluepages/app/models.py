@@ -324,6 +324,37 @@ class ContactSuggestion(ContactBase):
         else:
             return 'new ({})'.format(super().__str__())
 
+    @property
+    def contact_address(self):
+        if self.contact:
+            current_address = self.contact.address
+        else:
+            current_address = {
+                'line_1': '',
+                'line_2': '',
+                'city': '',
+                'state': '',
+                'zip_code': '',
+                'country': '',
+            }
+        
+        proposed_address = {
+            'line_1': self.address_line_1,
+            'line_2': self.address_line_2,
+            'city': self.address_city,
+            'state': self.address_state,
+            'zip_code': self.address_zip_code,
+            'country': self.address_country,
+        }
+
+        address = {
+            'current_address': current_address,
+            'proposed_address': proposed_address
+        }
+        
+        return address
+        
+
     class Meta:
         ordering = ['last_name', 'first_name', 'middle_name', 'entity', 'job_title', 'user__username']
 

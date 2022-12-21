@@ -116,7 +116,31 @@ def getRegionFacetFilters(contacts=None):
     ]
 
     return [x for x in final_regions if x['count'] > 0]
-        
+
+def contactSuggestionMenu(request, contact_id=None):
+    if request.method == 'POST':
+        pass
+    else:
+        if contact_id:
+            contact_suggestion = ContactSuggestion.objects.get(pk=contact_id)
+            context = {
+                'contact': {
+                    'id': contact_suggestion.pk,
+                    'name':  contact_suggestion.contact_name,
+                    'job_title': contact_suggestion.job_title,
+                    'entity_name': str(contact_suggestion.entity),
+                    'email': contact_suggestion.email,
+                    'phone': contact_suggestion.phone,
+                    'address': contact_suggestion.contact_address,
+                    'records': contact_suggestion.recordsuggestion_set.all().order_by('topic'),
+                    'description': contact_suggestion.description,
+                }
+            }
+            return render(request, 'suggestion_menu.html', context)
+        else:
+            pass
+
+
 def contactSuggestionForm(request):
     # use formset illustration below to add a'record' formset so users can add up to three record suggestions at once.
     # ContactSuggestionFormSet = modelformset_factory(ContactSuggestion, form=ContactSuggestionForm)
@@ -149,6 +173,14 @@ def recordSuggestionForm(request, contact_id):
         record_form = RecordSuggestionForm(request.POST)
         if record_form.is_valid():
             record_form.save()
+            return JsonResponse({'contact_suggestion': {
+                'id': contact_suggestion.id,
+                'name': str(contact_suggestion),
+                'contact_name': contact_suggestion.contact_name,
+                'topics': [{'id': x.pk, 'topic': str(x.topic), 'topic_id': x.topic.pk} for x in contact_suggestion.recordsuggestion_set.all()]
+                }
+            })
+
     else:
         record_form = RecordSuggestionForm(initial={'user': request.user, 'status': 'Pending', 'contact_suggestion':contact_suggestion})
 

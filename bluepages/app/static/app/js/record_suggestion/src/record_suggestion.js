@@ -164,7 +164,20 @@ app.recordMapZoomToBufferedExtent = function(extent, buffer) {
     let buf_north = extent[3] + h_buffer;
     let buffered_extent = [buf_west, buf_south, buf_east, buf_north];
     app.record_map.getView().fit(buffered_extent, {'duration': 1000});
-  }
+}
+
+app.submitRecordSuggestion = function() {
+    let record_form = $("#record-suggestion-form");
+    let submitAction = record_form .attr('action');
+
+    // TODO: Validate form
+
+    $.post(submitAction, record_form.serialize(), app.prepContactMenuModal)
+        .fail(function(error_form) {
+            alert("error");
+            $("#recordSuggestionModalWrapper").html(error_form);
+        });
+}
 
 // const clearInputs = function() {
 //     $('input').prop('checked', false);

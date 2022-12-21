@@ -1,4 +1,4 @@
-<form method="post" action="{{action}}">
+<form method="post" action="{{action}}" id="record-suggestion-form">
     {% csrf_token %}
 
     <!-- ABOUT SUGGESTION -->
@@ -93,6 +93,7 @@
         </div>
     </div>
 
-
-    <input type="submit" value="Submit">
+    <button type="button" class="btn btn-primary modal-submit-button" onclick="app.submitRecordSuggestion()">
+        Submit
+    </button>
 </form>
