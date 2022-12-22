@@ -39,3 +39,20 @@ textarea:disabled {
     color: black;
     font-size: 14px;
 }
+
+div.right-panel {
+
+    h4 {
+        margin-bottom: 1.5rem;
+    }
+
+    div.contact-record-menu-entry {
+        // margin: 0.7rem;
+        width: 100%;
+        button.btn {
+            // float: right;
+            font-size: small;
+            padding: 5px 7px;
+        }
+    }
+}

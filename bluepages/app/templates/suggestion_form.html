@@ -6,6 +6,11 @@
     <div class="well hidden-fields" id="suggestion-form-details">
         <h3>Suggestion Details</h3>
         <div class="fieldWrapper">
+            {{ contact_form.pk.errors }}
+            {{ contact_form.pk.label_tag }}
+            {{ contact_form.pk }}
+        </div>
+        <div class="fieldWrapper">
             {{ contact_form.user.errors }}
             {{ contact_form.user.label_tag }}
             {{ contact_form.user }}
@@ -200,6 +205,16 @@
     </div>
 
     {{ contact_form.non_field_errors }}
+
+    {% if contact_id %}
+        <button type="button" class="btn btn-primary modal-submit-button" onclick="app.prepContactMenuModal({'contact_suggestion': {'id': {{ contact_id }}  } })">
+            &lt; Back
+        </button>
+    {% else %}
+        <button type="button" class="btn btn-primary modal-submit-button" onclick="app.loadSuggestionMenu()">
+            &lt; Back
+        </button>
+    {% endif %}
     
     <button type="button" class="btn btn-primary modal-submit-button" onclick="app.submitContactSuggestion()">
         Submit

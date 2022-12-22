@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 import json
 
-from app.models import Region, Topic, Entity, Contact, Record, RegionState, ContactSuggestion
+from app.models import Region, Topic, Entity, Contact, Record, RegionState, ContactSuggestion, RecordSuggestion
 from app.forms import ContactSuggestionForm, RecordSuggestionForm
 
 def home(request):
@@ -117,6 +117,25 @@ def getRegionFacetFilters(contacts=None):
 
     return [x for x in final_regions if x['count'] > 0]
 
+def getSuggestionMenu(request):
+    user_suggestions = [
+        {
+            'id': contact_suggestion.id,
+            'name': str(contact_suggestion),
+            'contact_name': contact_suggestion.contact_name,
+            'status': contact_suggestion.status,
+            'description': contact_suggestion.description,
+            'date_created': contact_suggestion.date_created.strftime('%m/%d/%Y %I:%M %p'),
+            'date_modified': contact_suggestion.date_modified.strftime('%m/%d/%Y %I:%M %p'),
+            'topics': [{'id': x.pk, 'topic': str(x.topic), 'topic_id': x.topic.pk} for x in contact_suggestion.recordsuggestion_set.all()]
+        } 
+        for contact_suggestion in ContactSuggestion.objects.filter(user=request.user).order_by('status', 'last_name', 'first_name', 'date_modified', 'date_created')
+    ]
+    if len(user_suggestions) > 0:
+        return render(request, 'suggestion_menu.html', {'suggestions': user_suggestions})
+    else:
+        return JsonResponse({'has_suggestions': False})
+
 def contactSuggestionMenu(request, contact_id=None):
     if request.method == 'POST':
         pass
@@ -136,17 +155,43 @@ def contactSuggestionMenu(request, contact_id=None):
                     'description': contact_suggestion.description,
                 }
             }
-            return render(request, 'suggestion_menu.html', context)
+            return render(request, 'contact_suggestion_menu.html', context)
         else:
             pass
 
+def deleteSuggestedContact(request, contact_id=None):
+    contact_suggestion_matches = ContactSuggestion.objects.filter(pk=contact_id, user=request.user)
+    for match in contact_suggestion_matches:
+        match.delete()
+    return JsonResponse({
+        'status': 200,
+        'success': True,
+        'message': 'Suggestion deleted.'
+    })
 
-def contactSuggestionForm(request):
-    # use formset illustration below to add a'record' formset so users can add up to three record suggestions at once.
-    # ContactSuggestionFormSet = modelformset_factory(ContactSuggestion, form=ContactSuggestionForm)
+def deleteSuggestedRecord(request, record_id=None):
+    record_suggestion_matches = RecordSuggestion.objects.filter(pk=record_id, user=request.user)
+    for match in record_suggestion_matches:
+        match.delete()
+    return JsonResponse({
+        'status': 200,
+        'success': True,
+        'message': 'Topic Record deleted.'
+    })
+
+def contactSuggestionForm(request, contact_id=None):
+    action = '/suggestion_form'
+    contact_suggestion_record = False
+    if contact_id:
+        action = action + "/{}/".format(contact_id)
+        contact_suggestion_record_matches = ContactSuggestion.objects.filter(pk=contact_id, user=request.user)
+        if len(contact_suggestion_record_matches) == 1:
+            contact_suggestion_record = contact_suggestion_record_matches[0]
     if request.method == 'POST':
-        # formset = ContactSuggestionFormSet(request.POST)
-        contact_form = ContactSuggestionForm(request.POST)
+        if contact_suggestion_record:
+            contact_form = ContactSuggestionForm(request.POST, instance=contact_suggestion_record)
+        else:
+            contact_form = ContactSuggestionForm(request.POST)
         if contact_form.is_valid():
             contact_suggestion = contact_form.save()
             return JsonResponse({'contact_suggestion': {
@@ -156,21 +201,32 @@ def contactSuggestionForm(request):
                 'topics': [{'id': x.pk, 'topic': str(x.topic), 'topic_id': x.topic.pk} for x in contact_suggestion.recordsuggestion_set.all()]
                 }
             })
-
-
     else:
-        # formset = ContactSuggestionFormSet()
-        contact_form = ContactSuggestionForm(initial={'user':request.user, 'status':'Pending'})
+        if contact_suggestion_record:
+            contact_form =ContactSuggestionForm(instance=contact_suggestion_record)
+        else:
+            contact_form = ContactSuggestionForm(initial={'user':request.user, 'status':'Pending'})
     context = {
         'contact_form': contact_form,
-        'action': '/suggestion_form'
+        'action': action,
+        'contact_id': contact_id
     }
     return render(request, 'suggestion_form.html', context)
 
-def recordSuggestionForm(request, contact_id):
+def recordSuggestionForm(request, contact_id, record_id=None):
     contact_suggestion = ContactSuggestion.objects.get(pk=contact_id)
+    record_suggestion = False
+    action = '/record_suggestion_form/{}/'.format(contact_id)
+    if record_id:
+        record_suggestion_matches = RecordSuggestion.objects.filter(pk=record_id, user=request.user)
+        if len(record_suggestion_matches) == 1:
+            record_suggestion = record_suggestion_matches[0]
+            action += "{}/".format(record_suggestion.pk)
     if request.method == 'POST':
-        record_form = RecordSuggestionForm(request.POST)
+        if record_suggestion:
+            record_form = RecordSuggestionForm(request.POST, instance=record_suggestion)
+        else:
+            record_form = RecordSuggestionForm(request.POST)
         if record_form.is_valid():
             record_form.save()
             return JsonResponse({'contact_suggestion': {
@@ -182,12 +238,16 @@ def recordSuggestionForm(request, contact_id):
             })
 
     else:
-        record_form = RecordSuggestionForm(initial={'user': request.user, 'status': 'Pending', 'contact_suggestion':contact_suggestion})
+        if record_suggestion:
+            record_form = RecordSuggestionForm(instance=record_suggestion)
+        else:
+            record_form = RecordSuggestionForm(initial={'user': request.user, 'status': 'Pending', 'contact_suggestion':contact_suggestion})
 
     context = {
         'contact_name': contact_suggestion.contact_name,
+        'contact_id': contact_suggestion.pk,
         'record_form': record_form,
-        'action': '/record_suggestion_form/{}/'.format(contact_id)
+        'action': action
     }
     return render(request, 'record_suggestion_form.html', context)
 

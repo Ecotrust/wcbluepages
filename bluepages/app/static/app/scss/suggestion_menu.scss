@@ -1,0 +1,42 @@
+#suggestionMenuModalWrapper {
+
+    #add-topic-button {
+        float: right;
+    }
+
+    div.suggestion_container {
+        border: 1px solid black;
+        border-radius: 1rem;
+        margin: 0.5rem;
+        padding: 0.5rem;
+        cursor: pointer;
+
+    }
+    div.suggestion_container:hover {
+        border-width: 2px;
+    }
+    
+    div.suggestion_container.status_Pending {
+        background-color: rgba(0,255,50,0.2);
+    }
+    div.suggestion_container.status_Approved {
+        background-color: rgba(0,0,0,0.1);
+    }
+    div.suggestion_container.status_Rejected {
+        background-color: rgba(255,0,0,0.2);
+    }
+
+    div.suggestion_status_controls {
+
+        margin: 0.5rem;
+
+        p {
+            margin-bottom: 0.2rem;
+        }
+    }
+
+    div.contact-record-menu-entry {
+        margin: 0.5rem;
+    }
+    
+}

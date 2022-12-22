@@ -184,6 +184,21 @@ app.submitRecordSuggestion = function() {
 //     $('textarea').val('');
 // }
 
+app.recordMapLoadSelectedFeatures = function() {
+    let selected = $("#id_regions")[0].selectedOptions;
+    let features = app.recordMapRegionSource.getFeatures();
+    for (var sel_idx=0; sel_idx < selected.length; sel_idx++) {
+        var feature_id = selected[sel_idx].value;
+        for (var feat_idx=0; feat_idx < features.length; feat_idx++){
+            if (feature_id == features[feat_idx].get('id')){
+                app.recordMapToggleFeatureSelection(features[feat_idx])
+                break;
+            }
+        } 
+
+    }
+}
+
 // Prep Form
 app.loadRecordSuggestionForm = function() {
     app.recordMapSelected = [];
@@ -212,7 +227,7 @@ app.loadRecordSuggestionForm = function() {
             })
         });
     
-        // clearInputs();
+        app.recordMapRegionSource.clear()
         
         app.record_map.on('singleclick', function(e) {
             app.record_map.forEachFeatureAtPixel(e.pixel, app.recordMapToggleFeatureSelection);
@@ -222,6 +237,19 @@ app.loadRecordSuggestionForm = function() {
         if (app.recordMapRegionSource.getFeatures.length < 1) {
             app.recordMapRegionSource.addFeatures(features);
         }
+        app.recordMapLoadSelectedFeatures();
         app.recordMapZoomToBufferedExtent(app.recordMapRegionSource.getExtent(), 0.1);
     });
+}
+
+app.deleteRecordSuggestions = function(contact_id, record_id) {
+    if (window.confirm("Are you sure you wish to delete this Topic?")) {
+        $.ajax({
+            url: "/delete_suggested_record/" + record_id + "/",
+            success: window.setTimeout(function() {
+                app.prepContactMenuModal({'contact_suggestion': {'id': contact_id}});
+            }, 200) 
+        })
+    }
+
 }

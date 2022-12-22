@@ -1,70 +1,33 @@
-<p id="contact-suggestion-description">Proposed update: {{ contact.description }}</p>
-<div id="flex-container">
-    
-    <div id="suggested_contact_details" class="left-panel">
-        <button type="button" class="btn btn-primary" onclick="window.alert('TODO: Enable contact edits')">
-            Edit
-        </button>
-        <h4>Contact: {{ contact.name }}</h4>
-        <table>
-            <tr>
-                <td>Position:</td>
-                <td>{{ contact.job_title }}</td>
-            </tr>
-            <tr>
-                <td>Entity:</td>
-                <td>{{ contact.entity_name }}</td>
-            </tr>
-            <tr>
-                <td>Email:</td>
-                <td>{{ contact.email }}</td>
-            </tr>
-            <tr>
-                <td>Phone:</td>
-                <td>{{ contact.phone }}</td>
-            </tr>
-            <tr>
-                <td>Address:</td>
-                <td>
-                    {% if contact.address.proposed_address.line_1 %}
-                        Line 1: {{ contact.address.proposed_address.line_1 }}<br />
-                    {% endif %}
-                    {% if contact.address.proposed_address.line_2 %}
-                        Line 2: {{ contact.address.proposed_address.line_2 }}<br />
-                    {% endif %}
-                    {% if contact.address.proposed_address.city %}
-                        City: {{ contact.address.proposed_address.city }},&nbsp;
-                    {% endif %}
-                    {% if contact.address.proposed_address.state %}
-                        State: {{ contact.address.proposed_address.state }}&nbsp;
-                    {% endif %}
-                    {% if contact.address.proposed_address.zip_code %}
-                        Zip: {{ contact.address.proposed_address.zip_code }}
-                    {% endif %}
-                    {% if contact.address.proposed_address.country %}
-                        <br />
-                        Country: {{ contact.address.proposed_address.country }}
-                    {% endif %}
-                </td>
-            </tr>
-
-        </table>
-    </div>
-    <div id="right-panel">
-        <h4>Topics:</h4>
-        <button type="button" class="btn btn-primary" onclick="app.prepRecordSuggestions({{ contact.id }}, false)">
-            + Topic
-        </button>
-        {% if contact.records|length == 0 %}
-            <p>Contact has no associated topics.</p>
-        {% endif %}
-        {% for record in contact.records %}
-            <div class="record-suggestion-brief" onclick="app.prepRecordSuggestions({{ contact.id }}, {{ record.id }})">
-                <h3>{{ record.topic }}</h3>
-            </div>
-        {% endfor %}
-    </div>
-</div>
-<button type="button" class="btn btn-primary" onclick="window.alert('TODO: enable modal close')">
-    Done
+<button type="button" class="btn btn-primary" onclick="app.loadSuggestionForm()">
+    + Add Another
 </button>
+<div class="container">
+
+    {% for suggestion in suggestions %}
+        <div class="row">
+            <div class="suggestion_container status_{{ suggestion.status }} col" onclick="app.prepContactMenuModal({contact_suggestion: {{ suggestion }} })">
+                <h4>{{ suggestion.contact_name }}</h4>
+                <p><b>Status: {{ suggestion.status }}</b></p>
+                {% if suggestion.topics|length > 0 %}
+                    Topics:
+                    <ul>
+                    {% for record in suggestion.topics %}
+                            <li>{{ record.topic }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    No topics provided.
+                {% endif %}
+            </div>
+            <div class="suggestion_status_controls col-4">
+                <p>Created: {{ suggestion.date_created }}</p>
+                <p>Modified: {{ suggestion.date_modified }}</p>
+                <button type="button" class="btn btn-primary" onclick="app.confirmSuggestionDeletion({{ suggestion.id }})">
+                    Delete
+                </button>
+            </div>
+    
+        </div>
+    
+    {% endfor %}
+</div>

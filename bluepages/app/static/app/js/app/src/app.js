@@ -2,14 +2,30 @@ import { Modal } from 'bootstrap';
 import * as $ from 'jquery';
 import DataTable from 'datatables';
 
-app.loadSuggestionForm = function() {
+app.loadSuggestionForm = function(contact_suggestion_id) {
+    let url = "/suggestion_form/";
+    if (contact_suggestion_id) {
+        url = url + contact_suggestion_id + "/";
+    }
     $.ajax({
-        url: "/suggestion_form",
+        url: url,
         success: function(form){
             $("#suggestionModalWrapper").html(form);
+            app.recordSuggestionModal.hide();
+            app.suggestionMenuModal.hide();
             app.suggestionModal.show();
         }
     })
+}
+
+app.confirmSuggestionDeletion = function(contact_id) {
+    if (window.confirm("Are you sure you wish to delete this suggestion?")) {
+        $.ajax({
+            url: "/delete_suggested_contact/" + contact_id + "/",
+            success: window.setTimeout(app.loadSuggestionMenu, 200) 
+        })
+    }
+
 }
 
 app.submitContactSuggestion = function() {
@@ -25,6 +41,25 @@ app.submitContactSuggestion = function() {
         });
 }
 
+app.loadSuggestionMenu = function() {
+    // app.suggestionMenuModal.hide();
+    // $("#suggestionMenuModalWrapper").html('')
+    $.ajax({
+        url: "/get_suggestion_menu/",
+        success: function(data) {
+            if (typeof(data) == 'string') {
+                $("#suggestionMenuModalWrapper").html(data)
+                app.suggestionModal.hide();
+                app.recordSuggestionModal.hide();
+                app.suggestionMenuModal.show();
+            } else {
+                // result not HTML, meaning no existing suggestion records were found
+                app.loadSuggestionForm();
+            }
+        }
+    })
+}
+
 app.prepContactMenuModal = function(data) {
     if (typeof(data) == 'string') {
         //Form contained an error and was returned to us
@@ -32,7 +67,7 @@ app.prepContactMenuModal = function(data) {
     } else {
         app.suggested_contact = data.contact_suggestion;
         $.ajax({
-            url:"contact_suggestion_menu/" + app.suggested_contact.id + "/",
+            url:"contact_suggestion_menu/" + data.contact_suggestion.id + "/",
             success: app.loadContactMenuModal
         })
     }
@@ -46,7 +81,7 @@ app.loadContactMenuModal = function(form_html) {
 }
 
 app.prepRecordSuggestions = function(contact_id, record_id) {
-    let url = "/record_suggestion_form/" + app.suggested_contact.id + "/";
+    let url = "/record_suggestion_form/" + contact_id + "/";
     if (record_id){
         url += record_id + "/";
     }
