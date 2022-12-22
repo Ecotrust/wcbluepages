@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.gis.db.models import GeometryField
 from phone_field import PhoneField
@@ -154,6 +155,9 @@ class Topic(models.Model):
 
     class Meta:
         ordering = ['name']
+        constraints = [
+            models.UniqueConstraint(fields=['name',], name='unique_topic')
+        ]
 
     def __str__(self):
         return self.name
@@ -178,6 +182,9 @@ class Record(RecordBase):
     class Meta:
         ordering = ['topic', 'contact']
         abstract = False
+        constraints = [
+            models.UniqueConstraint(fields=['topic', 'contact'], name='unique_record')
+        ]
 
     def __str__(self):
         return "{}: {}".format(self.topic, self.contact)
@@ -354,9 +361,17 @@ class ContactSuggestion(ContactBase):
         
         return address
         
+    def clean(self):
+        if self.contact and self.status == 'Pending':
+            matches = ContactSuggestion.objects.filter(contact=self.contact, user=self.user, status=self.status)
+            if matches.count() > 0:
+                raise ValidationError('You already have a suggested edit peding for this contact. Please edit your existing suggestion.')
 
     class Meta:
         ordering = ['last_name', 'first_name', 'middle_name', 'entity', 'job_title', 'user__username']
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'contact'], condition=(models.Q(status="Pending") and ~models.Q(contact=None)), name='unique_contact_suggestion'),
+        ]
 
 class RecordSuggestion(RecordBase):
     contact_suggestion = models.ForeignKey('ContactSuggestion', on_delete=models.CASCADE)
@@ -365,8 +380,17 @@ class RecordSuggestion(RecordBase):
     date_modified = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=20, default='Pending', choices=SUGGESTION_STATUS_CHOICES, verbose_name="Suggestion status", help_text="Has suggestion been approved or declined?")
 
+    def clean(self):
+        if self.contact_suggestion.status == 'Pending' and self.status == 'Pending':
+            matches = RecordSuggestion.objects.filter(contact_suggestion=self.contact_suggestion, topic=self.topic, status=self.status)
+            if matches.count() > 0:
+                raise ValidationError('You already have a suggested edit peding for this contact for this topic. Please edit your existing suggestion.')
+
     class Meta:
         ordering = ['topic', 'contact_suggestion']
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'topic', 'contact_suggestion'], condition=models.Q(status="Pending"), name='unique_record_suggestion')
+        ]
 
     def __str__(self):
         return "{}: {}".format(self.topic, self.contact_suggestion)

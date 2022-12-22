@@ -170,19 +170,12 @@ app.submitRecordSuggestion = function() {
     let record_form = $("#record-suggestion-form");
     let submitAction = record_form .attr('action');
 
-    // TODO: Validate form
-
-    $.post(submitAction, record_form.serialize(), app.prepContactMenuModal)
+    $.post(submitAction, record_form.serialize(), app.loadRecordSuggestionModal)
         .fail(function(error_form) {
             alert("error");
             $("#recordSuggestionModalWrapper").html(error_form);
         });
 }
-
-// const clearInputs = function() {
-//     $('input').prop('checked', false);
-//     $('textarea').val('');
-// }
 
 app.recordMapLoadSelectedFeatures = function() {
     let selected = $("#id_regions")[0].selectedOptions;

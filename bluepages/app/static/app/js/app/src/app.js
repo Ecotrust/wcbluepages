@@ -91,13 +91,22 @@ app.prepRecordSuggestions = function(contact_id, record_id) {
     })
 }
 
-app.loadRecordSuggestionModal = function(form_html) {
-    app.suggestionModal.hide();
-    app.suggestionMenuModal.hide();
-    $('#recordSuggestionModalWrapper').html(form_html);
-    $("#topicSuggestionContactName").html(app.suggested_contact.contact_name);
-    app.loadRecordSuggestionForm();
-    app.recordSuggestionModal.show();
+app.loadRecordSuggestionModal = function(data) {
+    if (typeof(data) == 'string') {
+        app.suggestionModal.hide();
+        app.suggestionMenuModal.hide();
+        $('#recordSuggestionModalWrapper').html(data);
+        $("#topicSuggestionContactName").html(app.suggested_contact.contact_name);
+        app.loadRecordSuggestionForm();
+        app.recordSuggestionModal.show();
+    } else {
+        app.suggested_contact = data.contact_suggestion;
+        $.ajax({
+            url:"contact_suggestion_menu/" + data.contact_suggestion.id + "/",
+            success: app.loadContactMenuModal
+        })
+    }
+    
 }
 
 app.suggestionModal = new Modal(document.getElementById('suggestionModal'), {});
