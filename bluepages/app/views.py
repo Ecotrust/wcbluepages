@@ -1,7 +1,9 @@
 from django.conf import settings
-from django.forms import modelformset_factory
+from django.contrib.auth import authenticate, login, forms as auth_forms
+from django.forms import modelformset_factory, forms
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.template.loader import render_to_string
 import json
 
 from app.models import Region, Topic, Entity, Contact, Record, RegionState, ContactSuggestion, RecordSuggestion
@@ -16,7 +18,7 @@ def home(request):
     #   https://www.enterprisedb.com/postgres-tutorials/how-implement-faceted-search-django-and-postgresql
     if request.user.is_authenticated or not settings.REQUIRE_ACCOUNT:
         filters = {
-            'Entities': getEntityFeacetFilters(contacts),
+            'Entities': getEntityFacetFilters(contacts),
             'Topics': getTopicFacetFilters(contacts),
             'Regions': getRegionFacetFilters(contacts)
         }
@@ -35,7 +37,7 @@ def home(request):
 
     return render(request, "welcome.html", context)
 
-def getEntityFeacetFilters(contacts=None):
+def getEntityFacetFilters(contacts=None):
     if not contacts:
         contacts = Contact.objects.all()
 
@@ -116,6 +118,18 @@ def getRegionFacetFilters(contacts=None):
     ]
 
     return [x for x in final_regions if x['count'] > 0]
+
+def validateLogin(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+        return JsonResponse({'msg': "login successful", 'reload': True}, status=200)
+    else:
+        form = auth_forms.AuthenticationForm(initial=({'username': username, 'password': password}))
+        form.errors[forms.NON_FIELD_ERRORS] = form.error_class(["Username and/or password incorrect."])
+        return render(request, 'registration/login.html', {'form': form})
 
 def getSuggestionMenu(request):
     user_suggestions = [

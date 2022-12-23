@@ -1,5 +1,6 @@
 # REQUIRED
 django >=3.2.13,<3.3
+django-registration
 django-reversion
 psycopg2-binary
 uwsgi

@@ -2,6 +2,111 @@ import { Modal } from 'bootstrap';
 import * as $ from 'jquery';
 import DataTable from 'datatables';
 
+app.showAccountModal = function() {
+    app.registrationSuccessfulModal.hide();
+    app.suggestionMenuModal.hide();
+    app.suggestionModal.hide();
+    app.recordSuggestionModal.hide();
+    app.accountModal.show();
+}
+
+app.showRegistrationSuccessfulModal = function() {
+    app.accountModal.hide();
+    app.suggestionMenuModal.hide();
+    app.suggestionModal.hide();
+    app.recordSuggestionModal.hide();
+    app.registrationSuccessfulModal.show();
+}
+
+app.showSuggestionMenuModal = function() {
+    app.accountModal.hide();
+    app.registrationSuccessfulModal.hide();
+    app.suggestionModal.hide();
+    app.recordSuggestionModal.hide();
+    app.suggestionMenuModal.show();
+}
+
+app.showSuggestionFormModal = function() {
+    app.accountModal.hide();
+    app.registrationSuccessfulModal.hide();
+    app.suggestionMenuModal.hide();
+    app.recordSuggestionModal.hide();
+    app.suggestionModal.show();
+}
+
+app.showRecordSuggestionFormModal = function() {
+    app.accountModal.hide();
+    app.registrationSuccessfulModal.hide();
+    app.suggestionMenuModal.hide();
+    app.suggestionModal.hide();
+    app.recordSuggestionModal.show();
+}
+
+app.checkRegistrationFormValidity = function() {
+    if ($('#registration-form').checkValidity()) {
+        $('#registration-form-submit').removeAttribute('disabled');
+    } else {
+        $('#registration-form-submit').setAttribute('disabled', 'disabled');
+    }
+}
+
+app.loadRegistrationForm = function() {
+    $.ajax({
+        url: "/accounts/register/",
+        success: function(registration_form) {
+            $("#accountModalWrapper").html(registration_form);
+            $("#registration-form").change(app.checkRegistrationFormValidity);
+            app.showAccountModal();
+        }
+    });
+}
+
+app.submitRegistrationForm = function() {
+    let registration_form = $("#registration-form");
+    let submitAction = contact_form .attr('action');
+
+    $.post(submitAction, registration_form.serialize(), app.loadRegistrationSuccess)
+}
+
+app.loadRegistrationSuccess = function(success_html) {
+    $("#registrationSuccessfulModalWrapper").html(success_html);
+    app.showRegistrationSuccessfulModal();
+}
+
+app.loadLoginForm = function() {
+    $.ajax({
+        url: "/accounts/login/",
+        success: function(login_form) {
+            $("#accountModalWrapper").html(login_form);
+            app.showAccountModal();
+        }
+    });
+}
+
+app.handleLoginReturn = function(result) {
+    if (typeof(result) == 'string') {
+        $("#accountModalWrapper").html(result);
+        app.showAccountModal();
+    } else {
+        $("#accountModalWrapper").html(result.msg);
+        if (result.reload == true){
+            window.setTimeout(
+                function() {
+                    window.location.reload();
+                },
+                1000
+            );
+        }
+    }
+}
+
+app.submitLoginForm = function() {
+    let registration_form = $("#login-form");
+    let submitAction = registration_form .attr('action');
+
+    $.post(submitAction, registration_form.serialize(), app.handleLoginReturn);
+}
+
 app.loadSuggestionForm = function(contact_suggestion_id) {
     let url = "/suggestion_form/";
     if (contact_suggestion_id) {
@@ -11,9 +116,7 @@ app.loadSuggestionForm = function(contact_suggestion_id) {
         url: url,
         success: function(form){
             $("#suggestionModalWrapper").html(form);
-            app.recordSuggestionModal.hide();
-            app.suggestionMenuModal.hide();
-            app.suggestionModal.show();
+            app.showSuggestionFormModal();
         }
     })
 }
@@ -42,16 +145,12 @@ app.submitContactSuggestion = function() {
 }
 
 app.loadSuggestionMenu = function() {
-    // app.suggestionMenuModal.hide();
-    // $("#suggestionMenuModalWrapper").html('')
     $.ajax({
         url: "/get_suggestion_menu/",
         success: function(data) {
             if (typeof(data) == 'string') {
                 $("#suggestionMenuModalWrapper").html(data)
-                app.suggestionModal.hide();
-                app.recordSuggestionModal.hide();
-                app.suggestionMenuModal.show();
+                app.showSuggestionMenuModal();
             } else {
                 // result not HTML, meaning no existing suggestion records were found
                 app.loadSuggestionForm();
@@ -75,9 +174,7 @@ app.prepContactMenuModal = function(data) {
 
 app.loadContactMenuModal = function(form_html) {
     $('#suggestionMenuModalWrapper').html(form_html);
-    app.suggestionModal.hide();
-    app.recordSuggestionModal.hide();
-    app.suggestionMenuModal.show();
+    app.showSuggestionMenuModal();
 }
 
 app.prepRecordSuggestions = function(contact_id, record_id) {
@@ -93,12 +190,10 @@ app.prepRecordSuggestions = function(contact_id, record_id) {
 
 app.loadRecordSuggestionModal = function(data) {
     if (typeof(data) == 'string') {
-        app.suggestionModal.hide();
-        app.suggestionMenuModal.hide();
         $('#recordSuggestionModalWrapper').html(data);
         $("#topicSuggestionContactName").html(app.suggested_contact.contact_name);
         app.loadRecordSuggestionForm();
-        app.recordSuggestionModal.show();
+        app.showRecordSuggestionFormModal();
     } else {
         app.suggested_contact = data.contact_suggestion;
         $.ajax({
@@ -109,8 +204,10 @@ app.loadRecordSuggestionModal = function(data) {
     
 }
 
-app.suggestionModal = new Modal(document.getElementById('suggestionModal'), {});
+app.accountModal = new Modal(document.getElementById('accountModal'), {});
+app.registrationSuccessfulModal = new Modal(document.getElementById('registrationSuccessfulModal'), {});
 app.suggestionMenuModal = new Modal(document.getElementById('suggestionMenuModal'), {});
+app.suggestionModal = new Modal(document.getElementById('suggestionModal'), {});
 app.recordSuggestionModal = new Modal(document.getElementById('recordSuggestionModal'), {});
 
 

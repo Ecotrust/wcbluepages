@@ -96,6 +96,14 @@ DATABASES = {
     }
 }
 
+# Registration
+# https://django-registration.readthedocs.io/en/3.3/settings.html
+REGISTRATION_OPEN = True
+
+# Authentication
+# https://docs.djangoproject.com/en/3.2/topics/auth/default/#auth-web-requests
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
