@@ -104,6 +104,12 @@ app.submitLoginForm = function() {
     $.post(submitAction, login_form.serialize(), app.handleLoginReturn);
 }
 
+app.logoutRUS = function() {
+    let html = "<div id='logout-rus'><p>Are you sure you wish to log out?</p><button class='btn btn-primary' data-bs-dismiss='modal'>Nevemind</button><a href='/accounts/logout/'><button class='btn btn-primary'>Yes, log me out</button></a></div>";
+    $("#accountModalWrapper").html(html);
+    app.showAccountModal();
+}
+
 app.loadSuggestionForm = function(contact_suggestion_id) {
     let url = "/suggestion_form/";
     if (contact_suggestion_id) {
