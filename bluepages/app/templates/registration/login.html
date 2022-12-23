@@ -1,11 +1,7 @@
-<form method="post" action="/accounts/login/validate/" id="login-form">
+<form method="post" action="/accounts/login/" id="login-form">
     {% csrf_token %}
-
     {{ form.as_p }}
-
-    {% if error %} 
-        <p class="login-error-message">{{ error }}</p>
-    {% endif %}
-
     <button type="button" class="btn btn-primary modal-submit-button" onclick="app.submitLoginForm()">Log in</button>
 </form>
+
+<div><p>Don't have an account? <a href="#" onclick="app.loadRegistrationForm()"">Register for a free account</a></p></div>

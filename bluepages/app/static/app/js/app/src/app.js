@@ -3,24 +3,14 @@ import * as $ from 'jquery';
 import DataTable from 'datatables';
 
 app.showAccountModal = function() {
-    app.registrationSuccessfulModal.hide();
     app.suggestionMenuModal.hide();
     app.suggestionModal.hide();
     app.recordSuggestionModal.hide();
     app.accountModal.show();
 }
 
-app.showRegistrationSuccessfulModal = function() {
-    app.accountModal.hide();
-    app.suggestionMenuModal.hide();
-    app.suggestionModal.hide();
-    app.recordSuggestionModal.hide();
-    app.registrationSuccessfulModal.show();
-}
-
 app.showSuggestionMenuModal = function() {
     app.accountModal.hide();
-    app.registrationSuccessfulModal.hide();
     app.suggestionModal.hide();
     app.recordSuggestionModal.hide();
     app.suggestionMenuModal.show();
@@ -28,7 +18,6 @@ app.showSuggestionMenuModal = function() {
 
 app.showSuggestionFormModal = function() {
     app.accountModal.hide();
-    app.registrationSuccessfulModal.hide();
     app.suggestionMenuModal.hide();
     app.recordSuggestionModal.hide();
     app.suggestionModal.show();
@@ -36,7 +25,6 @@ app.showSuggestionFormModal = function() {
 
 app.showRecordSuggestionFormModal = function() {
     app.accountModal.hide();
-    app.registrationSuccessfulModal.hide();
     app.suggestionMenuModal.hide();
     app.suggestionModal.hide();
     app.recordSuggestionModal.show();
@@ -63,14 +51,25 @@ app.loadRegistrationForm = function() {
 
 app.submitRegistrationForm = function() {
     let registration_form = $("#registration-form");
-    let submitAction = contact_form .attr('action');
+    let submitAction = registration_form.attr('action');
 
-    $.post(submitAction, registration_form.serialize(), app.loadRegistrationSuccess)
+    $.post(submitAction, registration_form.serialize(), app.handleRegistrationReturn)
 }
 
-app.loadRegistrationSuccess = function(success_html) {
-    $("#registrationSuccessfulModalWrapper").html(success_html);
-    app.showRegistrationSuccessfulModal();
+app.handleRegistrationReturn = function(result) {
+    if (result.indexOf('id="registration-form">') < 0) {
+        $("#accountModalWrapper").html("Registration successful! You will now be logged in...");
+        window.setTimeout(
+            function() {
+                window.location.reload();
+            },
+            1000
+        );
+    } else {
+        $("#accountModalWrapper").html(result);
+        app.showAccountModal();
+
+    }
 }
 
 app.loadLoginForm = function() {
@@ -84,27 +83,25 @@ app.loadLoginForm = function() {
 }
 
 app.handleLoginReturn = function(result) {
-    if (typeof(result) == 'string') {
+    if (result.indexOf('id="login-form">') < 0) {
+        $("#accountModalWrapper").html("Login successful!");
+        window.setTimeout(
+            function() {
+                window.location.reload();
+            },
+            1000
+        );
+    } else {
         $("#accountModalWrapper").html(result);
         app.showAccountModal();
-    } else {
-        $("#accountModalWrapper").html(result.msg);
-        if (result.reload == true){
-            window.setTimeout(
-                function() {
-                    window.location.reload();
-                },
-                1000
-            );
-        }
     }
 }
 
 app.submitLoginForm = function() {
-    let registration_form = $("#login-form");
-    let submitAction = registration_form .attr('action');
+    let login_form = $("#login-form");
+    let submitAction = login_form.attr('action');
 
-    $.post(submitAction, registration_form.serialize(), app.handleLoginReturn);
+    $.post(submitAction, login_form.serialize(), app.handleLoginReturn);
 }
 
 app.loadSuggestionForm = function(contact_suggestion_id) {
@@ -205,7 +202,6 @@ app.loadRecordSuggestionModal = function(data) {
 }
 
 app.accountModal = new Modal(document.getElementById('accountModal'), {});
-app.registrationSuccessfulModal = new Modal(document.getElementById('registrationSuccessfulModal'), {});
 app.suggestionMenuModal = new Modal(document.getElementById('suggestionMenuModal'), {});
 app.suggestionModal = new Modal(document.getElementById('suggestionModal'), {});
 app.recordSuggestionModal = new Modal(document.getElementById('recordSuggestionModal'), {});

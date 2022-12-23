@@ -5,7 +5,7 @@ The `urlpatterns` list routes URLs to views. For more information please see:
 
 """
 from django.urls import path, re_path, include
-from app.views import home, regionJSON, regionPicker, wireframe, getSuggestionMenu, contactSuggestionMenu, contactSuggestionForm, recordSuggestionForm, deleteSuggestedContact, deleteSuggestedRecord, validateLogin
+from app.views import home, regionJSON, regionPicker, wireframe, getSuggestionMenu, contactSuggestionMenu, contactSuggestionForm, recordSuggestionForm, deleteSuggestedContact, deleteSuggestedRecord
 
 
 urlpatterns = [
@@ -19,7 +19,6 @@ urlpatterns = [
     path('record_suggestion_form/<int:contact_id>/', recordSuggestionForm),
     path('delete_suggested_contact/<int:contact_id>/', deleteSuggestedContact),
     path('delete_suggested_record/<int:record_id>/', deleteSuggestedRecord),
-    path('accounts/login/validate/', validateLogin),
     path('accounts/', include('django_registration.backends.one_step.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     

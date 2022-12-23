@@ -1,6 +1,7 @@
 <form method="post" action="/accounts/register/" id="registration-form">
     {% csrf_token %}
-    {{ form.non_field_errors }}
     {{ form.as_p }}
-    <button class="btn btn-primary" id="registration-form-submit" onclick="app.submitRegistrationForm()">Submit</button>
+    <button type="button" class="btn btn-primary modal-submit-button" onclick="app.submitRegistrationForm()">Submit</button>
 </form>
+
+<div><p>Already have an account? <a href="#" onclick="app.loadLoginForm()"">log in here</a></p></div>

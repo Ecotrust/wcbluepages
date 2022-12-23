@@ -1,9 +1,6 @@
 from django.conf import settings
-from django.contrib.auth import authenticate, login, forms as auth_forms
-from django.forms import modelformset_factory, forms
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
-from django.template.loader import render_to_string
+from django.shortcuts import render
 import json
 
 from app.models import Region, Topic, Entity, Contact, Record, RegionState, ContactSuggestion, RecordSuggestion
@@ -118,18 +115,6 @@ def getRegionFacetFilters(contacts=None):
     ]
 
     return [x for x in final_regions if x['count'] > 0]
-
-def validateLogin(request):
-    username = request.POST['username']
-    password = request.POST['password']
-    user = authenticate(request, username=username, password=password)
-    if user is not None:
-        login(request, user)
-        return JsonResponse({'msg': "login successful", 'reload': True}, status=200)
-    else:
-        form = auth_forms.AuthenticationForm(initial=({'username': username, 'password': password}))
-        form.errors[forms.NON_FIELD_ERRORS] = form.error_class(["Username and/or password incorrect."])
-        return render(request, 'registration/login.html', {'form': form})
 
 def getSuggestionMenu(request):
     user_suggestions = [
