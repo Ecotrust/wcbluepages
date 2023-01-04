@@ -1,0 +1,14 @@
+<form method="post" action="{{action}}" id="{{ form_id }}">
+    <h3>{{ generic_form_header }}</h3>
+    {% csrf_token %}
+    {{ form }}
+    <br />
+    <br />
+    {% if submit_function %}
+        <button type="button" class="btn btn-primary" onclick="{{ submit_function }}">
+            Submit
+        </button>
+    {% else %}
+        <input type="submit" class="btn btn-primary" value="Submit"/>
+    {% endif %}
+</form>

@@ -72,6 +72,36 @@ app.handleRegistrationReturn = function(result) {
     }
 }
 
+app.loadForgotCredentials = function() {
+    $.ajax({
+        url: "/accounts/forgot/",
+        success: function(forgot_result) {
+            $("#accountModalWrapper").html(forgot_result);
+            // $("#registration-form").change(app.checkRegistrationFormValidity);
+            app.showAccountModal();
+        }
+    });
+}
+
+app.submitPasswordReset = function() {
+    let reset_form = $("#password-reset-form");
+    let submitAction = reset_form.attr('action');
+
+    $.post(submitAction, reset_form.serialize(), app.handlePasswordResetReturn)
+}
+
+app.handlePasswordResetReturn = function(result) {
+    $("#accountModalWrapper").html(
+        '<div class="content">' +
+            '<div id="content" class="colM">' +
+                '<h1>Password reset sent</h1>' +
+                '<p>We’ve emailed you instructions for setting your password, if an account exists with the email you entered. You should receive them shortly.</p>' +
+                '<p>If you don’t receive an email, please make sure you’ve entered the address you registered with, and check your spam folder.</p>' +
+            '</div>' +
+        '</div>'
+    );
+}
+
 app.loadLoginForm = function() {
     $.ajax({
         url: "/accounts/login/",

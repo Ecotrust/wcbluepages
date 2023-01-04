@@ -5,6 +5,7 @@ The `urlpatterns` list routes URLs to views. For more information please see:
 
 """
 from django.urls import path, re_path, include
+from django.contrib.auth.views import PasswordResetView
 from app.views import home, regionJSON, regionPicker, wireframe, getSuggestionMenu, contactSuggestionMenu, contactSuggestionForm, recordSuggestionForm, deleteSuggestedContact, deleteSuggestedRecord
 
 
@@ -19,6 +20,12 @@ urlpatterns = [
     path('record_suggestion_form/<int:contact_id>/', recordSuggestionForm),
     path('delete_suggested_contact/<int:contact_id>/', deleteSuggestedContact),
     path('delete_suggested_record/<int:record_id>/', deleteSuggestedRecord),
+    path('accounts/forgot/', PasswordResetView.as_view(template_name='generic_form.html', extra_context={
+        'action': '/accounts/forgot/',
+        'form_id': 'password-reset-form',
+        'submit_function': 'app.submitPasswordReset()',
+        'generic_form_header': 'Reset your password:'
+    })),
     path('accounts/', include('django_registration.backends.one_step.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     
