@@ -98,7 +98,7 @@ DATABASES = {
 
 # Registration
 # https://django-registration.readthedocs.io/en/3.3/settings.html
-REGISTRATION_OPEN = True
+REGISTRATION_OPEN = False
 
 # Authentication
 # https://docs.djangoproject.com/en/3.2/topics/auth/default/#auth-web-requests
