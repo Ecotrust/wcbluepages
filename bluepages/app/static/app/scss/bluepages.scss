@@ -1,5 +1,9 @@
+:root {
+  --background: skyblue;
+}
+
 body {
-  background: skyblue;
+  background: var(--background);
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -70,11 +74,16 @@ header {
 
 .contact-results {
   flex: 1;
+  margin-bottom: 3rem;
 }
 
 .add-contact-control {
   position: sticky;
   bottom: 0;
+  background-color: var(--background);
+  padding-top: 0.8rem;
+  border-top: 1px solid black;
+
 }
 
 #map {  
