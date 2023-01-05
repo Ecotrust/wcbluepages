@@ -41,7 +41,7 @@ header {
 }
 
 .header-user {
-  min-width: 150px;
+  min-width: 235px;
   padding: 2rem;
 }
 
@@ -90,5 +90,9 @@ header {
   background-color: $color;
 }
 
-
+#logout-rus {
+  button{
+    margin:0.5rem;
+  } 
+}
 

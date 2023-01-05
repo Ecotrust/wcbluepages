@@ -362,7 +362,7 @@ class ContactSuggestion(ContactBase):
         return address
         
     def clean(self):
-        if self.contact and self.status == 'Pending':
+        if not self.pk and self.contact and self.status == 'Pending':
             matches = ContactSuggestion.objects.filter(contact=self.contact, user=self.user, status=self.status)
             if matches.count() > 0:
                 raise ValidationError('You already have a suggested edit peding for this contact. Please edit your existing suggestion.')
@@ -381,7 +381,7 @@ class RecordSuggestion(RecordBase):
     status = models.CharField(max_length=20, default='Pending', choices=SUGGESTION_STATUS_CHOICES, verbose_name="Suggestion status", help_text="Has suggestion been approved or declined?")
 
     def clean(self):
-        if self.contact_suggestion.status == 'Pending' and self.status == 'Pending':
+        if not self.pk and self.contact_suggestion.status == 'Pending' and self.status == 'Pending':
             matches = RecordSuggestion.objects.filter(contact_suggestion=self.contact_suggestion, topic=self.topic, status=self.status)
             if matches.count() > 0:
                 raise ValidationError('You already have a suggested edit peding for this contact for this topic. Please edit your existing suggestion.')

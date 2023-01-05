@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.forms import modelformset_factory
 from django.http import JsonResponse
 from django.shortcuts import render
 import json
@@ -16,7 +15,7 @@ def home(request):
     #   https://www.enterprisedb.com/postgres-tutorials/how-implement-faceted-search-django-and-postgresql
     if request.user.is_authenticated or not settings.REQUIRE_ACCOUNT:
         filters = {
-            'Entities': getEntityFeacetFilters(contacts),
+            'Entities': getEntityFacetFilters(contacts),
             'Topics': getTopicFacetFilters(contacts),
             'Regions': getRegionFacetFilters(contacts)
         }
@@ -35,7 +34,7 @@ def home(request):
 
     return render(request, "welcome.html", context)
 
-def getEntityFeacetFilters(contacts=None):
+def getEntityFacetFilters(contacts=None):
     if not contacts:
         contacts = Contact.objects.all()
 
