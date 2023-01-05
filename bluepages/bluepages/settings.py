@@ -96,6 +96,12 @@ DATABASES = {
     }
 }
 
+# LOGGING
+# Set logging to default, and then make admin error emails come through as HTML
+from django.utils.log import DEFAULT_LOGGING
+LOGGING = DEFAULT_LOGGING
+LOGGING['handlers']['mail_admins']['include_html'] = True
+
 # Registration
 # https://django-registration.readthedocs.io/en/3.3/settings.html
 REGISTRATION_OPEN = False
