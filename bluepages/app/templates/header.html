@@ -16,7 +16,7 @@
     </div>
     <div class="header-user">
         {% if user.is_authenticated %}
-            <button class="btn btn-primary">Account</button>
+            <button class="btn btn-primary" onclick="app.loadAccountModal()">Account</button>
             <button class="btn btn-primary" onclick="app.logoutRUS()">Logout</button>
         {% else %}
             <button class="btn btn-primary" onclick="app.loadRegistrationForm()">Register</button>

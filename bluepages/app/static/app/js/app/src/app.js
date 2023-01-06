@@ -140,6 +140,16 @@ app.logoutRUS = function() {
     app.showAccountModal();
 }
 
+app.loadAccountModal = function() {
+    $.ajax({
+        url: "/profile/",
+        success: function(profile_modal) {
+            $("#accountModalWrapper").html(profile_modal);
+            app.showAccountModal();
+        }
+    })
+}
+
 app.loadSuggestionForm = function(contact_suggestion_id) {
     let url = "/suggestion_form/";
     if (contact_suggestion_id) {

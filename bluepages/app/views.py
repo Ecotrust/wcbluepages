@@ -34,6 +34,12 @@ def home(request):
 
     return render(request, "welcome.html", context)
 
+def getProfile(request):
+    context = {
+        'user': request.user
+    }
+    return render(request, "profile_modal.html", context)
+
 def getEntityFacetFilters(contacts=None):
     if not contacts:
         contacts = Contact.objects.all()

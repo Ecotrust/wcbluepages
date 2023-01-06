@@ -1,0 +1,33 @@
+<h1>{{user.username}}</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <p><b>First Name:</b> {{user.first_name}}</p>
+            <p><b>Last Name:</b> {{user.last_name}}</p>
+            <p><b>Email:</b> {{user.email}}</p>
+            <p><b>Joined:</b> {{user.date_joined}}</p>
+        </div>
+        <div class="col-6">
+            <a href="/profile/edit/" target="_blank">
+                <button class="btn btn-primary" type="button">Edit Profile</button>
+            </a>
+            <br />
+            <a href="/accounts/password_change/" target="_blank">
+                <button class="btn btn-primary" type="button">Change Password</button>
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-1"></div>
+        <div class="col-10">
+            <button class="btn btn-primary" type="button" onclick="app.loadSuggestionMenu()">Suggestions</button>
+            {% if user.is_superuser %}
+                <br />
+                <a href="/admin/" target="_blank">
+                    <button class="btn btn-primary" type="button">Site Administration</button>
+                </a>
+            {% endif %}
+        </div>
+        <div class="col-1"></div>
+    </div>
+</div>
