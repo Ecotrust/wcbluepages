@@ -1,0 +1,60 @@
+{% load sass_tags static %}
+
+<!doctype html>
+<html lang="en">
+    {% block head %}
+        <head>
+            {% block head_title %}
+                <title>WC Blue Pages</title>
+            {% endblock %}
+            {% block head_meta %}
+                <meta charset="utf-8">
+                <meta name="Author" content="Ecotrust" />
+                <meta name="Description" content="West Coast Blue Pages" />
+                <meta name="Keywords" content="" />
+                <!-- other meta tags-->
+            {% endblock %}
+            {% block head_favicon %}
+                {% comment %} <link title="fav icon" rel="icon" href="/img/favicon.ico"> {% endcomment %}
+                {% comment %} <link rel="shortcut icon" href="/img/favicon.ico" /> {% endcomment %}
+            {% endblock %}
+            {% block head_analytics %}
+                <!--Google Analytics-->
+            {% endblock %}
+
+            {% block head_css %}
+                <link href="{% static 'app/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+                <!-- <link href="{% static 'app/vendor/openlayers/v6.15.1-dist/ol.css' %}" rel="stylesheet" type="text/css" /> -->
+                <!-- <link href="{% static 'app/js/dist/jquery.dataTables.min.css' %}" rel="stylesheet" type="text/css" /> -->
+                <link href="{% sass_src 'app/scss/bluepages.scss' %}" rel="stylesheet" type="text/css" />
+                <!-- <link href="{% sass_src 'app/scss/suggestion_menu.scss' %}" rel="stylesheet" type="text/css" /> -->
+                <!-- <link href="{% sass_src 'app/scss/suggestion_form.scss' %}" rel="stylesheet" type="text/css" /> -->
+                <!-- <link href="{% sass_src 'app/scss/record_suggestion.scss' %}" rel="stylesheet" type="text/css" /> -->
+            {% endblock %}          
+        </head>
+    {% endblock %}
+    {% block body %}
+        <body>
+            {% block body_header %}
+                <header>
+                    {% include "header.html" %}
+                </header>
+            {% endblock %}
+            {% block body_modals %}
+                {% include 'modals.html' %}
+            {% endblock %}
+            {% block body_main %}
+                <main>
+                    {{ body_main_content }}
+                </main>
+            {% endblock %}
+            {% block body_scripts %}
+                <script>
+                    let app = {};
+                </script>
+                <script src="{% static 'app/js/dist/app.min.js' %}"></script>
+                <script src="{% static 'app/js/dist/record_suggestion.min.js' %}"></script>
+            {% endblock %}
+        </body>
+    {% endblock %}
+</html>

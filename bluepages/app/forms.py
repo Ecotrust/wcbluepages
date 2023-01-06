@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.forms import ModelForm
 from app.models import RecordSuggestion, ContactSuggestion
 
@@ -13,3 +14,8 @@ class RecordSuggestionForm(ModelForm):
         model = RecordSuggestion
         # fields = '__all__'
         exclude = ['date_created', 'date_modified']
+
+class UserProfileForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name']

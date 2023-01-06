@@ -8,11 +8,11 @@
             <p><b>Joined:</b> {{user.date_joined}}</p>
         </div>
         <div class="col-6">
-            <a href="/profile/edit/" target="_blank">
-                <button class="btn btn-primary" type="button">Edit Profile</button>
-            </a>
+            <!-- <a href="/profile/edit/"> -->
+                <button class="btn btn-primary" type="button" onclick="app.loadProfileForm()">Edit Profile</button>
+            <!-- </a> -->
             <br />
-            <a href="/accounts/password_change/" target="_blank">
+            <a href="/accounts/password_change/">
                 <button class="btn btn-primary" type="button">Change Password</button>
             </a>
         </div>

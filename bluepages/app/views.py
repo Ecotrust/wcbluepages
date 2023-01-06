@@ -1,10 +1,11 @@
 from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.views import View
 import json
 
 from app.models import Region, Topic, Entity, Contact, Record, RegionState, ContactSuggestion, RecordSuggestion
-from app.forms import ContactSuggestionForm, RecordSuggestionForm
+from app.forms import ContactSuggestionForm, RecordSuggestionForm, UserProfileForm
 
 def home(request):
     context = {}
@@ -39,6 +40,26 @@ def getProfile(request):
         'user': request.user
     }
     return render(request, "profile_modal.html", context)
+
+class editProfile(View):
+    template_name='generic_form.html' 
+    extra_context={}
+
+    def get(self, request):
+        profile_form = UserProfileForm(instance=request.user)
+        context = {'form': profile_form.as_p()}
+        context.update(self.extra_context)
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        profile_form = UserProfileForm(request.POST, instance=request.user)
+        context = {'form': profile_form.as_p()}
+        context.update(self.extra_context)
+        if profile_form.is_valid():
+            profile_form.save()
+            context = {'form': 'Your profile has been updated.', 'hide_submit': True}
+            # return render(request, self.template_name, {'form': 'Your profile has been updated.', 'hide_submit': True})
+        return render(request, self.template_name, context)
 
 def getEntityFacetFilters(contacts=None):
     if not contacts:

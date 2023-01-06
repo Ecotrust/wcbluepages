@@ -150,6 +150,28 @@ app.loadAccountModal = function() {
     })
 }
 
+app.loadProfileForm = function() {
+    $.ajax({
+        url: '/profile/edit/',
+        success: function(profile_form) {
+            $("#accountModalWrapper").html(profile_form);
+            app.showAccountModal();
+        }
+    })
+}
+
+app.submitProfileForm = function() {
+    let profile_form = $("#profile-form");
+    let submitAction = profile_form.attr('action');
+
+    $.post(submitAction, profile_form.serialize(), app.handleProfileReturn);
+}
+
+app.handleProfileReturn = function(result) {
+    $("#accountModalWrapper").html(result);
+    app.showAccountModal();
+}
+
 app.loadSuggestionForm = function(contact_suggestion_id) {
     let url = "/suggestion_form/";
     if (contact_suggestion_id) {
