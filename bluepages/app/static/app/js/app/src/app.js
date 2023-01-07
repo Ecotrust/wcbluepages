@@ -172,6 +172,37 @@ app.handleProfileReturn = function(result) {
     app.showAccountModal();
 }
 
+app.loadPasswordChangeForm = function() {
+    $.ajax({
+        url: '/profile/password_change/',
+        success: function(password_form) {
+            $("#accountModalWrapper").html(password_form);
+            app.showAccountModal();
+        }
+    })
+}
+
+app.submitPasswordChangeForm = function() {
+    let password_form = $("#password-form");
+    let submitAction = password_form.attr('action');
+
+    $.post(submitAction, password_form.serialize(), app.handlePasswordChangeReturn);
+}
+
+app.handlePasswordChangeReturn = function(result) {
+    $("#accountModalWrapper").html(result);
+    if (result.indexOf('<span id="password-reset-success"></span>') >= 0) {
+        window.setTimeout(
+            function() {
+                window.location.reload();
+            },
+            2200
+        );
+    }
+
+    app.showAccountModal();
+}
+
 app.loadSuggestionForm = function(contact_suggestion_id) {
     let url = "/suggestion_form/";
     if (contact_suggestion_id) {

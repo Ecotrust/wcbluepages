@@ -205,6 +205,10 @@
     </div>
 
     {{ contact_form.non_field_errors }}
+    
+    <button type="button" class="btn btn-primary modal-submit-button" onclick="app.submitContactSuggestion()">
+        Submit
+    </button>
 
     {% if contact_id %}
         <button type="button" class="btn btn-primary modal-submit-button" onclick="app.prepContactMenuModal({'contact_suggestion': {'id': {{ contact_id }}  } })">
@@ -215,8 +219,4 @@
             &lt; Back
         </button>
     {% endif %}
-    
-    <button type="button" class="btn btn-primary modal-submit-button" onclick="app.submitContactSuggestion()">
-        Submit
-    </button>
 </form>

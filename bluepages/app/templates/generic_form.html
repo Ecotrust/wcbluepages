@@ -2,6 +2,7 @@
     <h3>{{ generic_form_header }}</h3>
     {% csrf_token %}
     {{ form }}
+    {{ message|safe }}
     <br />
     <br />
     {% if not hide_submit %}

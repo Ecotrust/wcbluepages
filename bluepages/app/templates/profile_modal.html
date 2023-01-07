@@ -8,13 +8,9 @@
             <p><b>Joined:</b> {{user.date_joined}}</p>
         </div>
         <div class="col-6">
-            <!-- <a href="/profile/edit/"> -->
-                <button class="btn btn-primary" type="button" onclick="app.loadProfileForm()">Edit Profile</button>
-            <!-- </a> -->
+            <button class="btn btn-primary" type="button" onclick="app.loadProfileForm()">Edit Profile</button>
             <br />
-            <a href="/accounts/password_change/">
-                <button class="btn btn-primary" type="button">Change Password</button>
-            </a>
+            <button class="btn btn-primary" type="button" onclick="app.loadPasswordChangeForm()">Change Password</button>
         </div>
     </div>
     <div class="row">

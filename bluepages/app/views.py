@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.auth.forms import PasswordChangeForm, PasswordResetForm
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views import View
@@ -58,8 +59,31 @@ class editProfile(View):
         if profile_form.is_valid():
             profile_form.save()
             context = {'form': 'Your profile has been updated.', 'hide_submit': True}
-            # return render(request, self.template_name, {'form': 'Your profile has been updated.', 'hide_submit': True})
         return render(request, self.template_name, context)
+
+
+class changePassword(View):
+    template_name='generic_form.html'
+    extra_context={}
+
+    def get(self, request):
+        password_form = PasswordChangeForm(user=request.user)
+        context = {'form': password_form.as_p()}
+        context.update(self.extra_context)
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        password_form = PasswordChangeForm(user=request.user, data=request.POST)
+        context = {'form': password_form.as_p()}
+        context.update(self.extra_context)
+        if password_form.is_valid():
+            password_form.save()
+            context['message'] = 'Your password has been updated. You will now be logged out. Please log in again with your new password. <span id="password-reset-success"></span>'
+            context['form'] = ''
+            context['hide_submit'] = True
+
+        return render(request, self.template_name, context)
+        
 
 def getEntityFacetFilters(contacts=None):
     if not contacts:

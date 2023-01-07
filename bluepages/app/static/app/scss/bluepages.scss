@@ -105,3 +105,12 @@ header {
   } 
 }
 
+/* ACCOUNT MODALS/FORMS */
+form#contact-suggestion-form button,
+form#profile-form button,
+form#password-form button {
+  float: right;
+  bottom: 0;
+  position: sticky;
+}
+
