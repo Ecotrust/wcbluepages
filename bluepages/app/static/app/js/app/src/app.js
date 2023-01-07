@@ -61,7 +61,7 @@ app.handleRegistrationReturn = function(result) {
         $("#accountModalWrapper").html("Registration successful! You will now be logged in...");
         window.setTimeout(
             function() {
-                window.location.reload();
+                window.location.assign('/');
             },
             1000
         );
@@ -117,7 +117,7 @@ app.handleLoginReturn = function(result) {
         $("#accountModalWrapper").html("Login successful!");
         window.setTimeout(
             function() {
-                window.location.reload();
+                window.location.assign('/');
             },
             1000
         );
@@ -194,9 +194,9 @@ app.handlePasswordChangeReturn = function(result) {
     if (result.indexOf('<span id="password-reset-success"></span>') >= 0) {
         window.setTimeout(
             function() {
-                window.location.reload();
+                window.location.assign('/');
             },
-            2200
+            3000
         );
     }
 

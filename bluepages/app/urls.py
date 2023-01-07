@@ -5,7 +5,7 @@ The `urlpatterns` list routes URLs to views. For more information please see:
 
 """
 from django.urls import path, re_path, include
-from django.contrib.auth.views import PasswordResetView
+from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, PasswordResetCompleteView
 from app.views import home, regionJSON, regionPicker, wireframe, getSuggestionMenu, contactSuggestionMenu, contactSuggestionForm, recordSuggestionForm, deleteSuggestedContact, deleteSuggestedRecord, getProfile, editProfile, changePassword
 
 
@@ -33,6 +33,8 @@ urlpatterns = [
         'generic_form_header': 'Update Your Profile', 
     })),
     path('profile/', getProfile),
+    path('accounts/reset/<uidb64>/<token>/', PasswordResetConfirmView.as_view(template_name = 'bluepages_registration/password_reset_confirm.html'), name='password_reset_confirm'),
+    path('accounts/reset/done/', PasswordResetCompleteView.as_view(template_name = 'bluepages_registration/password_reset_complete.html'), name='password_reset_complete'),
     path('accounts/forgot/', PasswordResetView.as_view(template_name='generic_form.html', extra_context={
         'action': '/accounts/forgot/',
         'form_id': 'password-reset-form',
