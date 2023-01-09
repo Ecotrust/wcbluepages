@@ -1,5 +1,6 @@
 :root {
   --background: skyblue;
+  --wc-blue: #002e7c;
 }
 
 body {
@@ -18,6 +19,24 @@ header {
   width: 100%;
 }
 
+#header-logo {
+  max-height: 5rem;
+  max-width: 40vw;
+  border-radius: 0.7rem;
+}
+
+.home-link {
+  text-decoration: none;
+  color: black;
+}
+
+.filter-header:hover,
+.home-link:hover,
+#header-title:hover {
+  color: var(--wc-blue);
+  text-decoration: none;
+}
+
 .header-flex {
   display: flex;
   border-bottom: 2px lightgray solid;
@@ -29,7 +48,7 @@ header {
 }
 
 .logo-bg {
-  background: blue;
+  background: var(--wc-blue);
   border-radius: 2em;
   color: white;
   display: inline-block;
