@@ -229,6 +229,7 @@ class ContactBase(models.Model):
     entity = models.ForeignKey(
         'Entity',
         null=True, blank=True, default=None,
+        verbose_name='Entity/Organization',
         on_delete=models.SET_NULL
     )
     job_title = models.CharField(
@@ -239,18 +240,29 @@ class ContactBase(models.Model):
     expertise = models.CharField(
         max_length=254, 
         blank=True, default='',
-        verbose_name='Expertise',
+        verbose_name='Area(s) of expertise'
     )
     email = models.EmailField(
         max_length=254,
         blank=True, default='',
     )
-    phone = PhoneField(blank=True, null=True, default=None,)
+    phone = PhoneField(blank=True, null=True, default=None, verbose_name="Work/Desk phone no.")
+    mobile_phone = PhoneField(blank=True, null=True, default=None, verbose_name="Mobile phone no.")
+    office_phone = PhoneField(blank=True, null=True, default=None, verbose_name="Department/General phone no.")
     fax = PhoneField(blank=True, null=True, default=None,)
     preferred_contact_method = models.CharField(
         max_length=254, 
         blank=True, default='',
         verbose_name='Preferred contact method(s)',
+        help_text='i.e. email, phone, no preference, etc...'
+    )
+    show_on_entity_page = models.BooleanField(
+        null=True, blank=True, 
+        choices=PUBLIC_CHOICES, 
+        default=None,
+        help_text="Public: Display contact on the entity page.<br />" +
+        "Private: Contact only disoverable via region/topic search.<br />" +
+        "Inherit: Do whatever the entity does."
     )
     notes = models.TextField(null=True, blank=True, default=None)
     
@@ -283,14 +295,7 @@ class Contact(ContactBase):
         blank=True, null=True, default=None,
         on_delete=models.SET_NULL
     )
-    show_on_entity_page = models.BooleanField(
-        null=True, blank=True, 
-        choices=PUBLIC_CHOICES, 
-        default=None,
-        help_text="Public: Display contact on the entity page.<br />" +
-        "Private: Contact only disoverable via region/topic search.<br />" +
-        "Inherit: Do whatever the entity does."
-    )
+
     is_test_data = models.BooleanField(
         default=False
     )
@@ -304,6 +309,7 @@ class ContactSuggestion(ContactBase):
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
     contact = models.ForeignKey('Contact', blank=True, null=True, default=None, on_delete=models.SET_NULL, verbose_name="Contact to edit", help_text="If suggesting edits for an existing contact, identify them here.")
+    self_suggestion = models.BooleanField(default=False, verbose_name='I am the contact', help_text='this record is my own information about me')
     last_name = models.CharField(
         max_length=254, 
         blank=True, default='',
@@ -316,6 +322,7 @@ class ContactSuggestion(ContactBase):
     address_country = models.CharField(max_length=150, blank=True, null=True, default=None)
     address_zip_code = models.CharField(max_length=25, blank=True, null=True, default=None, verbose_name='Zip/Postal Code')
     other_entity_name = models.CharField(max_length=254, blank=True, default='', verbose_name='Other Entity Name', help_text = 'If contact belongs to an unlisted entity, name it here.')
+    sub_entity_name = models.CharField(max_length=254, blank=True, default='', verbose_name='Division/Sub-entity', help_text='If contact belongs to a specific division within their organization, please specify it here.')
     status = models.CharField(max_length=20, default='Pending', choices=SUGGESTION_STATUS_CHOICES, verbose_name="Suggestion status", help_text="Has suggestion been approved or declined?")
     description = models.TextField(null=True, blank=True, default=None, verbose_name="Describe the proposed update", help_text="If you are updating an existing contact, what specific changes are you trying to propose in this form?")
 
