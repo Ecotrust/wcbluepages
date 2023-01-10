@@ -1,0 +1,25 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+    &rsaquo; Review Suggestions
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Review Contact Suggestions</h1>
+<div id="content-main">
+
+  {% if message %}
+    {{ message }}
+  {% endif %}
+  {% comment %}
+    {% include "admin/app_list.html" with app_list=app_list show_changelinks=True %}
+  {% endcomment %}
+</div>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}

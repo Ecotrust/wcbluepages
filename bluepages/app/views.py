@@ -308,6 +308,28 @@ def wireframe(request):
 
     return render(request, "wireframe.html", context)
 
+####################################
+#   ADMIN VIEWS                    #
+####################################
+
+def adminSuggestionReviewMenu(request, suggestion_id):
+    context = {
+        'message': 'Contact suggestion matching ID {} not found.'.format(suggestion_id)
+    }
+    try:
+        suggestion = ContactSuggestion.objects.get(pk=suggestion_id)
+        context['message'] = 'Contact suggestion matching ID {} found.'.format(suggestion_id)
+
+
+
+
+
+
+
+    except Exception as e:
+        pass
+    return render(request, 'admin/app/contactsuggestion/review_form.html', context)
+
 
 ####################################
 #   REGION PICKER                  #
