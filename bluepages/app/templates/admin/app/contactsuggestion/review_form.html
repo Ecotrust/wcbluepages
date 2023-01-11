@@ -44,21 +44,33 @@
       &emsp;Self-suggestion: {% if suggestion.self_suggestion %}YES{% else %}NO{% endif %}
     </p>
 
-    <table id="suggestion-review-table">
-      {% for row in table.rows %}
-        <tr id="suggestion-review-{{row.field}}" class="review-row {{row.style}}">
-          {% for cell in row.cells %}
-            <{{ row.element }} class="review-cell {% if cell.style %}{{cell.style}}{% endif %}">
-              {{ cell.value|safe }}
-            </{{ row.element }}>
-          {% endfor %}
-        </tr>
-      {% endfor %}
+    <form method="post" id="contact-suggestion-review-form" action="/admin/app/contactsuggestion/{{ suggestion.pk }}/review-suggestion/">
+      {% csrf_token %}
 
-        <!-- Records ?--
-      -->
+      <table id="suggestion-review-table">
+        {% for row in table.rows %}
+          <tr id="suggestion-review-{{row.field}}" class="review-row {{row.style}}">
+            {% for cell in row.cells %}
+              <{{ row.element }} class="review-cell {% if cell.style %}{{cell.style}}{% endif %}">
+                {% if cell.is_field %}
+                  {{ cell.value.errors|safe }}
+                {% endif %}
+                {{ cell.value|safe }}
+              </{{ row.element }}>
+            {% endfor %}
+          </tr>
+        {% endfor %}
 
-    </table>
+          <!-- Records ?--
+        -->
+
+      </table>
+
+      {{ contact_form.non_field_errors }}
+    
+      <input type="submit" class="btn btn-primary" value="Submit">
+          
+    </form>
 
   {% endif %}
 

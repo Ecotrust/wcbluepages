@@ -355,7 +355,8 @@ def buildReviewRow(suggestion, contact, contact_form, field, contact_field=None,
     ]
     try:
         cells.append({ 
-            'value':contact_form.fields[contact_field].get_bound_field(contact_form, contact_field) 
+            'value':contact_form.fields[contact_field].get_bound_field(contact_form, contact_field),
+            'is_field': True,
         }) 
     except (AttributeError, KeyError) as e:
         cells.append({ 
