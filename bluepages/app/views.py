@@ -354,11 +354,14 @@ def buildReviewRow(suggestion, contact, contact_form, field, contact_field=None,
         getattr(suggestion, field),
         contact_form.fields[contact_field].get_bound_field(contact_form, contact_field)
     ]
-    if contact and getattr(contact, field):
+    if contact and hasattr(contact, field):
         cells.insert(1, getattr(contact, field))
         if cells[0] == cells[1]:
             match = True
             overwrite = False
+
+    cells.insert(0, cells[-1].label)
+    cells.append(cells[-1].help_text)
 
     row['cells'] = cells
     row['match'] = match
@@ -380,17 +383,35 @@ def adminSuggestionReviewMenu(request, suggestion_id):
         contact = suggestion.contact
         initial_dict = getSuggestionInitialValues(suggestion)
         contact_form = ContactForm(instance=contact, initial=initial_dict)
-        header_cells = ['Suggestion', 'Updated Form']
+        header_cells = ['label', 'Suggestion', 'Updated Form', '']
         if contact:
-            header_cells.insert(1, 'Current Record')
+            header_cells.insert(2, 'Current Record')
         rows.append({
             'element': 'th',
             'cells': header_cells
         })
 
-        rows.append(buildReviewRow(suggestion, contact, contact_form, field='contact', contact_field='id', hidden=True))
         # Name
-        rows.append(buildReviewRow(suggestion, contact, contact_form, field='title'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'title'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'last_name'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'first_name'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'middle_name'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'post_title'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'preferred_pronouns'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'entity'))
+        # TODO: handle entity name, sub_entity!!!
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'job_title'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'expertise'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'email'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'phone'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'mobile_phone'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'office_phone'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'fax'))
+        # TODO: Handle addresses!
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'preferred_contact_method'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'show_on_entity_page'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'notes'))
+
 
 
     except Exception as e:
