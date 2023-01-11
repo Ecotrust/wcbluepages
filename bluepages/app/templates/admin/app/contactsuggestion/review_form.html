@@ -1,5 +1,15 @@
 {% extends "admin/base_site.html" %}
-{% load i18n static %}
+{% load sass_tags i18n static %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <!-- <script src="{% url 'admin:jsi18n' %}"></script> -->
+{% endblock %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% sass_src 'app/scss/admin_review_form.scss' %}">
+{% endblock %}
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
@@ -36,172 +46,19 @@
 
     <table id="suggestion-review-table">
       {% for row in table.rows %}
-        <tr id="suggestion-review-{{row.field}}" class="review-row {{ row.match }}">
+        <tr id="suggestion-review-{{row.field}}" class="review-row {{row.style}}">
           {% for cell in row.cells %}
-            <{{ row.element }} class="review-cell {{ row.match }}">
+            <{{ row.element }} class="review-cell {% if cell.style %}{{cell.style}}{% endif %}">
               {{ cell.value|safe }}
             </{{ row.element }}>
           {% endfor %}
         </tr>
       {% endfor %}
-      <!--
 
-        <tr id="suggestion-review-header">
-          <th>Suggestion</th>
-          {% if contact %}<th>Contact</th>{% endif %}
-          <th>Updated Form</th>
-        </tr>
-        <!-- identity --
-        <tr id="suggestion-review-title">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
-        <tr id="suggestion-review-last-name">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
-        <tr id="suggestion-review-first-name">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
-        <tr id="suggestion-review-middle-name">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
-        <tr id="suggestion-review-titles">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
-        <tr id="suggestion-review-pronouns">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
-  
-        <!-- position--
-        <tr id="suggestion-review-entity">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
-        <tr id="suggestion-review-other-entity">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
-        <tr id="suggestion-review-sub-entity">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
-        <tr id="suggestion-review-job-title">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
-        <tr id="suggestion-review-expertise">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
-  
-        <!-- contact info --
-        <tr id="suggestion-review-email">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
-        <tr id="suggestion-review-phone">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
-        <tr id="suggestion-review-mobile-phone">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
-        <tr id="suggestion-review-dept-phone">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
-        <tr id="suggestion-review-fax">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
-        <tr id="suggestion-review-address-line1">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
-        <tr id="suggestion-review-address-line2">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
-        <tr id="suggestion-review-city">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
-        <tr id="suggestion-review-state">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
-        <tr id="suggestion-review-country">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
-        <tr id="suggestion-review-zip">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
-        <tr id="suggestion-review-preferred-contact">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
-        <tr id="suggestion-review-visibility">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
-  
-        <!-- Additional--
-        <tr id="suggestion-review-notes">
-          <td id="suggestion-cell-"></td>
-          {% if contact %}<td id="contact-cell-"></td>{% endif %}
-          <td id="form-cell-"></td>
-        </tr>
         <!-- Records ?--
       -->
 
     </table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   {% endif %}
 

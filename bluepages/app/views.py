@@ -374,7 +374,7 @@ def buildReviewRow(suggestion, contact, contact_form, field, contact_field=None,
             match = True
             overwrite = False
         else:
-            if not row_style:
+            if not row_style and getattr(suggestion, field):
                 row_style = 'attention'
 
     try:
