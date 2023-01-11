@@ -39,7 +39,7 @@
         <tr id="suggestion-review-{{row.field}}" class="review-row {{ row.match }}">
           {% for cell in row.cells %}
             <{{ row.element }} class="review-cell {{ row.match }}">
-              {{ cell|safe }}
+              {{ cell.value|safe }}
             </{{ row.element }}>
           {% endfor %}
         </tr>

@@ -250,6 +250,11 @@ class ContactBase(models.Model):
     mobile_phone = PhoneField(blank=True, null=True, default=None, verbose_name="Mobile phone no.")
     office_phone = PhoneField(blank=True, null=True, default=None, verbose_name="Department/General phone no.")
     fax = PhoneField(blank=True, null=True, default=None,)
+    address = models.ForeignKey(
+        'address.Address',
+        blank=True, null=True, default=None,
+        on_delete=models.SET_NULL
+    )
     preferred_contact_method = models.CharField(
         max_length=254, 
         blank=True, default='',
@@ -290,11 +295,7 @@ class ContactBase(models.Model):
         return str(self)
 
 class Contact(ContactBase):
-    address = models.ForeignKey(
-        'address.Address',
-        blank=True, null=True, default=None,
-        on_delete=models.SET_NULL
-    )
+    
 
     is_test_data = models.BooleanField(
         default=False

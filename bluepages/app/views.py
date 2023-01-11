@@ -340,7 +340,7 @@ def getSuggestionInitialValues(suggestion):
     
     return initial
 
-def buildReviewRow(suggestion, contact, contact_form, field, contact_field=None, type='td', hidden=False):
+def buildReviewRow(suggestion, contact, contact_form, field, contact_field=None, type='td', hidden=False, row_style=None):
     row = {
         'element': type,
         'field': field,
@@ -351,21 +351,53 @@ def buildReviewRow(suggestion, contact, contact_form, field, contact_field=None,
     match = False
     overwrite = not getattr(suggestion, field) == None
     cells = [
-        getattr(suggestion, field),
-        contact_form.fields[contact_field].get_bound_field(contact_form, contact_field)
+        { 'value': getattr(suggestion, field), }
     ]
-    if contact and hasattr(contact, field):
-        cells.insert(1, getattr(contact, field))
-        if cells[0] == cells[1]:
+    try:
+        cells.append({ 
+            'value':contact_form.fields[contact_field].get_bound_field(contact_form, contact_field) 
+        }) 
+    except (AttributeError, KeyError) as e:
+        cells.append({ 
+            'value':'----'
+        })
+    if contact:
+        if hasattr(contact, field):
+            cells.insert(1, { 
+                'value':getattr(contact, field)
+            })
+        else:
+            cells.insert(1, { 
+                'value':'----'
+            })
+        if cells[0]['value'] == cells[1]['value']:
             match = True
             overwrite = False
+        else:
+            if not row_style:
+                row_style = 'attention'
 
-    cells.insert(0, cells[-1].label)
-    cells.append(cells[-1].help_text)
+    try:
+        cells.insert(0, { 
+            'value':cells[-1]['value'].label
+        })
+    except AttributeError as e:
+        cells.insert(0, { 
+            'value':field
+        })
+    try:
+        cells.append({ 
+            'value':cells[-1]['value'].help_text
+        })
+    except AttributeError as e:
+        cells.append({ 
+            'value':' '
+        })
 
     row['cells'] = cells
     row['match'] = match
     row['overwrite'] = overwrite
+    row['style'] = row_style
 
     return row
 
@@ -383,9 +415,19 @@ def adminSuggestionReviewMenu(request, suggestion_id):
         contact = suggestion.contact
         initial_dict = getSuggestionInitialValues(suggestion)
         contact_form = ContactForm(instance=contact, initial=initial_dict)
-        header_cells = ['label', 'Suggestion', 'Updated Form', '']
+        header_cells = [{ 
+                'value':'label'
+            }, { 
+                'value':'Suggestion'
+            }, { 
+                'value':'Updated Form'
+            }, { 
+                'value':''
+            }]
         if contact:
-            header_cells.insert(2, 'Current Record')
+            header_cells.insert(2, { 
+                'value':'Current Record'
+            })
         rows.append({
             'element': 'th',
             'cells': header_cells
@@ -399,7 +441,9 @@ def adminSuggestionReviewMenu(request, suggestion_id):
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'post_title'))
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'preferred_pronouns'))
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'entity'))
-        # TODO: handle entity name, sub_entity!!!
+        # handle entity name, sub_entity!!!
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'other_entity_name'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'sub_entity_name'))
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'job_title'))
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'expertise'))
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'email'))
@@ -407,7 +451,14 @@ def adminSuggestionReviewMenu(request, suggestion_id):
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'mobile_phone'))
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'office_phone'))
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'fax'))
-        # TODO: Handle addresses!
+        # Handle addresses!
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'address'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'address_line_1'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'address_line_2'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'address_city'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'address_state'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'address_country'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'address_zip_code'))
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'preferred_contact_method'))
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'show_on_entity_page'))
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'notes'))
