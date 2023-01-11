@@ -4,20 +4,207 @@
 {% block breadcrumbs %}
 <div class="breadcrumbs">
     <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+    &rsaquo; <a href="/admin/app/">App</a>
+    &rsaquo; <a href="/admin/app/contactsuggestion/">Contact suggestions</a>
+    &rsaquo; <a href="/admin/app/contactsuggestion/{{ suggestion.pk }}/change/">{{ suggestion }}</a>
     &rsaquo; Review Suggestions
 </div>
 {% endblock %}
 
 {% block content %}
-<h1>Review Contact Suggestions</h1>
+<h1>Review Contact Suggestion</h1>
 <div id="content-main">
-
   {% if message %}
     {{ message }}
   {% endif %}
-  {% comment %}
-    {% include "admin/app_list.html" with app_list=app_list show_changelinks=True %}
-  {% endcomment %}
+  {% if suggestion %}
+
+    <p>
+      <b>User:</b><br />
+      &emsp;{{ suggestion.user.get_full_name }} ({{ suggestion.user.username }}) <br />
+      &emsp;{{ suggestion.user.email }}
+    </p>
+
+    <p>
+      <b>Suggestion:</b><br />
+      &emsp;Status: {{ suggestion.status }}<br />
+      &emsp;Created: {{ suggestion.date_created }}<br />
+      &emsp;Last Modified: {{ suggestion.date_modified }} <br />
+      &emsp;Description: {{ suggestion.description }} <br />
+      &emsp;Self-suggestion: {% if suggestion.self_suggestion %}YES{% else %}NO{% endif %}
+    </p>
+
+    <table id="suggestion-review-table">
+      {% for row in table.rows %}
+        <tr id="suggestion-review-{{row.field}}" class="review-row {{ row.match }}">
+          {% for cell in row.cells %}
+            <{{ row.element }} class="review-cell {{ row.match }}">
+              {{ cell|safe }}
+            </{{ row.element }}>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+      <!--
+
+        <tr id="suggestion-review-header">
+          <th>Suggestion</th>
+          {% if contact %}<th>Contact</th>{% endif %}
+          <th>Updated Form</th>
+        </tr>
+        <!-- identity --
+        <tr id="suggestion-review-title">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+        <tr id="suggestion-review-last-name">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+        <tr id="suggestion-review-first-name">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+        <tr id="suggestion-review-middle-name">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+        <tr id="suggestion-review-titles">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+        <tr id="suggestion-review-pronouns">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+  
+        <!-- position--
+        <tr id="suggestion-review-entity">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+        <tr id="suggestion-review-other-entity">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+        <tr id="suggestion-review-sub-entity">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+        <tr id="suggestion-review-job-title">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+        <tr id="suggestion-review-expertise">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+  
+        <!-- contact info --
+        <tr id="suggestion-review-email">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+        <tr id="suggestion-review-phone">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+        <tr id="suggestion-review-mobile-phone">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+        <tr id="suggestion-review-dept-phone">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+        <tr id="suggestion-review-fax">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+        <tr id="suggestion-review-address-line1">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+        <tr id="suggestion-review-address-line2">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+        <tr id="suggestion-review-city">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+        <tr id="suggestion-review-state">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+        <tr id="suggestion-review-country">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+        <tr id="suggestion-review-zip">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+        <tr id="suggestion-review-preferred-contact">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+        <tr id="suggestion-review-visibility">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+  
+        <!-- Additional--
+        <tr id="suggestion-review-notes">
+          <td id="suggestion-cell-"></td>
+          {% if contact %}<td id="contact-cell-"></td>{% endif %}
+          <td id="form-cell-"></td>
+        </tr>
+        <!-- Records ?--
+      -->
+
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  {% endif %}
+
 </div>
 {% endblock %}
 

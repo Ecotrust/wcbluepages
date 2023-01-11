@@ -114,7 +114,12 @@ class ContactAdmin(VersionAdmin):
         ('Contact Information', {
             'fields': (
                 'email',
-                ('phone', 'fax'), 
+                (
+                    'phone', 
+                    'mobile_phone',
+                    'office_phone',
+                    'fax', 
+                ),
                 'address',
                 'preferred_contact_method',
                 'show_on_entity_page',
@@ -154,6 +159,7 @@ class ContactSuggestionAdmin(VersionAdmin):
         ('Contact', {
             'fields': (
                 'contact',
+                'self_suggestion'
             )
         }),
         ('Name', {
@@ -166,18 +172,24 @@ class ContactSuggestionAdmin(VersionAdmin):
         }),
         ('Position', {
             'fields': (
-                ('entity', 'other_entity_name'),
+                ('entity', 'other_entity_name', 'sub_entity_name'),
                 ('job_title','expertise'),
             )
         }),
         ('Contact Information', {
             'fields': (
                 'email',
-                ('phone', 'fax'), 
+                (
+                    'phone', 
+                    'mobile_phone',
+                    'office_phone',
+                    'fax', 
+                ),
                 ('address_line_1', 'address_line_2',),
                 ('address_city', 'address_state', 'address_country'),
                 'address_zip_code',
-                'preferred_contact_method'
+                'preferred_contact_method',
+                'show_on_entity_page'
             )
         }),
         ('Additional Information', {

@@ -6,7 +6,7 @@ from django.views import View
 import json
 
 from app.models import Region, Topic, Entity, Contact, Record, RegionState, ContactSuggestion, RecordSuggestion
-from app.forms import ContactSuggestionForm, RecordSuggestionForm, UserProfileForm
+from app.forms import ContactSuggestionForm, RecordSuggestionForm, UserProfileForm, ContactForm, RecordForm
 
 def home(request):
     context = {}
@@ -312,22 +312,101 @@ def wireframe(request):
 #   ADMIN VIEWS                    #
 ####################################
 
-def adminSuggestionReviewMenu(request, suggestion_id):
-    context = {
-        'message': 'Contact suggestion matching ID {} not found.'.format(suggestion_id)
+def getSuggestionInitialValues(suggestion):
+    initial = {}
+    fields = [
+        'title',
+        'last_name',
+        'first_name',
+        'middle_name',
+        'post_title',
+        'preferred_pronouns',
+        'entity',
+        'job_title',
+        'expertise',
+        'email',
+        'phone',
+        'mobile_phone',
+        'office_phone',
+        'fax',
+        'preferred_contact_method',
+        'show_on_entity_page'
+    ]
+
+    for field in fields:
+        value = getattr(suggestion, field)
+        if value:
+            initial[field] = value
+    
+    return initial
+
+def buildReviewRow(suggestion, contact, contact_form, field, contact_field=None, type='td', hidden=False):
+    row = {
+        'element': type,
+        'field': field,
+        'hidden': hidden,
     }
+    if not contact_field:
+        contact_field = field
+    match = False
+    overwrite = not getattr(suggestion, field) == None
+    cells = [
+        getattr(suggestion, field),
+        contact_form.fields[contact_field].get_bound_field(contact_form, contact_field)
+    ]
+    if contact and getattr(contact, field):
+        cells.insert(1, getattr(contact, field))
+        if cells[0] == cells[1]:
+            match = True
+            overwrite = False
+
+    row['cells'] = cells
+    row['match'] = match
+    row['overwrite'] = overwrite
+
+    return row
+
+
+def adminSuggestionReviewMenu(request, suggestion_id):
+    suggestion = None
+    contact = None
+    message = 'Contact suggestion matching ID {} not found.'.format(suggestion_id)
+    rows = []
+    contact_form = None
+
     try:
         suggestion = ContactSuggestion.objects.get(pk=suggestion_id)
-        context['message'] = 'Contact suggestion matching ID {} found.'.format(suggestion_id)
+        message = None
+        contact = suggestion.contact
+        initial_dict = getSuggestionInitialValues(suggestion)
+        contact_form = ContactForm(instance=contact, initial=initial_dict)
+        header_cells = ['Suggestion', 'Updated Form']
+        if contact:
+            header_cells.insert(1, 'Current Record')
+        rows.append({
+            'element': 'th',
+            'cells': header_cells
+        })
 
-
-
-
-
+        rows.append(buildReviewRow(suggestion, contact, contact_form, field='contact', contact_field='id', hidden=True))
+        # Name
+        rows.append(buildReviewRow(suggestion, contact, contact_form, field='title'))
 
 
     except Exception as e:
+        print(e)
+        import ipdb; ipdb.set_trace()
         pass
+
+    
+    # import ipdb; ipdb.set_trace()
+    context = {
+        'message': message,
+        'suggestion': suggestion,
+        'contact': contact,
+        'contact_form': contact_form,
+        'table': {'rows': rows}
+    }
     return render(request, 'admin/app/contactsuggestion/review_form.html', context)
 
 
