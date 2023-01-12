@@ -498,7 +498,6 @@ def adminSuggestionReviewMenu(request, suggestion_id):
             removed_regions = []
             shared_regions = []
             if overwrite:
-                # import ipdb; ipdb.set_trace()
                 contact_record = contact_topics[str(record_suggestion.topic.id)]
                 for region in record_suggestion.regions.all():
                     if region not in contact_record.regions.all():
@@ -508,6 +507,9 @@ def adminSuggestionReviewMenu(request, suggestion_id):
                 for region in contact_record.regions.all():
                     if region not in record_suggestion.regions.all():
                         removed_regions.append(region)
+            else:
+                added_regions = [x for x in record_suggestion.regions.all()]
+
 
             record_suggestions.append({
                 'record': record_suggestion,

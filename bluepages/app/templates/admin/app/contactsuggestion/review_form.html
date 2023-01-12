@@ -66,40 +66,54 @@
       </table>
       
       <!-- Records -->
-      <div class="records-container">
-        {% for record_suggestion in record_suggestions %}
-          <h3>Topic: {{record_suggestion.record.topic}}</h3>
-          {% if not record_suggestion.overwrite %}
-          <p>This is a <b>NEW</b> topic for the contact.</p>
-          {% endif %}
+      {% for record_suggestion in record_suggestions %}
+        <h3>Topic: {{record_suggestion.record.topic}}</h3>
+        <div class="records-container" id="records-container-{{ record_suggestion.id }}">
+          <div class="record-map-container record-item">
+            <div class="record-map" id="record-map-{{ record_suggestion.id }}"></div>
+          </div>
+          <div class="record-regions-container record-item">
+            {% if not record_suggestion.overwrite %}
+            <p>This is a <b>NEW</b> topic for the contact.</p>
+            {% endif %}
+  
+            {% if record_suggestion.added_regions|length > 0 %}
+              <p>Added Regions:</p>
+              <ul class="added-regions-list">
+                {% for added_region in record_suggestion.added_regions %} 
+                  <li>{{ added_region }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+  
+            {% if record_suggestion.overwrite %}
+              {% if record_suggestion.removed_regions|length > 0 %}
+                <p>Removed Regions:</p>
+                <ul class="removed-regions-list">
+                  {% for removed_region in record_suggestion.removed_regions %} 
+                    <li>{{ removed_region }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+                
+              {% if record_suggestion.shared_regions|length > 0 %}
+                <p>Shared Regions:</p>
+                <ul class="shared-regions-list">
+                  {% for shared_region in record_suggestion.shared_regions %} 
+                    <li>{{ shared_region }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            {% endif %}
+          </div>
+          <div class="record-field-container record-item">
+            <input type="checkbox" id="approve-record-suggestion-{{ record_suggestion.pk }}" checked>
+            <label for="approve-record-suggestion-{{ record_suggestion.pk }}">Approve Topic:</label>
+          </div>
 
-          <p>Added Regions:</p>
-          <ul>
-            {% for added_region in record_suggestion.added_regions %} 
-              <li>{{ added_region }}</li>
-            {% endfor %}
-          </ul>
 
-          <p>Removed Regions:</p>
-          <ul>
-            {% for removed_region in record_suggestion.removed_regions %} 
-              <li>{{ removed_region }}</li>
-            {% endfor %}
-          </ul>
-
-          <p>Shared Regions:</p>
-          <ul>
-            {% for shared_region in record_suggestion.shared_regions %} 
-              <li>{{ shared_region }}</li>
-            {% endfor %}
-          </ul>
-
-
-        {% endfor %}
-      </div>
-
-
-
+        </div>
+      {% endfor %}
 
       {{ contact_form.non_field_errors }}
     
