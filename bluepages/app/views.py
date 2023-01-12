@@ -485,6 +485,38 @@ def adminSuggestionReviewMenu(request, suggestion_id):
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'notes'))
 
 
+        record_suggestions = []
+        contact_topics = {}
+        if contact:
+            for record in contact.record_set.all():
+                contact_topics[str(record.topic.id)] = record
+
+
+        for record_suggestion in suggestion.recordsuggestion_set.all().order_by('topic'):
+            overwrite = str(record_suggestion.topic.id) in contact_topics.keys()
+            added_regions = []
+            removed_regions = []
+            shared_regions = []
+            if overwrite:
+                # import ipdb; ipdb.set_trace()
+                contact_record = contact_topics[str(record_suggestion.topic.id)]
+                for region in record_suggestion.regions.all():
+                    if region not in contact_record.regions.all():
+                        added_regions.append(region)
+                    else:
+                        shared_regions.append(region)
+                for region in contact_record.regions.all():
+                    if region not in record_suggestion.regions.all():
+                        removed_regions.append(region)
+
+            record_suggestions.append({
+                'record': record_suggestion,
+                'overwrite': overwrite,
+                'added_regions': added_regions,
+                'removed_regions': removed_regions,
+                'shared_regions': shared_regions,
+            })
+
 
     except Exception as e:
         print(e)
@@ -495,7 +527,9 @@ def adminSuggestionReviewMenu(request, suggestion_id):
         'suggestion': suggestion,
         'contact': contact,
         'contact_form': contact_form,
-        'table': {'rows': rows}
+        'table': {'rows': rows},
+        'record_suggestions': record_suggestions, 
+        'contact_topics': contact_topics
     }
     return render(request, 'admin/app/contactsuggestion/review_form.html', context)
 

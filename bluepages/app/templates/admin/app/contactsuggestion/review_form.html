@@ -62,10 +62,44 @@
           </tr>
         {% endfor %}
 
-          <!-- Records ?--
-        -->
-
+        
       </table>
+      
+      <!-- Records -->
+      <div class="records-container">
+        {% for record_suggestion in record_suggestions %}
+          <h3>Topic: {{record_suggestion.record.topic}}</h3>
+          {% if not record_suggestion.overwrite %}
+          <p>This is a <b>NEW</b> topic for the contact.</p>
+          {% endif %}
+
+          <p>Added Regions:</p>
+          <ul>
+            {% for added_region in record_suggestion.added_regions %} 
+              <li>{{ added_region }}</li>
+            {% endfor %}
+          </ul>
+
+          <p>Removed Regions:</p>
+          <ul>
+            {% for removed_region in record_suggestion.removed_regions %} 
+              <li>{{ removed_region }}</li>
+            {% endfor %}
+          </ul>
+
+          <p>Shared Regions:</p>
+          <ul>
+            {% for shared_region in record_suggestion.shared_regions %} 
+              <li>{{ shared_region }}</li>
+            {% endfor %}
+          </ul>
+
+
+        {% endfor %}
+      </div>
+
+
+
 
       {{ contact_form.non_field_errors }}
     
