@@ -1,5 +1,7 @@
 from django.conf import settings
-from django.contrib.auth.forms import PasswordChangeForm, PasswordResetForm
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib import messages
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views import View
@@ -402,7 +404,7 @@ def buildReviewRow(suggestion, contact, contact_form, field, contact_field=None,
 
     return row
 
-
+@staff_member_required
 def adminSuggestionReviewMenu(request, suggestion_id):
     suggestion = None
     contact = None
@@ -419,8 +421,16 @@ def adminSuggestionReviewMenu(request, suggestion_id):
             contact_form = ContactForm(request.POST, instance=contact)
             if contact_form.is_valid():
                 contact_form.save()
-                suggestion.status = 'Approved'
-                suggestion.save()
+                message = "Contact '{}' updated.".format(suggestion.contact)
+                messages.add_message(request, messages.SUCCESS, message, extra_tags='success', fail_silently=False)
+                try:
+                    suggestion.status = 'Approved'
+                    suggestion.save()
+                    message = "Contact Suggestion '{}' approved.".format(suggestion)
+                    messages.add_message(request, messages.SUCCESS, message, extra_tags='success', fail_silently=False)
+                except Exception as e:
+                    message = "Error updating status of '{}'.".format(suggestion)
+                    messages.add_message(request, messages.ERROR, message, extra_tags="error", fail_silently=False)
                 return HttpResponseRedirect('/admin/app/contactsuggestion/{}/change/'.format(suggestion_id))
 
 
@@ -489,6 +499,28 @@ def adminSuggestionReviewMenu(request, suggestion_id):
     }
     return render(request, 'admin/app/contactsuggestion/review_form.html', context)
 
+@staff_member_required
+def adminSuggestionRejection(request, suggestion_id):
+    message = "An error occurred. Please try again."
+    try:
+        suggestion = ContactSuggestion.objects.get(pk=suggestion_id)
+        try:
+            suggestion.status = "Declined"
+            suggestion.save()
+            message = "Contact suggestion '{}' successfully declined.".format(str(suggestion))
+            messages.add_message(request, messages.SUCCESS, message, extra_tags='success', fail_silently=False)
+            return HttpResponseRedirect('/admin/app/contactsuggestion/')
+        except Exception as e:
+            message = "An error occurred attempting to save rejection for suggestion {}".format(suggestion)
+    except Exception as e:
+        message = "An error occurred: Unable to identify a Contact Suggestion with given id '{}'.".format(suggestion_id)
+    # return render(request, 'admin/app/error_page.html', {'message': message})
+    messages.add_message(request, messages.ERROR, message, extra_tags='error', fail_silently=False)
+    return HttpResponseRedirect('/admin/app/contactsuggestion/'.format(suggestion_id), {'messages': [{'tags': 'error', 'message': message}]})
+
+    
+
+    
 
 ####################################
 #   REGION PICKER                  #

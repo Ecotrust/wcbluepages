@@ -8,6 +8,7 @@
 
 {% block extrastyle %}
   {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}">
   <link rel="stylesheet" type="text/css" href="{% sass_src 'app/scss/admin_review_form.scss' %}">
 {% endblock %}
 
@@ -68,7 +69,13 @@
 
       {{ contact_form.non_field_errors }}
     
-      <input type="submit" class="btn btn-primary" value="Submit">
+      <div class="submit-row">
+        <input type="submit" class="default" value="Approve">
+        <p class="deletelink-box">
+          <a class="deletelink" href="/admin/app/contactsuggestion/{{ suggestion.pk }}/reject/">Reject</a>
+        </p>
+
+      </div>
           
     </form>
 

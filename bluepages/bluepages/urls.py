@@ -16,10 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path, include
 from app import urls as app_urls
-from app.views import adminSuggestionReviewMenu
+from app.views import adminSuggestionReviewMenu, adminSuggestionRejection
 
 urlpatterns = [
     path('admin/app/contactsuggestion/<int:suggestion_id>/review-suggestion/', adminSuggestionReviewMenu),
+    path('admin/app/contactsuggestion/<int:suggestion_id>/reject/', adminSuggestionRejection),
     path('admin/', admin.site.urls),
     re_path(r'', include(app_urls)),
 ]
