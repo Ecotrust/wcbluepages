@@ -376,12 +376,12 @@ class ContactSuggestion(ContactBase):
         if not self.pk and self.contact and self.status == 'Pending':
             matches = ContactSuggestion.objects.filter(contact=self.contact, user=self.user, status=self.status)
             if matches.count() > 0:
-                raise ValidationError('You already have a suggested edit peding for this contact. Please edit your existing suggestion.')
+                raise ValidationError('You already have a suggested edit pending for this contact. Please edit your existing suggestion.')
 
     class Meta:
         ordering = ['last_name', 'first_name', 'middle_name', 'entity', 'job_title', 'user__username']
         constraints = [
-            models.UniqueConstraint(fields=['user', 'contact'], condition=(models.Q(status="Pending") and ~models.Q(contact=None)), name='unique_contact_suggestion'),
+            models.UniqueConstraint(fields=['user', 'contact', 'status'], condition=(models.Q(status="Pending") & ~models.Q(contact=None)), name='unique_contact_suggestion'),
         ]
 
 class RecordSuggestion(RecordBase):
@@ -395,12 +395,12 @@ class RecordSuggestion(RecordBase):
         if not self.pk and self.contact_suggestion.status == 'Pending' and self.status == 'Pending':
             matches = RecordSuggestion.objects.filter(contact_suggestion=self.contact_suggestion, topic=self.topic, status=self.status)
             if matches.count() > 0:
-                raise ValidationError('You already have a suggested edit peding for this contact for this topic. Please edit your existing suggestion.')
+                raise ValidationError('You already have a suggested edit pending for this contact for this topic. Please edit your existing suggestion.')
 
     class Meta:
         ordering = ['topic', 'contact_suggestion']
         constraints = [
-            models.UniqueConstraint(fields=['user', 'topic', 'contact_suggestion'], condition=models.Q(status="Pending"), name='unique_record_suggestion')
+            models.UniqueConstraint(fields=['user', 'topic', 'contact_suggestion', 'status'], condition=models.Q(status="Pending"), name='unique_record_suggestion')
         ]
 
     def __str__(self):
