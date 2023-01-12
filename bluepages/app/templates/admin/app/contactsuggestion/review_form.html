@@ -44,7 +44,7 @@
       &emsp;Self-suggestion: {% if suggestion.self_suggestion %}YES{% else %}NO{% endif %}
     </p>
 
-    <form method="post" id="contact-suggestion-review-form" action="/admin/app/contactsuggestion/{{ suggestion.pk }}/review-suggestion/">
+    <form method="post" id="contact-suggestion-review-form">
       {% csrf_token %}
 
       <table id="suggestion-review-table">

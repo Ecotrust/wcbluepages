@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.forms import PasswordChangeForm, PasswordResetForm
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views import View
 import json
@@ -414,6 +414,16 @@ def adminSuggestionReviewMenu(request, suggestion_id):
         suggestion = ContactSuggestion.objects.get(pk=suggestion_id)
         message = None
         contact = suggestion.contact
+
+        if request.method == 'POST':
+            contact_form = ContactForm(request.POST, instance=contact)
+            if contact_form.is_valid():
+                contact_form.save()
+                suggestion.status = 'Approved'
+                suggestion.save()
+                return HttpResponseRedirect('/admin/app/contactsuggestion/{}/change/'.format(suggestion_id))
+
+
         initial_dict = getSuggestionInitialValues(suggestion)
         contact_form = ContactForm(instance=contact, initial=initial_dict)
         header_cells = [{ 
@@ -468,11 +478,8 @@ def adminSuggestionReviewMenu(request, suggestion_id):
 
     except Exception as e:
         print(e)
-        import ipdb; ipdb.set_trace()
         pass
 
-    
-    # import ipdb; ipdb.set_trace()
     context = {
         'message': message,
         'suggestion': suggestion,
