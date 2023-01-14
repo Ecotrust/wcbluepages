@@ -7,9 +7,9 @@ from django.contrib.auth.models import User
 User._meta.get_field('email')._unique = True
 
 PUBLIC_CHOICES = [
-    (None, 'Inherit'),
+    (None, 'Default'),
     (True, 'Public'),
-    (False, 'Private'),
+    (False, 'Filtered'),
 ]
 
 REGION_TYPE_CHOICES = [
@@ -108,8 +108,8 @@ class Entity(models.Model):
         choices=PUBLIC_CHOICES, 
         default=None,
         help_text="Public: Display all known contacts for this entity on the entity page.<br />" +
-        "Private: Contacts only disoverable via region/topic search.<br />" +
-        "Inherit: Do whatever the parent entity does."
+        "Filtered: Contacts only disoverable via region/topic search.<br />" +
+        "Default: Do whatever the parent entity does."
     )
     parent = models.ForeignKey(
         'Entity', 
@@ -266,8 +266,8 @@ class ContactBase(models.Model):
         choices=PUBLIC_CHOICES, 
         default=None,
         help_text="Public: Display contact on the entity page.<br />" +
-        "Private: Contact only disoverable via region/topic search.<br />" +
-        "Inherit: Do whatever the entity does."
+        "Filtered: Contact only disoverable via region/topic search.<br />" +
+        "Default: Do whatever the entity does."
     )
     notes = models.TextField(null=True, blank=True, default=None)
     
