@@ -4,11 +4,13 @@
 {% block extrahead %}
   {{ block.super }}
   <!-- <script src="{% url 'admin:jsi18n' %}"></script> -->
+  <!-- <script src="{% static 'app/js/dist/bluepages_admin.min.js' %}"></script> -->
 {% endblock %}
 
 {% block extrastyle %}
   {{ block.super }}
   <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'app/js/dist/ol.css' %}">
   <link rel="stylesheet" type="text/css" href="{% sass_src 'app/scss/admin_review_form.scss' %}">
 {% endblock %}
 
@@ -68,9 +70,9 @@
       <!-- Records -->
       {% for record_suggestion in record_suggestions %}
         <h3>Topic: {{record_suggestion.record.topic}}</h3>
-        <div class="records-container" id="records-container-{{ record_suggestion.id }}">
+        <div class="records-container" id="records-container-{{ record_suggestion.record.id }}">
           <div class="record-map-container record-item">
-            <div class="record-map" id="record-map-{{ record_suggestion.id }}"></div>
+            <div class="record-map" id="record-map-{{ record_suggestion.record.id }}"></div>
           </div>
           <div class="record-regions-container record-item">
             {% if not record_suggestion.overwrite %}
@@ -130,6 +132,21 @@
   {% endif %}
 
 </div>
+
+<script>
+  app = {
+    'maps': {},
+    'regions': false,
+  };
+</script>
+<script src="{% static 'app/js/dist/bluepages_admin.min.js' %}"></script>
+<script>
+  app.loadRegions();
+  {% for record_suggestion in record_suggestions %} 
+    app.createTopicMap({{record_suggestion.record.id}});
+  {% endfor %}
+</script>
+
 {% endblock %}
 
 {% block sidebar %}

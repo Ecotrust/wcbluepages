@@ -1,0 +1,26 @@
+{
+  "name": "bluepages_admin",
+  "version": "0.0.1",
+  "description": "Support complex admin dashboard pages, like suggestion review",
+  "main": "./dist/bluepages_admin.min.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --mode=production",
+    "postbuild": "mv ./dist/* ../dist/",
+    "devbuild": "webpack --mode=development",
+    "postdevbuild": "mv ./dist/* ../dist/"
+  },
+  "author": "ksdev@ecotrust.org",
+  "license": "MIT",
+  "dependencies": {
+    "jquery": "^3.6.3",
+    "ol": "^7.2.2",
+    "webpack": "^5.75.0"
+  },
+  "devDependencies": {
+    "webpack-cli": "^5.0.1"
+  }
+}
