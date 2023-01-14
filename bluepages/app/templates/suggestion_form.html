@@ -40,6 +40,13 @@
             {% if contact_form.self_suggestion.errors %}{{ contact_form.self_suggestion.errors }}{% endif %}
         </div>
         <div class="fieldWrapper">
+            {{ contact_form.show_on_entity_page.errors }}
+            {{ contact_form.show_on_entity_page.label_tag }}
+            {{ contact_form.show_on_entity_page }}
+            {% if contact_form.show_on_entity_page.help_text %}<span class="help-text">{{ contact_form.show_on_entity_page.help_text|safe }}</span>{% endif %}
+            {% if contact_form.show_on_entity_page.errors %}{{ contact_form.show_on_entity_page.errors }}{% endif %}
+        </div>
+        <div class="fieldWrapper">
             {{ contact_form.title.errors }}
             {{ contact_form.title.label_tag }}
             {{ contact_form.title }}
@@ -122,13 +129,7 @@
             {% if contact_form.expertise.help_text %}<span class="help-text">{{ contact_form.expertise.help_text|safe }}</span>{% endif %}
             {% if contact_form.expertise.errors %}{{ contact_form.expertise.errors }}{% endif %}
         </div>
-        <div class="fieldWrapper">
-            {{ contact_form.show_on_entity_page.errors }}
-            {{ contact_form.show_on_entity_page.label_tag }}
-            {{ contact_form.show_on_entity_page }}
-            {% if contact_form.show_on_entity_page.help_text %}<span class="help-text">{{ contact_form.show_on_entity_page.help_text|safe }}</span>{% endif %}
-            {% if contact_form.show_on_entity_page.errors %}{{ contact_form.show_on_entity_page.errors }}{% endif %}
-        </div>
+        
     </div>
 
     <!-- Contact Info -->
