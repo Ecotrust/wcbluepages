@@ -265,6 +265,7 @@ class ContactBase(models.Model):
         null=True, blank=True, 
         choices=PUBLIC_CHOICES, 
         default=None,
+        verbose_name='Contact Visibility',
         help_text="Public: Display contact on the entity page.<br />" +
         "Filtered: Contact only disoverable via region/topic search.<br />" +
         "Default: Do whatever the entity does."
