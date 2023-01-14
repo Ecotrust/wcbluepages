@@ -4,7 +4,6 @@
 {% block extrahead %}
   {{ block.super }}
   <!-- <script src="{% url 'admin:jsi18n' %}"></script> -->
-  <!-- <script src="{% static 'app/js/dist/bluepages_admin.min.js' %}"></script> -->
 {% endblock %}
 
 {% block extrastyle %}
@@ -143,6 +142,23 @@
 <script>
   app.loadRegions();
   {% for record_suggestion in record_suggestions %} 
+    var added_region_ids = [];
+    var removed_region_ids = [];
+    var shared_region_ids = [];
+    {% for added_region in record_suggestion.added_regions %} 
+        added_region_ids.push("{{ added_region.id }}");
+    {% endfor %}
+    {% for removed_region in record_suggestion.removed_regions %} 
+      removed_region_ids.push("{{ removed_region.id }}");
+    {% endfor %}
+    {% for shared_region in record_suggestion.shared_regions %} 
+      shared_region_ids.push("{{ shared_region.id }}");
+    {% endfor %}
+    app.maps[{{ record_suggestion.record.id }}] = {
+      added_region_ids: added_region_ids,
+      removed_region_ids: removed_region_ids,
+      shared_region_ids: shared_region_ids
+    }
     app.createTopicMap({{record_suggestion.record.id}});
   {% endfor %}
 </script>

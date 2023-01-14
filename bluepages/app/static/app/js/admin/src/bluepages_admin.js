@@ -29,23 +29,79 @@ app.getRecordMapLabel = function(feature) {
 
 app.regionSuggestionStyle = function(feature) {
     var label = app.getRecordMapLabel(feature);
-    return new Style({
-        stroke: new Stroke({
-            color: 'rgba(0,55,255,1.0)',
-            width: 1,
-        }),
-        fill: new Fill({
-            color: 'rgba(0, 155, 255, 0.3)',
-        }),
-        text: new Text({
-            text: label,
+    if (feature.get('status') == 'added') {
+        return new Style({
             stroke: new Stroke({
-                color: 'white',
-                width: 1
+                color: 'rgba(0,255,0,1.0)',
+                width: 1,
             }),
-            font: 'bold 12px sans-serif'
-        })
-    });
+            fill: new Fill({
+                color: 'rgba(0, 255, 0, 0.3)',
+            }),
+            text: new Text({
+                text: label,
+                stroke: new Stroke({
+                    color: 'white',
+                    width: 1
+                }),
+                font: 'bold 12px sans-serif'
+            })
+        });    
+    } else if (feature.get('status') == 'removed') {
+        return new Style({
+            stroke: new Stroke({
+                color: 'rgba(255,0,0,1.0)',
+                width: 1,
+            }),
+            fill: new Fill({
+                color: 'rgba(255, 0, 0, 0.3)',
+            }),
+            text: new Text({
+                text: label,
+                stroke: new Stroke({
+                    color: 'white',
+                    width: 1
+                }),
+                font: 'bold 12px sans-serif'
+            })
+        });
+    } else if (feature.get('status') == 'shared') {
+        return new Style({
+            stroke: new Stroke({
+                color: 'rgba(0,55,255,1.0)',
+                width: 1,
+            }),
+            fill: new Fill({
+                color: 'rgba(0, 155, 255, 0.3)',
+            }),
+            text: new Text({
+                text: label,
+                stroke: new Stroke({
+                    color: 'white',
+                    width: 1
+                }),
+                font: 'bold 12px sans-serif'
+            })
+        });
+    } else {
+        return new Style({
+            stroke: new Stroke({
+                color: 'rgba(150,150,150,0.3)',
+                width: 1,
+            }),
+            fill: new Fill({
+                color: 'rgba(0, 155, 255, 0)',
+            }),
+            text: new Text({
+                text: label,
+                stroke: new Stroke({
+                    color: 'white',
+                    width: 1
+                }),
+                font: 'bold 12px sans-serif'
+            })
+        });
+    }
 }
 
 app.mapZoomToBufferedExtent = function(extent, buffer, map) {
@@ -64,7 +120,6 @@ app.mapZoomToBufferedExtent = function(extent, buffer, map) {
     map.getView().fit(buffered_extent, {'duration': 1000});
 }
 
-
 app.createTopicMap = function(record_suggestion_id){
     if (!app.regions_loaded) {
         setTimeout(() => {
@@ -72,7 +127,6 @@ app.createTopicMap = function(record_suggestion_id){
         }, 500);
     } else {
         let record_id_str = record_suggestion_id.toString();
-        app.maps[record_id_str] = {}
 
         app.maps[record_id_str]['region_source'] = new VectorSource({
             features: []
@@ -82,8 +136,6 @@ app.createTopicMap = function(record_suggestion_id){
             source: app.maps[record_id_str]['region_source'],
             style: app.regionSuggestionStyle,
         });
-
-
 
         app.maps[record_id_str]['map'] = new Map({
             target: 'record-map-' + record_suggestion_id,
@@ -105,11 +157,24 @@ app.createTopicMap = function(record_suggestion_id){
         app.maps[record_id_str]['region_source'].clear()
         
         let features = new GeoJSON().readFeatures(app.regions_loaded);
+
+        for (var i = 0; i < features.length; i++) {
+            var feat_id = features[i].get('id');
+            if (app.maps[record_id_str]['added_region_ids'].indexOf(feat_id) >= 0) {
+                features[i].set('status', 'added');
+            } else if (app.maps[record_id_str]['removed_region_ids'].indexOf(feat_id) >= 0) {
+                features[i].set('status', 'removed');
+            } else if (app.maps[record_id_str]['shared_region_ids'].indexOf(feat_id) >= 0) {
+                features[i].set('status', 'shared');
+            } else {
+                features[i].set('status', 'default');
+            }
+        }
+
         // Flush any pre-existing features to clear out selection.
         if (app.maps[record_id_str]['region_source'].getFeatures.length < 1) {
             app.maps[record_id_str]['region_source'].addFeatures(features);
         }
-        // app.recordMapLoadSelectedFeatures();
         app.mapZoomToBufferedExtent(app.maps[record_id_str]['region_source'].getExtent(), 0.1, app.maps[record_id_str]['map']);
 
 
