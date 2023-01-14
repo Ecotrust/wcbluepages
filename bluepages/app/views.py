@@ -1,12 +1,14 @@
 from django.conf import settings
-from django.contrib.auth.forms import PasswordChangeForm, PasswordResetForm
-from django.http import JsonResponse
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib import messages
+from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views import View
 import json
 
 from app.models import Region, Topic, Entity, Contact, Record, RegionState, ContactSuggestion, RecordSuggestion
-from app.forms import ContactSuggestionForm, RecordSuggestionForm, UserProfileForm
+from app.forms import ContactSuggestionForm, RecordSuggestionForm, UserProfileForm, ContactForm, RecordForm
 
 def home(request):
     context = {}
@@ -308,6 +310,268 @@ def wireframe(request):
 
     return render(request, "wireframe.html", context)
 
+####################################
+#   ADMIN VIEWS                    #
+####################################
+
+def getSuggestionInitialValues(suggestion):
+    initial = {}
+    fields = [
+        'title',
+        'last_name',
+        'first_name',
+        'middle_name',
+        'post_title',
+        'preferred_pronouns',
+        'entity',
+        'job_title',
+        'expertise',
+        'email',
+        'phone',
+        'mobile_phone',
+        'office_phone',
+        'fax',
+        'preferred_contact_method',
+        'show_on_entity_page'
+    ]
+
+    for field in fields:
+        value = getattr(suggestion, field)
+        if value:
+            initial[field] = value
+    
+    return initial
+
+def buildReviewRow(suggestion, contact, contact_form, field, contact_field=None, type='td', hidden=False, row_style=None):
+    row = {
+        'element': type,
+        'field': field,
+        'hidden': hidden,
+    }
+    if not contact_field:
+        contact_field = field
+    match = False
+    overwrite = not getattr(suggestion, field) == None
+    cells = [
+        { 'value': getattr(suggestion, field), }
+    ]
+    try:
+        cells.append({ 
+            'value':contact_form.fields[contact_field].get_bound_field(contact_form, contact_field),
+            'is_field': True,
+        }) 
+    except (AttributeError, KeyError) as e:
+        cells.append({ 
+            'value':'----'
+        })
+    if contact:
+        if hasattr(contact, field):
+            cells.insert(1, { 
+                'value':getattr(contact, field)
+            })
+        else:
+            cells.insert(1, { 
+                'value':'----'
+            })
+        if cells[0]['value'] == cells[1]['value']:
+            match = True
+            overwrite = False
+        else:
+            if not row_style and getattr(suggestion, field):
+                row_style = 'attention'
+
+    try:
+        cells.insert(0, { 
+            'value':cells[-1]['value'].label
+        })
+    except AttributeError as e:
+        cells.insert(0, { 
+            'value':field
+        })
+    try:
+        cells.append({ 
+            'value':cells[-1]['value'].help_text
+        })
+    except AttributeError as e:
+        cells.append({ 
+            'value':' '
+        })
+
+    row['cells'] = cells
+    row['match'] = match
+    row['overwrite'] = overwrite
+    row['style'] = row_style
+
+    return row
+
+@staff_member_required
+def adminSuggestionReviewMenu(request, suggestion_id):
+    suggestion = None
+    contact = None
+    message = 'Contact suggestion matching ID {} not found.'.format(suggestion_id)
+    rows = []
+    contact_form = None
+
+    try:
+        suggestion = ContactSuggestion.objects.get(pk=suggestion_id)
+        message = None
+        contact = suggestion.contact
+
+        if request.method == 'POST':
+            contact_form = ContactForm(request.POST, instance=contact)
+            if contact_form.is_valid():
+                contact_form.save()
+                message = "Contact '{}' updated.".format(suggestion.contact)
+                messages.add_message(request, messages.SUCCESS, message, extra_tags='success', fail_silently=False)
+                try:
+                    suggestion.status = 'Approved'
+                    suggestion.save()
+                    message = "Contact Suggestion '{}' approved.".format(suggestion)
+                    messages.add_message(request, messages.SUCCESS, message, extra_tags='success', fail_silently=False)
+
+                    for record in suggestion.recordsuggestion_set.all():
+                        record_approve_name = 'approve-record-suggestion-{}'.format(record.pk)
+                        if record_approve_name in request.POST.keys() and request.POST[record_approve_name] == 'on':
+                            record.status = 'Approved'
+                        else:
+                            record.status = 'Declined'
+                        try:
+                            record.save()
+                            message = "Record Suggestion '{}' {}.".format(record, record.status)
+                            messages.add_message(request, messages.SUCCESS, message, extra_tags='success', fail_silently=False)
+                        except Exception as e:
+                            message = "Error saving record Suggestion '{}'.".format(suggestion)
+                            messages.add_message(request, messages.ERROR, message, extra_tags='error', fail_silently=False)
+
+                except Exception as e:
+                    message = "Error updating status of '{}'.".format(suggestion)
+                    messages.add_message(request, messages.ERROR, message, extra_tags="error", fail_silently=False)
+                return HttpResponseRedirect('/admin/app/contactsuggestion/{}/change/'.format(suggestion_id))
+
+
+        initial_dict = getSuggestionInitialValues(suggestion)
+        contact_form = ContactForm(instance=contact, initial=initial_dict)
+        header_cells = [{ 
+                'value':'label'
+            }, { 
+                'value':'Suggestion'
+            }, { 
+                'value':'Updated Form'
+            }, { 
+                'value':''
+            }]
+        if contact:
+            header_cells.insert(2, { 
+                'value':'Current Record'
+            })
+        rows.append({
+            'element': 'th',
+            'cells': header_cells
+        })
+
+        # Name
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'title'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'last_name'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'first_name'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'middle_name'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'post_title'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'preferred_pronouns'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'entity'))
+        # handle entity name, sub_entity!!!
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'other_entity_name'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'sub_entity_name'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'job_title'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'expertise'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'email'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'phone'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'mobile_phone'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'office_phone'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'fax'))
+        # Handle addresses!
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'address'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'address_line_1'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'address_line_2'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'address_city'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'address_state'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'address_country'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'address_zip_code'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'preferred_contact_method'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'show_on_entity_page'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'notes'))
+
+
+        record_suggestions = []
+        contact_topics = {}
+        if contact:
+            for record in contact.record_set.all():
+                contact_topics[str(record.topic.id)] = record
+
+
+        for record_suggestion in suggestion.recordsuggestion_set.all().order_by('topic'):
+            overwrite = str(record_suggestion.topic.id) in contact_topics.keys()
+            added_regions = []
+            removed_regions = []
+            shared_regions = []
+            if overwrite:
+                contact_record = contact_topics[str(record_suggestion.topic.id)]
+                for region in record_suggestion.regions.all():
+                    if region not in contact_record.regions.all():
+                        added_regions.append(region)
+                    else:
+                        shared_regions.append(region)
+                for region in contact_record.regions.all():
+                    if region not in record_suggestion.regions.all():
+                        removed_regions.append(region)
+            else:
+                added_regions = [x for x in record_suggestion.regions.all()]
+
+
+            record_suggestions.append({
+                'record': record_suggestion,
+                'overwrite': overwrite,
+                'added_regions': added_regions,
+                'removed_regions': removed_regions,
+                'shared_regions': shared_regions,
+            })
+
+
+    except Exception as e:
+        print(e)
+        pass
+
+    context = {
+        'message': message,
+        'suggestion': suggestion,
+        'contact': contact,
+        'contact_form': contact_form,
+        'table': {'rows': rows},
+        'record_suggestions': record_suggestions, 
+        'contact_topics': contact_topics
+    }
+    return render(request, 'admin/app/contactsuggestion/review_form.html', context)
+
+@staff_member_required
+def adminSuggestionRejection(request, suggestion_id):
+    message = "An error occurred. Please try again."
+    try:
+        suggestion = ContactSuggestion.objects.get(pk=suggestion_id)
+        try:
+            suggestion.status = "Declined"
+            suggestion.save()
+            message = "Contact suggestion '{}' successfully declined.".format(str(suggestion))
+            messages.add_message(request, messages.SUCCESS, message, extra_tags='success', fail_silently=False)
+            return HttpResponseRedirect('/admin/app/contactsuggestion/')
+        except Exception as e:
+            message = "An error occurred attempting to save rejection for suggestion {}".format(suggestion)
+    except Exception as e:
+        message = "An error occurred: Unable to identify a Contact Suggestion with given id '{}'.".format(suggestion_id)
+    # return render(request, 'admin/app/error_page.html', {'message': message})
+    messages.add_message(request, messages.ERROR, message, extra_tags='error', fail_silently=False)
+    return HttpResponseRedirect('/admin/app/contactsuggestion/'.format(suggestion_id), {'messages': [{'tags': 'error', 'message': message}]})
+
+    
+
+    
 
 ####################################
 #   REGION PICKER                  #

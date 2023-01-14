@@ -7,9 +7,9 @@ from django.contrib.auth.models import User
 User._meta.get_field('email')._unique = True
 
 PUBLIC_CHOICES = [
-    (None, 'Inherit'),
+    (None, 'Default'),
     (True, 'Public'),
-    (False, 'Private'),
+    (False, 'Filtered'),
 ]
 
 REGION_TYPE_CHOICES = [
@@ -108,8 +108,8 @@ class Entity(models.Model):
         choices=PUBLIC_CHOICES, 
         default=None,
         help_text="Public: Display all known contacts for this entity on the entity page.<br />" +
-        "Private: Contacts only disoverable via region/topic search.<br />" +
-        "Inherit: Do whatever the parent entity does."
+        "Filtered: Contacts only disoverable via region/topic search.<br />" +
+        "Default: Do whatever the parent entity does."
     )
     parent = models.ForeignKey(
         'Entity', 
@@ -250,6 +250,11 @@ class ContactBase(models.Model):
     mobile_phone = PhoneField(blank=True, null=True, default=None, verbose_name="Mobile phone no.")
     office_phone = PhoneField(blank=True, null=True, default=None, verbose_name="Department/General phone no.")
     fax = PhoneField(blank=True, null=True, default=None,)
+    address = models.ForeignKey(
+        'address.Address',
+        blank=True, null=True, default=None,
+        on_delete=models.SET_NULL
+    )
     preferred_contact_method = models.CharField(
         max_length=254, 
         blank=True, default='',
@@ -260,9 +265,10 @@ class ContactBase(models.Model):
         null=True, blank=True, 
         choices=PUBLIC_CHOICES, 
         default=None,
+        verbose_name='Contact Visibility',
         help_text="Public: Display contact on the entity page.<br />" +
-        "Private: Contact only disoverable via region/topic search.<br />" +
-        "Inherit: Do whatever the entity does."
+        "Filtered: Contact only disoverable via region/topic search.<br />" +
+        "Default: Do whatever the entity does."
     )
     notes = models.TextField(null=True, blank=True, default=None)
     
@@ -290,11 +296,7 @@ class ContactBase(models.Model):
         return str(self)
 
 class Contact(ContactBase):
-    address = models.ForeignKey(
-        'address.Address',
-        blank=True, null=True, default=None,
-        on_delete=models.SET_NULL
-    )
+    
 
     is_test_data = models.BooleanField(
         default=False
@@ -375,12 +377,12 @@ class ContactSuggestion(ContactBase):
         if not self.pk and self.contact and self.status == 'Pending':
             matches = ContactSuggestion.objects.filter(contact=self.contact, user=self.user, status=self.status)
             if matches.count() > 0:
-                raise ValidationError('You already have a suggested edit peding for this contact. Please edit your existing suggestion.')
+                raise ValidationError('You already have a suggested edit pending for this contact. Please edit your existing suggestion.')
 
     class Meta:
         ordering = ['last_name', 'first_name', 'middle_name', 'entity', 'job_title', 'user__username']
         constraints = [
-            models.UniqueConstraint(fields=['user', 'contact'], condition=(models.Q(status="Pending") and ~models.Q(contact=None)), name='unique_contact_suggestion'),
+            models.UniqueConstraint(fields=['user', 'contact', 'status'], condition=(models.Q(status="Pending") & ~models.Q(contact=None)), name='unique_contact_suggestion'),
         ]
 
 class RecordSuggestion(RecordBase):
@@ -394,12 +396,12 @@ class RecordSuggestion(RecordBase):
         if not self.pk and self.contact_suggestion.status == 'Pending' and self.status == 'Pending':
             matches = RecordSuggestion.objects.filter(contact_suggestion=self.contact_suggestion, topic=self.topic, status=self.status)
             if matches.count() > 0:
-                raise ValidationError('You already have a suggested edit peding for this contact for this topic. Please edit your existing suggestion.')
+                raise ValidationError('You already have a suggested edit pending for this contact for this topic. Please edit your existing suggestion.')
 
     class Meta:
         ordering = ['topic', 'contact_suggestion']
         constraints = [
-            models.UniqueConstraint(fields=['user', 'topic', 'contact_suggestion'], condition=models.Q(status="Pending"), name='unique_record_suggestion')
+            models.UniqueConstraint(fields=['user', 'topic', 'contact_suggestion', 'status'], condition=models.Q(status="Pending"), name='unique_record_suggestion')
         ]
 
     def __str__(self):

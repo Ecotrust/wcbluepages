@@ -18,7 +18,7 @@
             {{ record_form.contact_suggestion.errors }}
             {{ record_form.contact_suggestion.label_tag }}
             {{ record_form.contact_suggestion }}
-            {% if record_form.contact_suggestion.help_text %}<span class="help-text">{{ record_form.contact_suggestion.help_text }}</span>{% endif %}
+            {% if record_form.contact_suggestion.help_text %}<span class="help-text">{{ record_form.contact_suggestion.help_text|safe }}</span>{% endif %}
             {% if record_form.contact_suggestion.errors %}{{ record_form.contact_suggestion.errors }}{% endif %}
         </div>
     </div>
@@ -27,7 +27,7 @@
             {{ record_form.regions.errors }}
             {{ record_form.regions.label_tag }}
             {{ record_form.regions }}
-            {% if record_form.regions.help_text %}<span class="help-text">{{ record_form.regions.help_text }}</span>{% endif %}
+            {% if record_form.regions.help_text %}<span class="help-text">{{ record_form.regions.help_text|safe }}</span>{% endif %}
             {% if record_form.regions.errors %}{{ record_form.regions.errors }}{% endif %}
         </div>
     </div>
@@ -38,7 +38,7 @@
             {{ record_form.topic.errors }}
             {{ record_form.topic.label_tag }}
             {{ record_form.topic }}
-            {% if record_form.topic.help_text %}<span class="help-text">{{ record_form.topic.help_text }}</span>{% endif %}
+            {% if record_form.topic.help_text %}<span class="help-text">{{ record_form.topic.help_text|safe }}</span>{% endif %}
             {% if record_form.topic.errors %}{{ record_form.topic.errors }}{% endif %}
         </div>
     </div>

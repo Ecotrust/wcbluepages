@@ -1,0 +1,33 @@
+.review-row.attention {
+    background-color: rgba(200, 200, 0, 0.3);
+}
+
+.records-container {
+    display: flex;
+}
+
+.added-regions-list,
+.removed-regions-list,
+.shared-regions-list {
+    border: 1px solid;
+    border-radius: 0.3rem;
+}
+
+.added-regions-list {
+    background-color: rgba(0, 255, 0, 0.3);
+}
+
+.removed-regions-list {
+    background-color: rgba(255, 0, 0, 0.3);
+}
+
+.shared-regions-list {
+    background-color: rgba(0, 155, 255, 0.3);
+}
+
+/* MAPS */
+
+.record-map {
+    min-width: 450px;
+    height: 600px;
+}

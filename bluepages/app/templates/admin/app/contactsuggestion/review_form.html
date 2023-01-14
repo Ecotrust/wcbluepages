@@ -1,0 +1,169 @@
+{% extends "admin/base_site.html" %}
+{% load sass_tags i18n static %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <!-- <script src="{% url 'admin:jsi18n' %}"></script> -->
+{% endblock %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'app/js/dist/ol.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% sass_src 'app/scss/admin_review_form.scss' %}">
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+    &rsaquo; <a href="/admin/app/">App</a>
+    &rsaquo; <a href="/admin/app/contactsuggestion/">Contact suggestions</a>
+    &rsaquo; <a href="/admin/app/contactsuggestion/{{ suggestion.pk }}/change/">{{ suggestion }}</a>
+    &rsaquo; Review Suggestions
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Review Contact Suggestion</h1>
+<div id="content-main">
+  {% if message %}
+    {{ message }}
+  {% endif %}
+  {% if suggestion %}
+
+    <p>
+      <b>User:</b><br />
+      &emsp;{{ suggestion.user.get_full_name }} ({{ suggestion.user.username }}) <br />
+      &emsp;{{ suggestion.user.email }}
+    </p>
+
+    <p>
+      <b>Suggestion:</b><br />
+      &emsp;Status: {{ suggestion.status }}<br />
+      &emsp;Created: {{ suggestion.date_created }}<br />
+      &emsp;Last Modified: {{ suggestion.date_modified }} <br />
+      &emsp;Description: {{ suggestion.description }} <br />
+      &emsp;Self-suggestion: {% if suggestion.self_suggestion %}YES{% else %}NO{% endif %}
+    </p>
+
+    <form method="post" id="contact-suggestion-review-form">
+      {% csrf_token %}
+
+      <table id="suggestion-review-table">
+        {% for row in table.rows %}
+          <tr id="suggestion-review-{{row.field}}" class="review-row {{row.style}}">
+            {% for cell in row.cells %}
+              <{{ row.element }} class="review-cell {% if cell.style %}{{cell.style}}{% endif %}">
+                {% if cell.is_field %}
+                  {{ cell.value.errors|safe }}
+                {% endif %}
+                {{ cell.value|safe }}
+              </{{ row.element }}>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+
+        
+      </table>
+      
+      <!-- Records -->
+      {% for record_suggestion in record_suggestions %}
+        <h3>Topic: {{record_suggestion.record.topic}}</h3>
+        <div class="records-container" id="records-container-{{ record_suggestion.record.id }}">
+          <div class="record-map-container record-item">
+            <div class="record-map" id="record-map-{{ record_suggestion.record.id }}"></div>
+          </div>
+          <div class="record-regions-container record-item">
+            {% if not record_suggestion.overwrite %}
+            <p>This is a <b>NEW</b> topic for the contact.</p>
+            {% endif %}
+  
+            {% if record_suggestion.added_regions|length > 0 %}
+              <p>Added Regions:</p>
+              <ul class="added-regions-list">
+                {% for added_region in record_suggestion.added_regions %} 
+                  <li>{{ added_region }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+  
+            {% if record_suggestion.overwrite %}
+              {% if record_suggestion.removed_regions|length > 0 %}
+                <p>Removed Regions:</p>
+                <ul class="removed-regions-list">
+                  {% for removed_region in record_suggestion.removed_regions %} 
+                    <li>{{ removed_region }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+                
+              {% if record_suggestion.shared_regions|length > 0 %}
+                <p>Shared Regions:</p>
+                <ul class="shared-regions-list">
+                  {% for shared_region in record_suggestion.shared_regions %} 
+                    <li>{{ shared_region }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            {% endif %}
+          </div>
+          <div class="record-field-container record-item">
+            <input type="checkbox" id="approve-record-suggestion-{{ record_suggestion.record.pk }}" name="approve-record-suggestion-{{ record_suggestion.record.pk }}" checked>
+            <label for="approve-record-suggestion-{{ record_suggestion.record.pk }}">Approve Topic:</label>
+          </div>
+
+
+        </div>
+      {% endfor %}
+
+      {{ contact_form.non_field_errors }}
+    
+      <div class="submit-row">
+        <input type="submit" class="default" value="Approve">
+        <p class="deletelink-box">
+          <a class="deletelink" href="/admin/app/contactsuggestion/{{ suggestion.pk }}/reject/">Reject</a>
+        </p>
+
+      </div>
+          
+    </form>
+
+  {% endif %}
+
+</div>
+
+<script>
+  app = {
+    'maps': {},
+    'regions': false,
+  };
+</script>
+<script src="{% static 'app/js/dist/bluepages_admin.min.js' %}"></script>
+<script>
+  app.loadRegions();
+  {% for record_suggestion in record_suggestions %} 
+    var added_region_ids = [];
+    var removed_region_ids = [];
+    var shared_region_ids = [];
+    {% for added_region in record_suggestion.added_regions %} 
+        added_region_ids.push("{{ added_region.id }}");
+    {% endfor %}
+    {% for removed_region in record_suggestion.removed_regions %} 
+      removed_region_ids.push("{{ removed_region.id }}");
+    {% endfor %}
+    {% for shared_region in record_suggestion.shared_regions %} 
+      shared_region_ids.push("{{ shared_region.id }}");
+    {% endfor %}
+    app.maps[{{ record_suggestion.record.id }}] = {
+      added_region_ids: added_region_ids,
+      removed_region_ids: removed_region_ids,
+      shared_region_ids: shared_region_ids
+    }
+    app.createTopicMap({{record_suggestion.record.id}});
+  {% endfor %}
+</script>
+
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}
