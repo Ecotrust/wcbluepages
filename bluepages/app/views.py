@@ -428,6 +428,21 @@ def adminSuggestionReviewMenu(request, suggestion_id):
                     suggestion.save()
                     message = "Contact Suggestion '{}' approved.".format(suggestion)
                     messages.add_message(request, messages.SUCCESS, message, extra_tags='success', fail_silently=False)
+
+                    for record in suggestion.recordsuggestion_set.all():
+                        record_approve_name = 'approve-record-suggestion-{}'.format(record.pk)
+                        if record_approve_name in request.POST.keys() and request.POST[record_approve_name] == 'on':
+                            record.status = 'Approved'
+                        else:
+                            record.status = 'Declined'
+                        try:
+                            record.save()
+                            message = "Record Suggestion '{}' {}.".format(record, record.status)
+                            messages.add_message(request, messages.SUCCESS, message, extra_tags='success', fail_silently=False)
+                        except Exception as e:
+                            message = "Error saving record Suggestion '{}'.".format(suggestion)
+                            messages.add_message(request, messages.ERROR, message, extra_tags='error', fail_silently=False)
+
                 except Exception as e:
                     message = "Error updating status of '{}'.".format(suggestion)
                     messages.add_message(request, messages.ERROR, message, extra_tags="error", fail_silently=False)

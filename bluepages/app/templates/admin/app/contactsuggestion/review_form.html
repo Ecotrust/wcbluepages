@@ -108,8 +108,8 @@
             {% endif %}
           </div>
           <div class="record-field-container record-item">
-            <input type="checkbox" id="approve-record-suggestion-{{ record_suggestion.pk }}" checked>
-            <label for="approve-record-suggestion-{{ record_suggestion.pk }}">Approve Topic:</label>
+            <input type="checkbox" id="approve-record-suggestion-{{ record_suggestion.record.pk }}" name="approve-record-suggestion-{{ record_suggestion.record.pk }}" checked>
+            <label for="approve-record-suggestion-{{ record_suggestion.record.pk }}">Approve Topic:</label>
           </div>
 
 
