@@ -26,9 +26,9 @@ def get_address_components_alias(prefix=''):
     return Concat(
         f"{prefix}line_1", Value(" "),
         f"{prefix}line_2", Value(" "),
-        f"{prefix}city__name", Value(" "),
-        f"{prefix}city__state__name", Value(" "),
-        f"{prefix}city__state__postal_code", Value(" "),
+        f"{prefix}city", Value(" "),
+        f"{prefix}state", Value(" "),
+        # f"{prefix}city__state__postal_code", Value(" "),
         f"{prefix}zip_code", Value(" "),
     )
 
