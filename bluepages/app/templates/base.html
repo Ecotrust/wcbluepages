@@ -15,8 +15,8 @@
                 <!-- other meta tags-->
             {% endblock %}
             {% block head_favicon %}
-                {% comment %} <link title="fav icon" rel="icon" href="/img/favicon.ico"> {% endcomment %}
-                {% comment %} <link rel="shortcut icon" href="/img/favicon.ico" /> {% endcomment %}
+                <link title="fav icon" rel="icon" href="{% static 'app/img/favicon.ico' %}">
+                <link rel="shortcut icon" href="{% static 'app/img/favicon.ico' %}" />
             {% endblock %}
             {% block head_analytics %}
                 <!--Google Analytics-->
