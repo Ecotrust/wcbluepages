@@ -420,24 +420,28 @@ def adminSuggestionReviewMenu(request, suggestion_id):
         if request.method == 'POST':
             contact_form = ContactForm(request.POST, instance=contact)
             if contact_form.is_valid():
-                contact_form.save()
+                contact = contact_form.save()
                 message = "Contact '{}' updated.".format(suggestion.contact)
                 messages.add_message(request, messages.SUCCESS, message, extra_tags='success', fail_silently=False)
                 try:
                     suggestion.status = 'Approved'
+                    status.contact = contact
                     suggestion.save()
                     message = "Contact Suggestion '{}' approved.".format(suggestion)
                     messages.add_message(request, messages.SUCCESS, message, extra_tags='success', fail_silently=False)
 
-                    for record in suggestion.recordsuggestion_set.all():
-                        record_approve_name = 'approve-record-suggestion-{}'.format(record.pk)
+                    for record_suggestion in suggestion.recordsuggestion_set.all():
+                        record_approve_name = 'approve-record-suggestion-{}'.format(record_suggestion.pk)
                         if record_approve_name in request.POST.keys() and request.POST[record_approve_name] == 'on':
-                            record.status = 'Approved'
+                            record_suggestion.status = 'Approved'
                         else:
-                            record.status = 'Declined'
+                            record_suggestion.status = 'Declined'
                         try:
+                            record_suggestion.save()
+                            (record, rec_create_status) = Record.objects.get_or_create(contact=contact, topic=record_suggestion.topic)
+                            record.regions.set(record_suggestion.regions.all())
                             record.save()
-                            message = "Record Suggestion '{}' {}.".format(record, record.status)
+                            message = "Record Suggestion '{}' {}.".format(record_suggestion, record_suggestion.status)
                             messages.add_message(request, messages.SUCCESS, message, extra_tags='success', fail_silently=False)
                         except Exception as e:
                             message = "Error saving record Suggestion '{}'.".format(suggestion)
