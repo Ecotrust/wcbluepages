@@ -203,35 +203,40 @@ app.loadRecordSuggestionForm = function() {
         dataType: 'json'
     })
     .done(function(data) {
-        app.record_map = new Map({
-            layers: [
-                new TileLayer({
-                    source: new OSM
-                }),
-                app.recordMapVectorLayer
-            ],
-            target: 'record_map',
-            view: new View({
-                center: [
-                    -13803616.858365921,    // -124
-                    4865942.279503175       // 40 
-                ],
-                zoom: 5,
-            })
-        });
-    
-        app.recordMapRegionSource.clear()
-        
-        app.record_map.on('singleclick', function(e) {
-            app.record_map.forEachFeatureAtPixel(e.pixel, app.recordMapToggleFeatureSelection);
-        });
-        var features = new GeoJSON().readFeatures(data);
-        // Flush any pre-existing features to clear out selection.
-        if (app.recordMapRegionSource.getFeatures.length < 1) {
-            app.recordMapRegionSource.addFeatures(features);
-        }
-        app.recordMapLoadSelectedFeatures();
-        app.recordMapZoomToBufferedExtent(app.recordMapRegionSource.getExtent(), 0.1);
+        window.setTimeout(
+            function(){
+                
+                app.record_map = new Map({
+                    layers: [
+                        new TileLayer({
+                            source: new OSM
+                        }),
+                        app.recordMapVectorLayer
+                    ],
+                    target: 'record_map',
+                    view: new View({
+                        center: [
+                            -13803616.858365921,    // -124
+                            4865942.279503175       // 40 
+                        ],
+                        zoom: 5,
+                    })
+                });
+                
+                app.recordMapRegionSource.clear();
+                
+                app.record_map.on('singleclick', function(e) {
+                    app.record_map.forEachFeatureAtPixel(e.pixel, app.recordMapToggleFeatureSelection);
+                });
+                var features = new GeoJSON().readFeatures(data);
+                // Flush any pre-existing features to clear out selection.
+                if (app.recordMapRegionSource.getFeatures.length < 1) {
+                    app.recordMapRegionSource.addFeatures(features);
+                }
+                app.recordMapLoadSelectedFeatures();
+                app.recordMapZoomToBufferedExtent(app.recordMapRegionSource.getExtent(), 0.1);
+            }, 150
+        )
     });
 }
 
