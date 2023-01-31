@@ -77,7 +77,7 @@
     {% endif %}
     {% for record in contact.records %}
         <div class="contact-record-menu-entry row" >
-            <div class="col-8"><b>{{ record.topic }}</b></div>
+            <div class="col-8 {{ record.status }}"><b>{{ record.topic }}</b></div>
             <div class="col-4">
                 <button class="btn btn-primary" onclick="app.prepRecordSuggestions({{ contact.id }}, {{ record.id }})">Edit</button>
                 <button class="btn btn-danger" onclick="app.deleteRecordSuggestions({{ contact.id }}, {{ record.id }})">Delete</button>
