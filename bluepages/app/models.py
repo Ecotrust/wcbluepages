@@ -172,6 +172,8 @@ class RecordBase(models.Model):
         on_delete=models.CASCADE,
     )
     regions = models.ManyToManyField(Region)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
 
     class Meta:
         abstract = True
@@ -271,6 +273,9 @@ class ContactBase(models.Model):
         "Default: Do whatever the entity does."
     )
     notes = models.TextField(null=True, blank=True, default=None)
+
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
     
     class Meta:
         ordering = ['last_name', 'first_name', 'middle_name', 'entity', 'job_title']
@@ -296,8 +301,6 @@ class ContactBase(models.Model):
         return str(self)
 
 class Contact(ContactBase):
-    
-
     is_test_data = models.BooleanField(
         default=False
     )
@@ -308,8 +311,6 @@ class Contact(ContactBase):
 
 class ContactSuggestion(ContactBase):
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE, verbose_name="User proposing this change")
-    date_created = models.DateTimeField(auto_now_add=True)
-    date_modified = models.DateTimeField(auto_now=True)
     contact = models.ForeignKey('Contact', blank=True, null=True, default=None, on_delete=models.SET_NULL, verbose_name="Contact to edit", help_text="If suggesting edits for an existing contact, identify them here.")
     self_suggestion = models.BooleanField(default=False, verbose_name='I am the contact', help_text='this record is my own information about me')
     last_name = models.CharField(
@@ -388,8 +389,6 @@ class ContactSuggestion(ContactBase):
 class RecordSuggestion(RecordBase):
     contact_suggestion = models.ForeignKey('ContactSuggestion', on_delete=models.CASCADE)
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE, verbose_name="User proposing this change")
-    date_created = models.DateTimeField(auto_now_add=True)
-    date_modified = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=20, default='Pending', choices=SUGGESTION_STATUS_CHOICES, verbose_name="Suggestion status", help_text="Has suggestion been approved or declined?")
 
     def clean(self):
