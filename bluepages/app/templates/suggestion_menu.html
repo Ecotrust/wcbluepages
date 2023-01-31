@@ -12,7 +12,7 @@
                     Topics:
                     <ul>
                     {% for record in suggestion.topics %}
-                            <li>{{ record.topic }}</li>
+                            <li class="{{ record.status }}">{{ record.topic }}</li>
                         {% endfor %}
                     </ul>
                 {% else %}

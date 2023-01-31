@@ -179,7 +179,7 @@ def getSuggestionMenu(request):
             'description': contact_suggestion.description,
             'date_created': contact_suggestion.date_created.strftime('%m/%d/%Y %I:%M %p'),
             'date_modified': contact_suggestion.date_modified.strftime('%m/%d/%Y %I:%M %p'),
-            'topics': [{'id': x.pk, 'topic': str(x.topic), 'topic_id': x.topic.pk} for x in contact_suggestion.recordsuggestion_set.all()]
+            'topics': [{'id': x.pk, 'topic': str(x.topic), 'topic_id': x.topic.pk, 'status': x.status} for x in contact_suggestion.recordsuggestion_set.all()]
         } 
         for contact_suggestion in ContactSuggestion.objects.filter(user=request.user).order_by('status', 'last_name', 'first_name', 'date_modified', 'date_created')
     ]
