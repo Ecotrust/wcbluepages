@@ -5,18 +5,17 @@
 
 body {
   background: var(--background);
+  display: flex;
+  flex-flow: column;
   margin: 0;
+  min-height: 100vh;
   padding: 0;
   overflow: hidden;
-  height: 100%;
   width: 100%;
 }
 
 header {
-  // position: sticky;
-  top: 0;
-  left: 0;
-  width: 100%;
+  flex: 1;
 }
 
 #header-logo {
@@ -68,19 +67,24 @@ header {
   padding: 2rem;
 }
 
+main {
+  display: flex;
+  flex: 5;
+  flex-flow: column;
+}
+
+.container-flex {
+  display: flex;
+  flex: 1;
+}
+
 #home-columns-row {
-  height: calc(100vh - 112px);
-  // border: 1px solid black;
-  position: absolute;
-  width: 100vw;
+  align-items: stretch;
   margin: 0;
 }
 
 #filter-column,
-#results-column {
-  overflow-y: auto;
-  height: 100%;
-}
+#results-column {}
 
 #filter-column .filter-header>span {
   cursor: pointer;
