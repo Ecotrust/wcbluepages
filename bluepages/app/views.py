@@ -425,10 +425,11 @@ def adminSuggestionReviewMenu(request, suggestion_id):
                 messages.add_message(request, messages.SUCCESS, message, extra_tags='success', fail_silently=False)
                 try:
                     suggestion.status = 'Approved'
-                    status.contact = contact
+                    suggestion.contact = contact
                     suggestion.save()
                     message = "Contact Suggestion '{}' approved.".format(suggestion)
                     messages.add_message(request, messages.SUCCESS, message, extra_tags='success', fail_silently=False)
+
 
                     for record_suggestion in suggestion.recordsuggestion_set.all():
                         record_approve_name = 'approve-record-suggestion-{}'.format(record_suggestion.pk)
