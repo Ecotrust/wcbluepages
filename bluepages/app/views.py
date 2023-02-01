@@ -12,28 +12,7 @@ from app.forms import ContactSuggestionForm, RecordSuggestionForm, UserProfileFo
 
 def home(request):
     context = {}
-    contacts = Contact.objects.all()
-    records = Record.objects.all()
-    # TODO: getTopic and getRegion should accept filtered records, NOT contacts
-    # TODO: Faster smarter queries and facets
-    #   https://www.enterprisedb.com/postgres-tutorials/how-implement-faceted-search-django-and-postgresql
     if request.user.is_authenticated or not settings.REQUIRE_ACCOUNT:
-        filters = {
-            'Entities': getEntityFacetFilters(contacts),
-            'Topics': getTopicFacetFilters(contacts),
-            'Regions': getRegionFacetFilters(contacts)
-        }
-
-        context['filters'] = filters
-        context['contacts'] = [
-            {
-                'id':x.pk, 
-                'name': x.full_name,
-                'role': x.job_title,
-                'entity': x.entity.name, 
-                'entity_id': x.entity.pk 
-            } for x in contacts.order_by('last_name', 'first_name', 'middle_name', 'title', 'post_title', 'entity__name')
-        ]
         return render(request, "home.html", context)
 
     return render(request, "welcome.html", context)
@@ -48,16 +27,7 @@ def filterContactsRequest(request):
         if 'regions' in request.POST.keys() and len(request.POST['regions']) > 0:
             filters['regions'] = request.POST['regions']
     contacts = filterContacts(filters)
-    contact_json = [
-        {
-            'id':x.pk, 
-            'name': x.full_name,
-            'role': x.job_title,
-            'entity': x.entity.name, 
-            'entity_id': x.entity.pk 
-        } for x in contacts.order_by('last_name', 'first_name', 'middle_name', 'title', 'post_title', 'entity__name')
-    ]
-    return JsonResponse(contact_json)
+    return JsonResponse(contacts)
 
 def regionTypeLookup(region_type):
     from .models import REGION_TYPE_CHOICES
@@ -66,7 +36,9 @@ def regionTypeLookup(region_type):
             return pair[0]
     return None
 
-def filterContacts(filters):
+def filterContacts(filters={}):
+    # TODO: Consider faceted searches and indices
+    #   https://www.enterprisedb.com/postgres-tutorials/how-implement-faceted-search-django-and-postgresql
     contacts = Contact.objects.all()
     if 'entities' in filters.keys():
         contacts = contacts.filter(entity__name__in=filters['entities'])
@@ -97,7 +69,28 @@ def filterContacts(filters):
             records = records.filter(pk__in=depth_record_ids)
         contact_ids = list(set(x.contact.pk for x in records))
         contacts = contacts.filter(pk__in=contact_ids)
-    return contacts
+
+    # TODO: getTopic and getRegion should accept filtered records, NOT contacts
+    # TODO: Faster smarter queries and facets
+    filters = {
+        'Entities': getEntityFacetFilters(contacts),
+        'Topics': getTopicFacetFilters(contacts),
+        'Regions': getRegionFacetFilters(contacts)
+    }
+    
+    contacts_dict = [
+        {
+            'id':x.pk, 
+            'name': x.full_name,
+            'role': x.job_title,
+            'entity': x.entity.name, 
+            'entity_id': x.entity.pk 
+        } for x in contacts.order_by('last_name', 'first_name', 'middle_name', 'title', 'post_title', 'entity__name')
+    ]
+    return {
+        'filters': filters,
+        'contacts': contacts_dict
+    }
 
 
 def getProfile(request):

@@ -1,12 +1,5 @@
 
-{% for name, selections in filters.items %}
-<h2 class="filter-header"><span data-bs-toggle="collapse" href="#{{ name }}FilterOptions" aria-expanded="false" aria-controls="collapse{{ name }}">{{ name }}</span></h2>
-<!-- <a class="filter-header" data-bs-toggle="collapse" href="#{{ name }}FilterOptions" aria-expanded="false" aria-controls="collapse{{ name }}" role="button">{{ name }}</a> -->
-<ul class="collapse" id="{{ name }}FilterOptions">
-    {% for selection in selections %}
-        <li><span type="{{ name }}" value="{{ selection.id }}">{{ selection.name }} ({{ selection.count }})</span></li>
-    {% endfor %}
-</ul>
-<br />
 
-{% endfor %}
+<div class="spinner-border text-primary" role="status">
+    <span class="sr-only"></span>
+</div>

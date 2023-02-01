@@ -300,12 +300,98 @@ app.loadRecordSuggestionModal = function(data) {
     
 }
 
+app.loadSearchResults = function(results, status) {
+    // pull filter/facets from data results to populate filters on left
+    let filter_col_html = '';
+    Object.keys(results.filters).forEach( key => {
+        
+        filter_col_html += '<h2 class="filter-header">' +
+        '<span data-bs-toggle="collapse" href="#' + key + 'FilterOptions" aria-expanede="false" aria-controls="collapse' + key + '">' +
+                    key +
+                '</span>' +
+            '</h2>';
+        filter_col_html += '<ul class="collapse" id="' + key +'FilterOptions">';
+        results.filters[key].forEach( filter => {
+            filter_col_html += '<li>' +
+                    '<span type="' + key + '" value="' + filter.id + '">' +
+                        filter.name + '(' + filter.count + ')' +
+                        '</span>' +
+                '</li>';
+        });
+        filter_col_html += '</ul>' +
+        '<br />';
+    });
+    $("#filter-column").html(filter_col_html);
+        
+    // (Re?)create DataTable, feeding in the 'contacts' results
+    let results_col_html = '<table id="contact-results-table">' +
+            '<thead>' +
+                '<tr>' +
+                    '<th>Name</th>' +
+                    '<th>Role</th>' +
+                    '<th>Entity</th>' +
+                '</tr>' +
+            '</thead>' +
+            '<tbody>';
+    results.contacts.forEach( contact => {
+        results_col_html += '<tr id="contact-row-' + contact.id +'" class="contact-row ">' +
+                '<td>' + contact.name + '</td>' +
+                '<td>' + contact.role + '</td>' +
+                '<td>' + contact.entity + '</td>' +
+            '</tr>';
+    })
+    results_col_html += '</tbody>' +
+        '</table>';
+    $("#results-column div.contact-results").html(results_col_html);
+    $('#contact-results-table').DataTable();
+    
+}
+
+app.getSearchResults = function() {
+    // convert app.filter_state to AJAX query, then call app.loadSearchResults with the data
+    $.ajax({
+        url: "/filter_contacts",
+        type: "POST",
+        headers: {
+            'X-CSRFToken': app.csrftoken
+        },
+        mode: 'same-origin',
+        data: app.filter_state,
+        dataType: "json",
+        success: app.loadSearchResults
+    });
+}
+
+// Copied from Django docs:
+//  https://docs.djangoproject.com/en/4.1/howto/csrf/#acquiring-the-token-if-csrf-use-sessions-and-csrf-cookie-httponly-are-false
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+app.csrftoken = getCookie('csrftoken');
+
 app.accountModal = new Modal(document.getElementById('accountModal'), {});
 app.suggestionMenuModal = new Modal(document.getElementById('suggestionMenuModal'), {});
 app.suggestionModal = new Modal(document.getElementById('suggestionModal'), {});
 app.recordSuggestionModal = new Modal(document.getElementById('recordSuggestionModal'), {});
-
+app.filter_state = {
+    'entities': [],
+    'topics': [],
+    'regions': [],
+};
 
 $(document).ready( function () {
-    $('#contact-results-table').DataTable();
+    app.getSearchResults();
+
 } );

@@ -6,10 +6,14 @@ The `urlpatterns` list routes URLs to views. For more information please see:
 """
 from django.urls import path, re_path, include
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, PasswordResetCompleteView
-from app.views import home, regionJSON, regionPicker, wireframe, getSuggestionMenu, contactSuggestionMenu, contactSuggestionForm, recordSuggestionForm, deleteSuggestedContact, deleteSuggestedRecord, getProfile, editProfile, changePassword
+from app.views import (
+    home, regionJSON, regionPicker, wireframe, getSuggestionMenu, contactSuggestionMenu, contactSuggestionForm, 
+    recordSuggestionForm, deleteSuggestedContact, deleteSuggestedRecord, getProfile, editProfile, changePassword, filterContactsRequest
+)
 
 
 urlpatterns = [
+    path('filter_contacts', filterContactsRequest),
     re_path(r'^regions.json', regionJSON),
     path('get_suggestion_menu/', getSuggestionMenu),
     path('suggestion_form/<int:contact_id>/', contactSuggestionForm),

@@ -95,6 +95,12 @@ main {
   cursor: pointer;
 }
 
+#filter-column div.spinner-border {
+  width: 15vw;
+  height: 15vw;
+  margin: 20%;
+}
+
 #results-column {
   display: flex;
   flex-direction: column;
@@ -105,13 +111,18 @@ main {
   margin-bottom: 3rem;
 }
 
+#results-column div.contact-results div.spinner-border {
+  width: 15vw;
+  height: 15vw;
+  margin: 20% 16vw;
+}
+
 .add-contact-control {
   position: sticky;
   bottom: 0;
   background-color: var(--background);
   padding-top: 0.8rem;
   border-top: 1px solid black;
-
 }
 
 #map {  
