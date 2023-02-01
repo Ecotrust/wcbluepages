@@ -38,6 +38,68 @@ def home(request):
 
     return render(request, "welcome.html", context)
 
+def filterContactsRequest(request):
+    filters = {}
+    if request.method == 'POST':
+        if 'entities' in request.POST.keys() and len(request.POST['entities']) > 0:
+            filters['entities'] = request.POST['entities']
+        if 'topics' in request.POST.keys() and len(request.POST['topics']) > 0:
+            filters['topics'] = request.POST['topics']
+        if 'regions' in request.POST.keys() and len(request.POST['regions']) > 0:
+            filters['regions'] = request.POST['regions']
+    contacts = filterContacts(filters)
+    contact_json = [
+        {
+            'id':x.pk, 
+            'name': x.full_name,
+            'role': x.job_title,
+            'entity': x.entity.name, 
+            'entity_id': x.entity.pk 
+        } for x in contacts.order_by('last_name', 'first_name', 'middle_name', 'title', 'post_title', 'entity__name')
+    ]
+    return JsonResponse(contact_json)
+
+def regionTypeLookup(region_type):
+    from .models import REGION_TYPE_CHOICES
+    for pair in REGION_TYPE_CHOICES:
+        if pair[1] == region_type:
+            return pair[0]
+    return None
+
+def filterContacts(filters):
+    contacts = Contact.objects.all()
+    if 'entities' in filters.keys():
+        contacts = contacts.filter(entity__name__in=filters['entities'])
+    if 'topics' in filters.keys():
+        records = Record.objects.filter(contact__in=contacts, topic__name__in=filters['topics'])
+        contact_ids = list(set([x.contact.pk for x in records]))
+        contacts = contacts.filter(pk__in=contact_ids)
+    else:
+        records = Record.objects.all()
+    if 'regions' in filters.keys():
+        states = RegionState.objects.filter(name__in=filters['regions'])
+
+        has_states = len(states) > 0
+
+        depth_regions = [regionTypeLookup(x) for x in filters['regions']]
+        while None in depth_regions:
+            depth_regions.remove(None)
+        has_depths = len(depth_regions) > 0
+        
+        if has_states:
+            state_regions = Region.objects.filter(states__in=states)
+            state_records = records.filter(regions__in=state_regions)
+            # for some reason, the result contains MANY dupes - let's remove those:
+            state_record_ids = list(set([x.pk for x in state_records]))
+            records = records.filter(pk__in=state_record_ids)
+        if has_depths:
+            depth_record_ids = list(set([x.pk for x in records.filter(regions__depth_type__in=depth_regions)]))
+            records = records.filter(pk__in=depth_record_ids)
+        contact_ids = list(set(x.contact.pk for x in records))
+        contacts = contacts.filter(pk__in=contact_ids)
+    return contacts
+
+
 def getProfile(request):
     context = {
         'user': request.user
