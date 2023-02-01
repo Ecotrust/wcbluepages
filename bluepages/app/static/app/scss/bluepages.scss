@@ -81,10 +81,15 @@ main {
 #home-columns-row {
   align-items: stretch;
   margin: 0;
+  flex: 1;
 }
 
 #filter-column,
 #results-column {}
+
+#contact-results-table_filter label {
+  width: auto;
+}
 
 #filter-column .filter-header>span {
   cursor: pointer;
