@@ -310,12 +310,20 @@ app.loadSearchResults = function(results, status) {
                     key +
                 '</span>' +
             '</h2>';
-        filter_col_html += '<ul class="collapse" id="' + key +'FilterOptions">';
+        if (app.filter_state[key.toLowerCase()].length > 0) {
+            filter_col_html += '<ul id="' + key +'FilterOptions">';
+        } else {
+            filter_col_html += '<ul class="collapse" id="' + key +'FilterOptions">';
+        }
         results.filters[key].forEach( filter => {
             filter_col_html += '<li>' +
-                    '<span type="' + key + '" value="' + filter.id + '">' +
-                        filter.name + '(' + filter.count + ')' +
-                        '</span>' +
+                    '<span type="' + key + '" value="' + filter.id + '" onclick="app.updateState(\'' + key.toLowerCase() + '\', \'' + filter.id + '\')">';
+            if (app.filter_state[key.toLowerCase()].indexOf(filter.id) >= 0) {
+                filter_col_html += '<b>' + filter.name + '(' + filter.count + ')' + ' <i class="bi bi-check2-square"></i></b>';
+            } else {
+                filter_col_html += filter.name + '(' + filter.count + ')';
+            }
+            filter_col_html += '</span>' +
                 '</li>';
         });
         filter_col_html += '</ul>' +
@@ -347,6 +355,22 @@ app.loadSearchResults = function(results, status) {
     
 }
 
+app.updateState = function(filter, value) {
+    if (!isNaN(parseInt(value))) {
+        value = parseInt(value);
+    }
+    if (Object.keys(app.filter_state).indexOf(filter) < 0) {
+        app.filter_state[filter] = [];
+    }
+    let val_index = app.filter_state[filter].indexOf(value)
+    if (val_index >= 0) {
+        app.filter_state[filter].pop(val_index);
+    } else {
+        app.filter_state[filter].push(value);
+    } 
+    app.getSearchResults();
+}
+
 app.getSearchResults = function() {
     // convert app.filter_state to AJAX query, then call app.loadSearchResults with the data
     $.ajax({
@@ -356,7 +380,7 @@ app.getSearchResults = function() {
             'X-CSRFToken': app.csrftoken
         },
         mode: 'same-origin',
-        data: app.filter_state,
+        data: {'data': JSON.stringify(app.filter_state)},
         dataType: "json",
         success: app.loadSearchResults
     });

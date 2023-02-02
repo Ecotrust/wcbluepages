@@ -18,42 +18,39 @@ def home(request):
     return render(request, "welcome.html", context)
 
 def filterContactsRequest(request):
+    import json
     filters = {}
     if request.method == 'POST':
-        if 'entities' in request.POST.keys() and len(request.POST['entities']) > 0:
-            filters['entities'] = request.POST['entities']
-        if 'topics' in request.POST.keys() and len(request.POST['topics']) > 0:
-            filters['topics'] = request.POST['topics']
-        if 'regions' in request.POST.keys() and len(request.POST['regions']) > 0:
-            filters['regions'] = request.POST['regions']
+        filters = json.loads(request.POST.get('data'))
     contacts = filterContacts(filters)
     return JsonResponse(contacts)
-
-def regionTypeLookup(region_type):
-    from .models import REGION_TYPE_CHOICES
-    for pair in REGION_TYPE_CHOICES:
-        if pair[1] == region_type:
-            return pair[0]
-    return None
 
 def filterContacts(filters={}):
     # TODO: Consider faceted searches and indices
     #   https://www.enterprisedb.com/postgres-tutorials/how-implement-faceted-search-django-and-postgresql
     contacts = Contact.objects.all()
-    if 'entities' in filters.keys():
-        contacts = contacts.filter(entity__name__in=filters['entities'])
-    if 'topics' in filters.keys():
-        records = Record.objects.filter(contact__in=contacts, topic__name__in=filters['topics'])
+    if 'entities' in filters.keys() and len(filters['entities']) > 0:
+        contacts = contacts.filter(entity__pk__in=filters['entities'])
+    if 'topics' in filters.keys() and len(filters['topics']) > 0:
+        records = Record.objects.filter(contact__in=contacts, topic__pk__in=filters['topics'])
         contact_ids = list(set([x.contact.pk for x in records]))
         contacts = contacts.filter(pk__in=contact_ids)
     else:
         records = Record.objects.all()
-    if 'regions' in filters.keys():
-        states = RegionState.objects.filter(name__in=filters['regions'])
+    if 'regions' in filters.keys() and len(filters['regions']) > 0:
+        states = RegionState.objects.filter(postal_code__in=filters['regions'])
 
         has_states = len(states) > 0
 
-        depth_regions = [regionTypeLookup(x) for x in filters['regions']]
+        REGION_TYPE_LOOKUP = {
+            'MD': 'M',
+            'OS': 'O',
+            'NS': 'N',
+            'WA': None,
+            'OR': None,
+            'CA': None
+        }
+        depth_regions = [REGION_TYPE_LOOKUP[x] for x in filters['regions']]
         while None in depth_regions:
             depth_regions.remove(None)
         has_depths = len(depth_regions) > 0
