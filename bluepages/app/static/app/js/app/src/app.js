@@ -1,6 +1,17 @@
 import { Modal } from 'bootstrap';
 import * as $ from 'jquery';
 import DataTable from 'datatables';
+import Map from 'ol/Map';
+import OSM from 'ol/source/OSM';
+import VectorSource from 'ol/source/Vector';
+import VectorLayer from 'ol/layer/Vector';
+import TileLayer from 'ol/layer/Tile';
+import View from 'ol/View';
+import Style from 'ol/style/Style';
+import Stroke from 'ol/style/Stroke';
+import Fill from 'ol/style/Fill';
+import Text from 'ol/style/Text';
+import GeoJSON from 'ol/format/GeoJSON';
 
 app.showAccountModal = function() {
     app.suggestionMenuModal.hide();
@@ -371,6 +382,158 @@ app.updateState = function(filter, value) {
     app.getSearchResults();
 }
 
+app.getMapLabel = function(feature) {
+    let text = feature.get('name');
+    return text;
+}
+
+app.mapStyleFunction = function(feature) {
+    var label = app.getMapLabel(feature);
+    return new Style({
+        stroke: new Stroke({
+            color: 'rgba(0,55,255,1.0)',
+            width: 1,
+        }),
+        fill: new Fill({
+            color: 'rgba(0, 155, 255, 0.3)',
+        }),
+        text: new Text({
+            text: label,
+            stroke: new Stroke({
+                color: 'white',
+                width: 1
+            }),
+            font: 'bold 12px sans-serif'
+        })
+    });
+}
+
+app.mapRegionSource = new VectorSource({
+    features: []
+});
+
+app.mapVectorLayer = new VectorLayer({
+    source: app.mapRegionSource,
+    style: app.mapStyleFunction,
+});
+
+// Selection logic largely taken from OL examples:
+//  https://openlayers.org/en/latest/examples/select-features.html
+//  https://openlayers.org/en/latest/examples/select-multiple-features.html
+
+app.mapSelected = [];
+
+app.mapSelectedStyleFunction = function(feature) {
+    var label = app.getMapLabel(feature);
+    let selectedStyle = new Style({
+        fill: new Fill({
+            color: 'rgba(255,255,255,0.1)'
+        }),
+        stroke: new Stroke({
+            color: 'rgba(255,0,255,1.0)',
+            width: 2,
+        }),
+        text: new Text({
+            text: label,
+            stroke: new Stroke({
+                color: 'white',
+                width: 1
+            }),
+            font: 'bold 12px sans-serif'
+        })
+    })
+    return selectedStyle;
+}
+
+app.mapToggleFeatureSelection = function(feature)  {
+    const selIndex = app.mapSelected.indexOf(feature);
+    if (selIndex < 0) {
+        app.mapSelected.push(feature);
+        feature.setStyle(app.mapSelectedStyleFunction(feature));
+        $("#id_regions option[value='" + feature.get('id') + "']").prop("selected", true);
+    } else {
+        app.mapSelected.splice(selIndex, 1);
+        feature.setStyle(undefined);
+        $("#id_regions option[value='" + feature.get('id') + "']").prop("selected", false);
+    }
+}
+
+// Load Regions onto map
+app.mapZoomToBufferedExtent = function(extent, buffer) {
+    if (buffer > 1.0) {
+      buffer = buffer/100.0;
+    }
+    let width = Math.abs(extent[2]-extent[0]);
+    let height = Math.abs(extent[3]-extent[1]);
+    let w_buffer = width * buffer;
+    let h_buffer = height * buffer;
+    let buf_west = extent[0] - w_buffer;
+    let buf_east = extent[2] + w_buffer;
+    let buf_south = extent[1] - h_buffer;
+    let buf_north = extent[3] + h_buffer;
+    let buffered_extent = [buf_west, buf_south, buf_east, buf_north];
+    app.map.getView().fit(buffered_extent, {'duration': 1000});
+}
+
+app.mapLoadSelectedFeatures = function() {
+    let selected = app.filter_state['map_regions'] | [];
+    let features = app.mapRegionSource.getFeatures();
+    for (var sel_idx=0; sel_idx < selected.length; sel_idx++) {
+        var feature_id = selected[sel_idx].value;
+        for (var feat_idx=0; feat_idx < features.length; feat_idx++){
+            if (feature_id == features[feat_idx].get('id')){
+                app.mapToggleFeatureSelection(features[feat_idx])
+                break;
+            }
+        } 
+
+    }
+}
+
+app.loadMapFilter = function(){
+    // get map data
+    $.ajax({
+        url:'/static/app/data/regions.json',
+        dataType: 'json'
+    })
+    .done(function(data) {
+        window.setTimeout(
+            function(){
+                $("#map").html('');
+                app.map = new Map({
+                    layers: [
+                        new TileLayer({
+                            source: new OSM
+                        }),
+                        app.mapVectorLayer
+                    ],
+                    target: 'map',
+                    view: new View({
+                        center: [
+                            -13803616.858365921,    // -124
+                            4865942.279503175       // 40 
+                        ],
+                        zoom: 5,
+                    })
+                });
+                
+                app.mapRegionSource.clear();
+                
+                app.map.on('singleclick', function(e) {
+                    app.map.forEachFeatureAtPixel(e.pixel, app.mapToggleFeatureSelection);
+                });
+                var features = new GeoJSON().readFeatures(data);
+                // Flush any pre-existing features to clear out selection.
+                if (app.mapRegionSource.getFeatures.length < 1) {
+                    app.mapRegionSource.addFeatures(features);
+                }
+                app.mapLoadSelectedFeatures();
+                app.mapZoomToBufferedExtent(app.mapRegionSource.getExtent(), 0.1);
+            }, 150
+        )
+    });
+}
+
 app.getSearchResults = function() {
     // convert app.filter_state to AJAX query, then call app.loadSearchResults with the data
     $.ajax({
@@ -416,6 +579,7 @@ app.filter_state = {
 };
 
 $(document).ready( function () {
+    app.loadMapFilter();
     app.getSearchResults();
 
 } );

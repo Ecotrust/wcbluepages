@@ -95,6 +95,7 @@ main {
   cursor: pointer;
 }
 
+#map-column div.spinner-border,
 #filter-column div.spinner-border {
   width: 15vw;
   height: 15vw;
@@ -125,8 +126,18 @@ main {
   border-top: 1px solid black;
 }
 
+#map-column {
+  display: flex;
+  padding-right: 0;
+  padding-left: 0;
+  height: calc( 100vh - 113px);
+  border-left: 2px gray solid;
+  box-shadow: 0px 4px 0px 0px gray;
+}
+
 #map {  
   position: relative;
+  width: 100%;
 }
 
 #map svg {  
