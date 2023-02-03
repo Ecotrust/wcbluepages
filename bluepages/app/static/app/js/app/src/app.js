@@ -421,8 +421,6 @@ app.mapVectorLayer = new VectorLayer({
 //  https://openlayers.org/en/latest/examples/select-features.html
 //  https://openlayers.org/en/latest/examples/select-multiple-features.html
 
-app.mapSelected = [];
-
 app.mapSelectedStyleFunction = function(feature) {
     var label = app.getMapLabel(feature);
     let selectedStyle = new Style({
@@ -446,16 +444,15 @@ app.mapSelectedStyleFunction = function(feature) {
 }
 
 app.mapToggleFeatureSelection = function(feature)  {
-    const selIndex = app.mapSelected.indexOf(feature);
-    if (selIndex < 0) {
-        app.mapSelected.push(feature);
+    var sel_index = app.filter_state['map_regions'].indexOf(feature.get('id'));
+    if ( sel_index < 0){
         feature.setStyle(app.mapSelectedStyleFunction(feature));
-        $("#id_regions option[value='" + feature.get('id') + "']").prop("selected", true);
+        app.filter_state['map_regions'].push(feature.get('id'));
     } else {
-        app.mapSelected.splice(selIndex, 1);
         feature.setStyle(undefined);
-        $("#id_regions option[value='" + feature.get('id') + "']").prop("selected", false);
+        app.filter_state['map_regions'].splice(sel_index, 1);
     }
+    app.getSearchResults();
 }
 
 // Load Regions onto map
@@ -576,6 +573,8 @@ app.filter_state = {
     'entities': [],
     'topics': [],
     'regions': [],
+    'map_regions': [],              // Track which regions are selected on the map
+    'open': []                      // Track whether left-panel filter categories are expanded or collapsed
 };
 
 $(document).ready( function () {

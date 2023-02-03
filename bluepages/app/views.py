@@ -26,6 +26,14 @@ def filterContactsRequest(request):
     return JsonResponse(contacts)
 
 def filterContacts(filters={}):
+    REGION_TYPE_LOOKUP = {
+        'MD': 'M',
+        'OS': 'O',
+        'NS': 'N',
+        'WA': None,
+        'OR': None,
+        'CA': None
+    }
     # TODO: Consider faceted searches and indices
     #   https://www.enterprisedb.com/postgres-tutorials/how-implement-faceted-search-django-and-postgresql
     contacts = Contact.objects.all()
@@ -42,14 +50,6 @@ def filterContacts(filters={}):
 
         has_states = len(states) > 0
 
-        REGION_TYPE_LOOKUP = {
-            'MD': 'M',
-            'OS': 'O',
-            'NS': 'N',
-            'WA': None,
-            'OR': None,
-            'CA': None
-        }
         depth_regions = [REGION_TYPE_LOOKUP[x] for x in filters['regions']]
         while None in depth_regions:
             depth_regions.remove(None)
@@ -64,6 +64,10 @@ def filterContacts(filters={}):
         if has_depths:
             depth_record_ids = list(set([x.pk for x in records.filter(regions__depth_type__in=depth_regions)]))
             records = records.filter(pk__in=depth_record_ids)
+        contact_ids = list(set(x.contact.pk for x in records))
+        contacts = contacts.filter(pk__in=contact_ids)
+    if 'map_regions' in filters.keys() and len(filters['map_regions']) > 0:
+        records = records.filter(regions__pk__in=filters['map_regions'])
         contact_ids = list(set(x.contact.pk for x in records))
         contacts = contacts.filter(pk__in=contact_ids)
 
