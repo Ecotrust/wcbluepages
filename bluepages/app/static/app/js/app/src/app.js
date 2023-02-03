@@ -379,7 +379,11 @@ app.updateState = function(filter, value) {
     } else {
         app.filter_state[filter].push(value);
     } 
-    app.getSearchResults();
+    if (filter == 'regions') {
+        app.mapUpdateFilters();
+    } else {
+        app.getSearchResults();
+    }
 }
 
 app.getMapLabel = function(feature) {
@@ -443,7 +447,7 @@ app.mapSelectedStyleFunction = function(feature) {
     return selectedStyle;
 }
 
-app.mapToggleFeatureSelection = function(feature)  {
+app.mapToggleFeatureSelection = function(feature, run_query)  {
     var sel_index = app.filter_state['map_regions'].indexOf(feature.get('id'));
     if ( sel_index < 0){
         feature.setStyle(app.mapSelectedStyleFunction(feature));
@@ -452,7 +456,71 @@ app.mapToggleFeatureSelection = function(feature)  {
         feature.setStyle(undefined);
         app.filter_state['map_regions'].splice(sel_index, 1);
     }
+    if (run_query) {
+        app.getSearchResults();
+    }
+}
+
+// Map and Form interactions:
+app.mapUpdateFilters = function() {
+    let regions = app.mapVectorLayer.getSource().getFeatures();
+    let filtered_regions = [];
+    let states = [];
+    let depths = [];
+
+    if (app.filter_state['regions'].indexOf('WA') >= 0) { states.push('WA')};
+    if (app.filter_state['regions'].indexOf('OR') >= 0) { states.push('OR')};
+    if (app.filter_state['regions'].indexOf('CA') >= 0) { states.push('CA')};
+
+    if (app.filter_state['regions'].indexOf('OS') >= 0) { depths.push('O')};
+    if (app.filter_state['regions'].indexOf('MD') >= 0) { depths.push('M')};
+    if (app.filter_state['regions'].indexOf('NS') >= 0) { depths.push('N')};
+
+    if (states.length == 0 || states.length == 3) {
+        filtered_regions = regions;
+    } else {
+        for (var region_idx = 0; region_idx < regions.length; region_idx++) {
+            var region = regions[region_idx];
+            for (let state_idx = 0;  state_idx < states.length; state_idx++) {
+                var state = states[state_idx];
+                if (region.get('states').indexOf(state) >= 0 && filtered_regions.indexOf(region) < 0 ) {
+                    filtered_regions.push(region);
+                }
+            }
+        }
+    }
+
+    let final_regions = [];
+    if (depths.length == 0 || depths.length == 3) {
+        final_regions = filtered_regions;
+    } else {
+        for (var region_idx = 0; region_idx < filtered_regions.length; region_idx++) {
+            var region = filtered_regions[region_idx];
+            for (let depth_idx = 0; depth_idx < depths.length; depth_idx++) {
+                var depth = depths[depth_idx];
+                if (region.get('depth') == depth && final_regions.indexOf(region) < 0) {
+                    final_regions.push(region);
+                }
+            }
+        }
+    }
+
+    if (states.length == 0 && depths.length == 0) {
+        final_regions = [];
+    }
+
+    for (var region_idx = 0; region_idx < regions.length; region_idx++) {
+        var region = regions[region_idx];
+        if (final_regions.indexOf(region) >= 0 && app.filter_state['map_regions'].indexOf(region.get('id')) < 0) {
+            //select unselected region:
+            app.mapToggleFeatureSelection(region, false);
+        } else if (final_regions.indexOf(region) < 0 && app.filter_state['map_regions'].indexOf(region.get('id')) >= 0) {
+            // unselect previously selected region:
+            app.mapToggleFeatureSelection(region, false);
+        }
+    }
     app.getSearchResults();
+
 }
 
 // Load Regions onto map
@@ -470,21 +538,6 @@ app.mapZoomToBufferedExtent = function(extent, buffer) {
     let buf_north = extent[3] + h_buffer;
     let buffered_extent = [buf_west, buf_south, buf_east, buf_north];
     app.map.getView().fit(buffered_extent, {'duration': 1000});
-}
-
-app.mapLoadSelectedFeatures = function() {
-    let selected = app.filter_state['map_regions'] | [];
-    let features = app.mapRegionSource.getFeatures();
-    for (var sel_idx=0; sel_idx < selected.length; sel_idx++) {
-        var feature_id = selected[sel_idx].value;
-        for (var feat_idx=0; feat_idx < features.length; feat_idx++){
-            if (feature_id == features[feat_idx].get('id')){
-                app.mapToggleFeatureSelection(features[feat_idx])
-                break;
-            }
-        } 
-
-    }
 }
 
 app.loadMapFilter = function(){
@@ -517,14 +570,14 @@ app.loadMapFilter = function(){
                 app.mapRegionSource.clear();
                 
                 app.map.on('singleclick', function(e) {
-                    app.map.forEachFeatureAtPixel(e.pixel, app.mapToggleFeatureSelection);
+                    app.map.forEachFeatureAtPixel(e.pixel, app.mapToggleFeatureSelection, true);
                 });
                 var features = new GeoJSON().readFeatures(data);
                 // Flush any pre-existing features to clear out selection.
                 if (app.mapRegionSource.getFeatures.length < 1) {
                     app.mapRegionSource.addFeatures(features);
                 }
-                app.mapLoadSelectedFeatures();
+
                 app.mapZoomToBufferedExtent(app.mapRegionSource.getExtent(), 0.1);
             }, 150
         )
