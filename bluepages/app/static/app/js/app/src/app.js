@@ -315,14 +315,19 @@ app.loadSearchResults = function(results, status) {
     // pull filter/facets from data results to populate filters on left
     let filter_col_html = '';
     Object.keys(results.filters).forEach( key => {
-        
-        filter_col_html += '<h2 class="filter-header">' +
-        '<span data-bs-toggle="collapse" href="#' + key + 'FilterOptions" aria-expanede="false" aria-controls="collapse' + key + '" onclick="app.updateState(\'open\', \'' + key + '\')">' +
+        var is_expanded = app.filter_state['open'].indexOf(key) >= 0;
+        filter_col_html += '<h2 class="filter-header">';
+        if (is_expanded) {
+            filter_col_html += '<span class="" ';
+        } else {
+            filter_col_html += '<span class="collapsed" ';
+        }
+        filter_col_html += 'data-bs-toggle="collapse" href="#' + key + 'FilterOptions" aria-expanded="' + is_expanded + '" aria-controls="collapse' + key + '" onclick="app.updateState(\'open\', \'' + key + '\')">' +
                     key +
                 '</span>' +
             '</h2>';
-        if (app.filter_state['open'].indexOf(key) >= 0) {
-            filter_col_html += '<ul id="' + key +'FilterOptions">';
+        if (is_expanded) {
+            filter_col_html += '<ul class="collapse show" id="' + key +'FilterOptions">';
         } else {
             filter_col_html += '<ul class="collapse" id="' + key +'FilterOptions">';
         }
@@ -375,13 +380,13 @@ app.updateState = function(filter, value) {
     }
     let val_index = app.filter_state[filter].indexOf(value)
     if (val_index >= 0) {
-        app.filter_state[filter].pop(val_index);
+        app.filter_state[filter].splice(val_index, 1);
     } else {
         app.filter_state[filter].push(value);
     } 
-    if (filter == 'regions' || filter == 'open') {
+    if (filter == 'regions') {
         app.mapUpdateFilters();
-    } else {
+    } else if (filter != 'open') {
         app.getSearchResults();
     }
 }
