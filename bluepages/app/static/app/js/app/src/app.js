@@ -317,11 +317,11 @@ app.loadSearchResults = function(results, status) {
     Object.keys(results.filters).forEach( key => {
         
         filter_col_html += '<h2 class="filter-header">' +
-        '<span data-bs-toggle="collapse" href="#' + key + 'FilterOptions" aria-expanede="false" aria-controls="collapse' + key + '">' +
+        '<span data-bs-toggle="collapse" href="#' + key + 'FilterOptions" aria-expanede="false" aria-controls="collapse' + key + '" onclick="app.updateState(\'open\', \'' + key + '\')">' +
                     key +
                 '</span>' +
             '</h2>';
-        if (app.filter_state[key.toLowerCase()].length > 0) {
+        if (app.filter_state['open'].indexOf(key) >= 0) {
             filter_col_html += '<ul id="' + key +'FilterOptions">';
         } else {
             filter_col_html += '<ul class="collapse" id="' + key +'FilterOptions">';
@@ -379,7 +379,7 @@ app.updateState = function(filter, value) {
     } else {
         app.filter_state[filter].push(value);
     } 
-    if (filter == 'regions') {
+    if (filter == 'regions' || filter == 'open') {
         app.mapUpdateFilters();
     } else {
         app.getSearchResults();
