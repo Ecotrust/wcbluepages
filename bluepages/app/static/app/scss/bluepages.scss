@@ -105,17 +105,18 @@ main {
 #results-column {
   display: flex;
   flex-direction: column;
+
+  div.contact-results div.spinner-border {
+    width: 15vw;
+    height: 15vw;
+    margin: 20% 16vw;
+  }
 }
+
 
 .contact-results {
   flex: 1;
   margin-bottom: 3rem;
-}
-
-#results-column div.contact-results div.spinner-border {
-  width: 15vw;
-  height: 15vw;
-  margin: 20% 16vw;
 }
 
 .add-contact-control {
