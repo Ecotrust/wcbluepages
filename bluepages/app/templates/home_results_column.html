@@ -1,24 +1,7 @@
-<h1>Contacts:</h1>
-
 <div class="contact-results">
-    <table id="contact-results-table">
-        <thead style="display: none;">
-            <tr>
-                <th>Name</th>
-                <th>Role</th>
-                <th>entity</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in contacts %}
-                <tr id="contact-row-{{row.id}}" class="contact-row ">
-                    <td>{{ row.name }}</td>
-                    <td>{{ row.role }}</td>
-                    <td>{{ row.entity }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only"></span>
+    </div>
 </div>
 <div class="add-contact-control">
     <p>

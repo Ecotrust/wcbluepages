@@ -1,6 +1,17 @@
 import { Modal } from 'bootstrap';
 import * as $ from 'jquery';
 import DataTable from 'datatables';
+import Map from 'ol/Map';
+import OSM from 'ol/source/OSM';
+import VectorSource from 'ol/source/Vector';
+import VectorLayer from 'ol/layer/Vector';
+import TileLayer from 'ol/layer/Tile';
+import View from 'ol/View';
+import Style from 'ol/style/Style';
+import Stroke from 'ol/style/Stroke';
+import Fill from 'ol/style/Fill';
+import Text from 'ol/style/Text';
+import GeoJSON from 'ol/format/GeoJSON';
 
 app.showAccountModal = function() {
     app.suggestionMenuModal.hide();
@@ -300,12 +311,332 @@ app.loadRecordSuggestionModal = function(data) {
     
 }
 
+app.loadSearchResults = function(results, status) {
+    // pull filter/facets from data results to populate filters on left
+    let filter_col_html = '';
+    Object.keys(results.filters).forEach( key => {
+        var is_expanded = app.filter_state['open'].indexOf(key) >= 0;
+        filter_col_html += '<h2 class="filter-header">';
+        if (is_expanded) {
+            filter_col_html += '<span class="" ';
+        } else {
+            filter_col_html += '<span class="collapsed" ';
+        }
+        filter_col_html += 'data-bs-toggle="collapse" href="#' + key + 'FilterOptions" aria-expanded="' + is_expanded + '" aria-controls="collapse' + key + '" onclick="app.updateState(\'open\', \'' + key + '\')">' +
+                    key +
+                '</span>' +
+            '</h2>';
+        if (is_expanded) {
+            filter_col_html += '<ul class="collapse show" id="' + key +'FilterOptions">';
+        } else {
+            filter_col_html += '<ul class="collapse" id="' + key +'FilterOptions">';
+        }
+        results.filters[key].forEach( filter => {
+            filter_col_html += '<li>' +
+                    '<span type="' + key + '" value="' + filter.id + '" onclick="app.updateState(\'' + key.toLowerCase() + '\', \'' + filter.id + '\')">';
+            if (app.filter_state[key.toLowerCase()].indexOf(filter.id) >= 0) {
+                filter_col_html += '<b>' + filter.name + '(' + filter.count + ')' + ' <i class="bi bi-check2-square"></i></b>';
+            } else {
+                filter_col_html += filter.name + '(' + filter.count + ')';
+            }
+            filter_col_html += '</span>' +
+                '</li>';
+        });
+        filter_col_html += '</ul>' +
+        '<br />';
+    });
+    $("#filter-column").html(filter_col_html);
+        
+    // (Re?)create DataTable, feeding in the 'contacts' results
+    let results_col_html = '<table id="contact-results-table">' +
+            '<thead>' +
+                '<tr>' +
+                    '<th>Name</th>' +
+                    '<th>Role</th>' +
+                    '<th>Entity</th>' +
+                '</tr>' +
+            '</thead>' +
+            '<tbody>';
+    results.contacts.forEach( contact => {
+        results_col_html += '<tr id="contact-row-' + contact.id +'" class="contact-row ">' +
+                '<td>' + contact.name + '</td>' +
+                '<td>' + contact.role + '</td>' +
+                '<td>' + contact.entity + '</td>' +
+            '</tr>';
+    })
+    results_col_html += '</tbody>' +
+        '</table>';
+    $("#results-column div.contact-results").html(results_col_html);
+    $('#contact-results-table').DataTable();
+    
+}
+
+app.updateState = function(filter, value) {
+    if (!isNaN(parseInt(value))) {
+        value = parseInt(value);
+    }
+    if (Object.keys(app.filter_state).indexOf(filter) < 0) {
+        app.filter_state[filter] = [];
+    }
+    let val_index = app.filter_state[filter].indexOf(value)
+    if (val_index >= 0) {
+        app.filter_state[filter].splice(val_index, 1);
+    } else {
+        app.filter_state[filter].push(value);
+    } 
+    if (filter == 'regions') {
+        app.mapUpdateFilters();
+    } else if (filter != 'open') {
+        app.getSearchResults();
+    }
+}
+
+app.getMapLabel = function(feature) {
+    let text = feature.get('name');
+    return text;
+}
+
+app.mapStyleFunction = function(feature) {
+    var label = app.getMapLabel(feature);
+    return new Style({
+        stroke: new Stroke({
+            color: 'rgba(0,55,255,1.0)',
+            width: 1,
+        }),
+        fill: new Fill({
+            color: 'rgba(0, 155, 255, 0.3)',
+        }),
+        text: new Text({
+            text: label,
+            stroke: new Stroke({
+                color: 'white',
+                width: 1
+            }),
+            font: 'bold 12px sans-serif'
+        })
+    });
+}
+
+app.mapRegionSource = new VectorSource({
+    features: []
+});
+
+app.mapVectorLayer = new VectorLayer({
+    source: app.mapRegionSource,
+    style: app.mapStyleFunction,
+});
+
+// Selection logic largely taken from OL examples:
+//  https://openlayers.org/en/latest/examples/select-features.html
+//  https://openlayers.org/en/latest/examples/select-multiple-features.html
+
+app.mapSelectedStyleFunction = function(feature) {
+    var label = app.getMapLabel(feature);
+    let selectedStyle = new Style({
+        fill: new Fill({
+            color: 'rgba(255,255,255,0.1)'
+        }),
+        stroke: new Stroke({
+            color: 'rgba(255,0,255,1.0)',
+            width: 2,
+        }),
+        text: new Text({
+            text: label,
+            stroke: new Stroke({
+                color: 'white',
+                width: 1
+            }),
+            font: 'bold 12px sans-serif'
+        })
+    })
+    return selectedStyle;
+}
+
+app.mapToggleFeatureSelection = function(feature, run_query)  {
+    var sel_index = app.filter_state['map_regions'].indexOf(feature.get('id'));
+    if ( sel_index < 0){
+        feature.setStyle(app.mapSelectedStyleFunction(feature));
+        app.filter_state['map_regions'].push(feature.get('id'));
+    } else {
+        feature.setStyle(undefined);
+        app.filter_state['map_regions'].splice(sel_index, 1);
+    }
+    if (run_query) {
+        app.getSearchResults();
+    }
+}
+
+// Map and Form interactions:
+app.mapUpdateFilters = function() {
+    let regions = app.mapVectorLayer.getSource().getFeatures();
+    let filtered_regions = [];
+    let states = [];
+    let depths = [];
+
+    if (app.filter_state['regions'].indexOf('WA') >= 0) { states.push('WA')};
+    if (app.filter_state['regions'].indexOf('OR') >= 0) { states.push('OR')};
+    if (app.filter_state['regions'].indexOf('CA') >= 0) { states.push('CA')};
+
+    if (app.filter_state['regions'].indexOf('OS') >= 0) { depths.push('O')};
+    if (app.filter_state['regions'].indexOf('MD') >= 0) { depths.push('M')};
+    if (app.filter_state['regions'].indexOf('NS') >= 0) { depths.push('N')};
+
+    if (states.length == 0 || states.length == 3) {
+        filtered_regions = regions;
+    } else {
+        for (var region_idx = 0; region_idx < regions.length; region_idx++) {
+            var region = regions[region_idx];
+            for (let state_idx = 0;  state_idx < states.length; state_idx++) {
+                var state = states[state_idx];
+                if (region.get('states').indexOf(state) >= 0 && filtered_regions.indexOf(region) < 0 ) {
+                    filtered_regions.push(region);
+                }
+            }
+        }
+    }
+
+    let final_regions = [];
+    if (depths.length == 0 || depths.length == 3) {
+        final_regions = filtered_regions;
+    } else {
+        for (var region_idx = 0; region_idx < filtered_regions.length; region_idx++) {
+            var region = filtered_regions[region_idx];
+            for (let depth_idx = 0; depth_idx < depths.length; depth_idx++) {
+                var depth = depths[depth_idx];
+                if (region.get('depth') == depth && final_regions.indexOf(region) < 0) {
+                    final_regions.push(region);
+                }
+            }
+        }
+    }
+
+    if (states.length == 0 && depths.length == 0) {
+        final_regions = [];
+    }
+
+    for (var region_idx = 0; region_idx < regions.length; region_idx++) {
+        var region = regions[region_idx];
+        if (final_regions.indexOf(region) >= 0 && app.filter_state['map_regions'].indexOf(region.get('id')) < 0) {
+            //select unselected region:
+            app.mapToggleFeatureSelection(region, false);
+        } else if (final_regions.indexOf(region) < 0 && app.filter_state['map_regions'].indexOf(region.get('id')) >= 0) {
+            // unselect previously selected region:
+            app.mapToggleFeatureSelection(region, false);
+        }
+    }
+    app.getSearchResults();
+
+}
+
+// Load Regions onto map
+app.mapZoomToBufferedExtent = function(extent, buffer) {
+    if (buffer > 1.0) {
+      buffer = buffer/100.0;
+    }
+    let width = Math.abs(extent[2]-extent[0]);
+    let height = Math.abs(extent[3]-extent[1]);
+    let w_buffer = width * buffer;
+    let h_buffer = height * buffer;
+    let buf_west = extent[0] - w_buffer;
+    let buf_east = extent[2] + w_buffer;
+    let buf_south = extent[1] - h_buffer;
+    let buf_north = extent[3] + h_buffer;
+    let buffered_extent = [buf_west, buf_south, buf_east, buf_north];
+    app.map.getView().fit(buffered_extent, {'duration': 1000});
+}
+
+app.loadMapFilter = function(){
+    // get map data
+    $.ajax({
+        url:'/static/app/data/regions.json',
+        dataType: 'json'
+    })
+    .done(function(data) {
+        window.setTimeout(
+            function(){
+                $("#map").html('');
+                app.map = new Map({
+                    layers: [
+                        new TileLayer({
+                            source: new OSM
+                        }),
+                        app.mapVectorLayer
+                    ],
+                    target: 'map',
+                    view: new View({
+                        center: [
+                            -13803616.858365921,    // -124
+                            4865942.279503175       // 40 
+                        ],
+                        zoom: 5,
+                    })
+                });
+                
+                app.mapRegionSource.clear();
+                
+                app.map.on('singleclick', function(e) {
+                    app.map.forEachFeatureAtPixel(e.pixel, app.mapToggleFeatureSelection, true);
+                });
+                var features = new GeoJSON().readFeatures(data);
+                // Flush any pre-existing features to clear out selection.
+                if (app.mapRegionSource.getFeatures.length < 1) {
+                    app.mapRegionSource.addFeatures(features);
+                }
+
+                app.mapZoomToBufferedExtent(app.mapRegionSource.getExtent(), 0.1);
+            }, 150
+        )
+    });
+}
+
+app.getSearchResults = function() {
+    // convert app.filter_state to AJAX query, then call app.loadSearchResults with the data
+    $.ajax({
+        url: "/filter_contacts",
+        type: "POST",
+        headers: {
+            'X-CSRFToken': app.csrftoken
+        },
+        mode: 'same-origin',
+        data: {'data': JSON.stringify(app.filter_state)},
+        dataType: "json",
+        success: app.loadSearchResults
+    });
+}
+
+// Copied from Django docs:
+//  https://docs.djangoproject.com/en/4.1/howto/csrf/#acquiring-the-token-if-csrf-use-sessions-and-csrf-cookie-httponly-are-false
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+app.csrftoken = getCookie('csrftoken');
+
 app.accountModal = new Modal(document.getElementById('accountModal'), {});
 app.suggestionMenuModal = new Modal(document.getElementById('suggestionMenuModal'), {});
 app.suggestionModal = new Modal(document.getElementById('suggestionModal'), {});
 app.recordSuggestionModal = new Modal(document.getElementById('recordSuggestionModal'), {});
-
+app.filter_state = {
+    'entities': [],
+    'topics': [],
+    'regions': [],
+    'map_regions': [],              // Track which regions are selected on the map
+    'open': []                      // Track whether left-panel filter categories are expanded or collapsed
+};
 
 $(document).ready( function () {
-    $('#contact-results-table').DataTable();
+    app.loadMapFilter();
+    app.getSearchResults();
+
 } );
