@@ -75,6 +75,20 @@ class Region(models.Model):
         verbose_name = f'{self.id} | {states} | {self.name} | depth:{self.depth_type}'
         return verbose_name
 
+    def to_dict(self, include_geometry=False, format='json'):
+        out_dict = {
+            'id': self.pk,
+            'region_id': self.id,
+            'name': self.name,
+            'depth_type': self.depth_type,
+            'region_number': self.id_num,
+            'states ': [state.postal_code for state in self.states.all()],
+        }
+        if include_geometry and hasattr(self.geometry, format):
+            out_dict['geometry'] = getattr(self.geometry, format)
+
+        return out_dict
+
 # Entity
 class Entity(models.Model):
     name = models.CharField(
@@ -148,6 +162,39 @@ class Entity(models.Model):
             return f"{self.name} ({self.ancestor})"
         return self.name
 
+    def allow_show_contacts(self):
+        if not self.show_contacts == None:
+            # explicitly set
+            return self.show_contacts
+        else:
+            # do what may parent (or nearest non-wishy-washy ancestor) does
+            if not self.parent == None:
+                return parent.allow_show_contacts()
+        # default to transparency
+        return True
+
+    def to_dict(self, include_contacts=False):
+        
+        out_dict = {
+            'id': self.pk,
+            'name': str(self),
+            'entity_type': self.entity_type,
+            'website': self.website,
+            'address': str(self.address),
+            'email': self.email,
+            'phone': str(self.phone),
+            'fax': str(self.fax),
+            'show_contacts': self.allow_show_contacts(),
+            'parent': self.parent.to_dict(include_contacts=False) if self.parent else None,
+            'notes': self.notes
+        }
+
+        if include_contacts and self.allow_show_contacts():
+            out_dict['contacts'] = [contact.to_dict(include_records=False) for contact in self.contacts_set.all()]
+
+        return out_dict
+
+
 # Topic
 class Topic(models.Model):
     name = models.CharField(
@@ -193,6 +240,23 @@ class Record(RecordBase):
 
     def __str__(self):
         return "{}: {}".format(self.topic, self.contact)
+
+    def to_dict(self, include_contact=False, include_regions=True, include_geometry=False):
+        out_dict = {
+            'id': self.pk,
+            'name': str(self),
+            'topic': str(self.topic),
+            'date_created': self.date_created.strftime('%m-%d-%Y'),
+            'date_modified': self.date_modified.strftime('%m-%d-%Y')
+        }
+
+        if include_contact:
+            out_dict['contact'] = self.contact.to_dict()
+        
+        if include_regions:
+            out_dict['regions'] = [region.to_dict(include_geometry=include_geometry) for region in self.regions.all()]
+
+        return out_dict
 
 # Contact
 class ContactBase(models.Model):
@@ -304,6 +368,36 @@ class Contact(ContactBase):
     is_test_data = models.BooleanField(
         default=False
     )
+
+    def to_dict(self, include_entity=True, include_records=True, include_regions=True, include_geometry=False):
+        # Maybe: list of rough region types that their regions fall into (state/depth)
+        out_dict = {
+            'id': self.pk,
+            'name': self.full_name,
+            'pronouns': self.preferred_pronouns,
+            'job_title': self.job_title,
+            'expertise': self.expertise,
+            'email': self.email,
+            'phone': str(self.phone),
+            'mobile_phone': str(self.mobile_phone),
+            'office_phone': str(self.office_phone),
+            'fax': str(self.fax),
+            'address': str(self.address),
+            'preferred_contact_method': self.preferred_contact_method,
+            'show_on_entity_page': self.show_on_entity_page,
+            'is_test_data': self.is_test_data,
+            'notes': self.notes,
+            'date_created': self.date_created.strftime('%m-%d-%Y'),
+            'date_modified': self.date_modified.strftime('%m-%d-%Y'),
+        }
+
+        if include_entity:
+            out_dict['entity'] = self.entity.to_dict()
+
+        if include_records:
+            out_dict['records'] = [record.to_dict(include_regions=include_regions, include_geometry=include_geometry) for record in self.record_set.all()]
+
+        return out_dict
 
     class Meta:
         ordering = ['last_name', 'first_name', 'middle_name', 'entity', 'job_title']
