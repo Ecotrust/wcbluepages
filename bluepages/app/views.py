@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views import View
+from pyld import jsonld
 import json
 
 from app.models import Region, Topic, Entity, Contact, Record, RegionState, ContactSuggestion, RecordSuggestion
@@ -25,7 +26,7 @@ def filterContactsRequest(request):
     contacts = filterContacts(filters)
     return JsonResponse(contacts)
 
-def filterContacts(filters={}):
+def filterContacts(filters={}, format='datatable'):
     # TODO: Consider faceted searches and indices
     #   https://www.enterprisedb.com/postgres-tutorials/how-implement-faceted-search-django-and-postgresql
     contacts = Contact.objects.all()
@@ -50,18 +51,22 @@ def filterContacts(filters={}):
         'Regions': getRegionFacetFilters(contacts)
     }
     
-    contacts_dict = [
-        {
-            'id':x.pk, 
-            'name': x.full_name,
-            'role': x.job_title,
-            'entity': x.entity.name, 
-            'entity_id': x.entity.pk 
-        } for x in contacts.order_by('last_name', 'first_name', 'middle_name', 'title', 'post_title', 'entity__name')
-    ]
+    if format == 'datatable':
+        contacts_list = [
+            {
+                'id':x.pk, 
+                'name': x.full_name,
+                'role': x.job_title,
+                'entity': x.entity.name, 
+                'entity_id': x.entity.pk 
+            } for x in contacts.order_by('last_name', 'first_name', 'middle_name', 'title', 'post_title', 'entity__name')
+        ]
+    else:
+        contacts_list = contacts
+
     return {
         'filters': filters,
-        'contacts': contacts_dict
+        'contacts': contacts_list
     }
 
 
@@ -336,6 +341,49 @@ def wireframe(request):
     context = {}
 
     return render(request, "wireframe.html", context)
+
+def contactList(request):
+    filters = {}
+    if request.method == 'POST':
+        filters = json.loads(request.POST.get('data'))
+    contacts = filterContacts(filters)['contacts']
+    return JsonResponse({'contacts': contacts})
+
+def contactDetail(request, contact_id):
+    try:
+        contact = Contact.objects.get(pk=contact_id)
+        response = contact.to_dict()
+    except Exception as e:
+        response = {
+            'status': 'Error',
+            'message': 'Contact with id {} not found'.format(contact_id)
+        }
+    return JsonResponse(response)
+    
+
+
+def getJSONLD(request):
+    doc = {
+        "http://schema.org/name": "West Coast Blue Pages",
+        "http://schema.org/url": {"@id": "https://bluepages.westcoastoceanalliance.org/"},
+        "http://schema.org/image": {"@id": "https://bluepages.westcoastoceanalliance.org/static/app/img/wcoa_header_blue.jpg"}
+    }
+
+    context = {
+        "name": "http://schema.org/name",
+        "homepage": {"@id": "http://schema.org/url", "@type": "@id"},
+        "image": {"@id": "http://schema.org/image", "@type": "@id"}
+    }
+
+    # print(json.dumps(compacted, indent=2))
+
+    compacted = jsonld.compact(doc, context)
+
+    return compacted
+
+
+
+
 
 ####################################
 #   ADMIN VIEWS                    #

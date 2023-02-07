@@ -5,6 +5,7 @@ django-reversion
 psycopg2-binary
 uwsgi
 pyshp
+PyLD
 
 # 3rd Party Form Fields
 django-phone-field
