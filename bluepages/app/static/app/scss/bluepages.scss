@@ -10,23 +10,15 @@ body {
   margin: 0;
   min-height: 100vh;
   padding: 0;
-  overflow: hidden;
   width: 100%;
 }
 
+/**
+* Header
+*/
+
 header {
-  flex: 1;
-}
-
-#header-logo {
-  max-height: 5rem;
-  max-width: 40vw;
-  border-radius: 0.7rem;
-}
-
-.home-link {
-  text-decoration: none;
-  color: black;
+  background: var(--wc-blue);
 }
 
 .filter-header:hover,
@@ -40,32 +32,39 @@ header {
   display: flex;
   border-bottom: 2px lightgray solid;
   box-shadow: 0px 0px 4px 0px gray;
+  justify-content: space-between;
+  padding: 2vh 2%;
 }
 
-.header-logo {
-  padding: 1rem 0.5rem 0;
+#header-logo {
+  max-height: 10vh;
+  max-width: 100%;
+  border-radius: 0.7rem;
 }
 
-.logo-bg {
-  background: var(--wc-blue);
-  border-radius: 2em;
-  color: white;
-  display: inline-block;
-  line-height: 1;
-  padding: .75em 1.75em;
-  position: relative;
-  width: auto;
-}
+#header-title {
+  align-items: center;
+  display: flex;
+  font-size: 5vh;
 
-.header-title {
-  width: 100%;
-  padding: 1rem  0.5rem 0;
+  a {
+    color: white;
+    text-decoration: none;
+
+    span {
+      font-size: 2.5vh;
+    }
+  }
 }
 
 .header-user {
-  min-width: 235px;
-  padding: 2rem;
+  display: flex;
+  align-items: center;
 }
+
+/**
+* Main
+*/
 
 main {
   display: flex;
