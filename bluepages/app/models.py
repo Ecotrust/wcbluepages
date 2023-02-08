@@ -364,6 +364,15 @@ class ContactBase(models.Model):
     def full_name(self):
         return str(self)
 
+    @property
+    def public(self):
+        if not self.show_on_entity_page == None:
+            return self.show_on_entity_page
+        else:
+            if self.entity:
+                return self.entity.allow_show_contacts()
+        return True
+
 class Contact(ContactBase):
     is_test_data = models.BooleanField(
         default=False
