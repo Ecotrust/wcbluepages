@@ -20,12 +20,17 @@ def home(request):
     return render(request, "welcome.html", context)
 
 def filterContactsRequest(request):
-    import json
     filters = {}
     if request.method == 'POST':
         filters = json.loads(request.POST.get('data'))
     contacts = filterContacts(filters)
     return JsonResponse(contacts)
+
+def stringMatch(target, match_list):
+    for match in match_list:
+        if not match.lower() in target.lower():
+            return False
+    return True
 
 def filterContacts(filters={}, format='datatable'):
     # TODO: Consider faceted searches and indices
@@ -46,8 +51,18 @@ def filterContacts(filters={}, format='datatable'):
         records = records.filter(regions__pk__in=filters['map_regions'])
         contact_ids = list(set(x.contact.pk for x in records))
         contacts = contacts.filter(pk__in=contact_ids)
+    if 'text' in filters.keys() and len(filters['text']) > 0:
+        # TODO: which fields is Data Tables looking at? How do we PERFECTLY replicate the search in python?
+        #     name (full_name)
+        name_ids = [x.pk for x in contacts if stringMatch(x.full_name, filters['text'])]
+        #     role (job_title)
+        role_ids = [x.pk for x in contacts if stringMatch(x.job_title, filters['text'])]
+        #     entity (entity.name)
+        entity_ids = [x.pk for x in contacts if stringMatch(x.entity.name, filters['text'])]
+        text_ids = list(set(name_ids + role_ids + entity_ids))
 
-    # TODO: getTopic and getRegion should accept filtered records, NOT contacts
+        contacts = contacts.filter(pk__in=text_ids)
+
     # TODO: Faster smarter queries and facets
     filters = {
         'Entities': getEntityFacetFilters(contacts),
@@ -72,7 +87,6 @@ def filterContacts(filters={}, format='datatable'):
         'filters': filters,
         'contacts': contacts_list
     }
-
 
 def getProfile(request):
     context = {
@@ -99,7 +113,6 @@ class editProfile(View):
             context = {'form': 'Your profile has been updated.', 'hide_submit': True}
         return render(request, self.template_name, context)
 
-
 class changePassword(View):
     template_name='generic_form.html'
     extra_context={}
@@ -122,7 +135,6 @@ class changePassword(View):
 
         return render(request, self.template_name, context)
         
-
 def getEntityFacetFilters(contacts=None):
     if not contacts:
         contacts = Contact.objects.all()
@@ -339,7 +351,6 @@ def recordSuggestionForm(request, contact_id, record_id=None):
     }
     return render(request, 'record_suggestion_form.html', context)
 
-
 def wireframe(request):
 
     context = {}
@@ -472,9 +483,6 @@ def getContactJsonLd(request, contact, render=False):
         return doc
     else:
         return JsonResponse(doc)
-
-
-
 
 ####################################
 #   ADMIN VIEWS                    #
@@ -739,10 +747,6 @@ def adminSuggestionRejection(request, suggestion_id):
     # return render(request, 'admin/app/error_page.html', {'message': message})
     messages.add_message(request, messages.ERROR, message, extra_tags='error', fail_silently=False)
     return HttpResponseRedirect('/admin/app/contactsuggestion/'.format(suggestion_id), {'messages': [{'tags': 'error', 'message': message}]})
-
-    
-
-    
 
 ####################################
 #   REGION PICKER                  #
