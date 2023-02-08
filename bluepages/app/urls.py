@@ -9,7 +9,7 @@ from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmVie
 from app.views import (
     home, regionJSON, regionPicker, wireframe, getSuggestionMenu, contactSuggestionMenu, contactSuggestionForm, 
     recordSuggestionForm, deleteSuggestedContact, deleteSuggestedRecord, getProfile, editProfile, changePassword, 
-    filterContactsRequest, contactList, contactDetail, contactDetailHTML, getContactJsonLd
+    filterContactsRequest, contactList, contactDetail, contactDetailHTML, getContactJsonLd, exportCSVList
 )
 
 
@@ -52,6 +52,8 @@ urlpatterns = [
     })),
     path('accounts/', include('django_registration.backends.one_step.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
+
+    path('export/csv/', exportCSVList, name='export_csv'),
     
     re_path(r'^region_picker', regionPicker),
     re_path(r'^wireframe', wireframe),

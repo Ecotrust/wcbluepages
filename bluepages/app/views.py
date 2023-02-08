@@ -1,10 +1,11 @@
 import csv
+from datetime import datetime
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
-from django.http import JsonResponse, HttpResponseRedirect, Http404
+from django.http import JsonResponse, HttpResponseRedirect, Http404, FileResponse
 from django.shortcuts import render
 from django.views import View
 import os
@@ -36,10 +37,11 @@ def exportCSVList(request):
     contacts = filterContacts(filters, format='dict')['contacts']
 
     try:
-        csv_file = tempfile.NamedTemporaryFile(delete=False)
+        prefix = '{}_bluepages_'.format(datetime.now().strftime("%Y-%m-%d_%H%M%S"))
+        csv_file = tempfile.NamedTemporaryFile(prefix=prefix, suffix=".csv", delete=False)
         with open(csv_file.name, 'w') as csv_contents:
             fieldnames = [
-                'last_name', 'first_name', 'middle_name', 'post_title', 'title', 'full_name', 'preferred_pronouns',
+                'last_name', 'first_name', 'middle_name', 'post_title', 'title', 'full_name', 'pronouns',
                 'job_title', 'expertise', 
                 'entity_name', 'entity_type', 'entity_website', 'entity_address', 'entity_phone', 'entity_fax', 'entity_parent',
                 'email', 'phone', 'mobile_phone', 'office_phone', 'fax', 'address', 'preferred_contact_method',
@@ -50,8 +52,11 @@ def exportCSVList(request):
             writer = csv.DictWriter(csv_contents, fieldnames=fieldnames)
 
             writer.writeheader()
-            for contact in contacts:
-                writer.writerow({contact.to_dict(flat=True)})
+            for contact in contacts.order_by('last_name', 'first_name', 'middle_name', 'post_title', 'entity__name', 'job_title'):
+                contact_dict = contact.to_dict(flat=True)
+                contact_dict.pop("is_test_data")
+                contact_dict.pop("show_on_entity_page")
+                writer.writerow(contact_dict)
 
 
         response = FileResponse(open(csv_file.name, 'rb'))
@@ -109,7 +114,7 @@ def filterContacts(filters={}, format='datatable'):
                 'role': x.job_title,
                 'entity': x.entity.name, 
                 'entity_id': x.entity.pk 
-            } for x in contacts.order_by('last_name', 'first_name', 'middle_name', 'title', 'post_title', 'entity__name')
+            } for x in contacts.order_by('last_name', 'first_name', 'middle_name', 'post_title', 'entity__name', 'job_title')
         ]
     else:
         contacts_list = contacts
