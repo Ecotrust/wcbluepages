@@ -376,26 +376,99 @@ def getContactJsonLd(request, contact, render=False):
         except Exception as e:
             raise Http404("Contact does not exist")
     site = get_current_site(request)
+
     context = {
         "@vocab": "http://schema.org/",
-        "endDate": {
-            "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
-        },
-        "startDate": {
-            "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
-        }
     }
+
     doc = {
-        "http://schema.org/name": "West Coast Blue Pages",
-        "http://schema.org/url": {"@id": "{}/".format(site)},
-        "http://schema.org/image": {"@id": "{}/static/app/img/wcoa_header_blue.jpg".format(site)}
+        "@context": {
+            "@vocab": "https://schema.org/"
+        },
+        "@id": "https://{}/contacts/{}/".format(site, contact.pk),
+        "@type": "Person",
+        "name": contact.full_name,
+        "jobTitle": contact.job_title,
+        "telephone": str(contact.phone),
+        # "url": contact.url if contact.url else None,
+        "knowsAbout": [
+            # {
+            # "@type": "Text",
+            # "description": "Invasive species in brackish water"
+            # },
+            # {
+            # "@type": "URL",
+            # "url": "https://www.wikidata.org/wiki/Q183368"
+            # },
+            # {
+            # "@id": "https://example.org/id/course/x",
+            # "@type": "Course",
+            # "description": "In this course ...",
+            # "url": "URL to the course"
+            # }
+        ],
+        # "identifier": {
+        #     "@id": "https://{}/contacts/{}/".format(site, contact.pk),
+        #     "@type": "PropertyValue",
+        #     "propertyID": "https://registry.identifiers.org/registry/orcid",
+        #     "url": "https://orcid.org/0000-0002-2257-9127",
+        #     "description": "Optional description of this record..."
+        # },
+        # "nationality": [
+        #     {
+        #         "@type": "Country",
+        #         "name": contact.addresss.country if contact.address else None
+        #     },
+        #     {
+        #         "@type": "DefinedTerm",
+        #         "url": "https://unece.org/trade/cefact/unlocode-code-list-country-and-territory",
+        #         "inDefinedTermSet": "UN/LOCODE Code List by Country and Territory",
+        #         "name": "United States",
+        #         "termCode": "US"
+        #     } if contact.address and contact.address.country == 'USA' else None
+        # ],
+        # "knowsLanguage" :{
+        #     "@type": "Language",
+        #     "name": "Spanish",
+        #     "alternateName": "es"
+        # }
     }
-    compacted = jsonld.compact(doc, context)
+
+    if contact.address and contact.address.country:
+        doc['nationality'] = [
+            {
+                "@type": "Country",
+                "name": contact.address.country
+            },
+            {
+                "@type": "DefinedTerm",
+                "url": "https://unece.org/trade/cefact/unlocode-code-list-country-and-territory",
+                "inDefinedTermSet": "UN/LOCODE Code List by Country and Territory",
+                "name": "United States",
+                "termCode": "US"
+            } if contact.address and contact.address.country == 'USA' else None
+        ]
+    for record in contact.record_set.all():
+        doc['knowsAbout'].append(
+            {
+                "@type":"Text",
+                "description":str(record.topic)
+            },
+            # {
+            # "@type": "URL",
+            # "url": "https://www.wikidata.org/wiki/Q188989"
+            # },
+        )
+    doc['@context'] = context
+
+
+    # The above is formatted correctly - I'm not sure we need jsonld (RDH 2023-02-07)
+    # compacted = jsonld.compact(doc, context)
 
     if render:
-        return compacted
+        return doc
     else:
-        return JsonResponse(compacted)
+        return JsonResponse(doc)
 
 
 
