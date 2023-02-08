@@ -28,7 +28,10 @@ def filterContactsRequest(request):
 def filterContacts(filters={}):
     # TODO: Consider faceted searches and indices
     #   https://www.enterprisedb.com/postgres-tutorials/how-implement-faceted-search-django-and-postgresql
-    contacts = Contact.objects.all()
+    contacts = Contact.objects.filter(is_test_data=False)
+    if ('entities' not in filters.keys() or len(filters['entities']) == 0) and ('topics' not in filters.keys() or len(filters['topics']) == 0) and ('map_regions' not in filters.keys() or len(filters['map_regions']) == 0):
+        public_ids = [contact.pk for contact in contacts if contact.public]
+        contacts = contacts.filter(pk__in=public_ids)
     if 'entities' in filters.keys() and len(filters['entities']) > 0:
         contacts = contacts.filter(entity__pk__in=filters['entities'])
     if 'topics' in filters.keys() and len(filters['topics']) > 0:
