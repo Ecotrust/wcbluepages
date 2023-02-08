@@ -2,7 +2,8 @@ from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
-from django.http import JsonResponse, HttpResponseRedirect
+from django.contrib.sites.shortcuts import get_current_site
+from django.http import JsonResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.views import View
 from pyld import jsonld
@@ -360,27 +361,41 @@ def contactDetail(request, contact_id):
         }
     return JsonResponse(response)
     
+def contactDetailHTML(request, contact_id):
+    try:
+        contact = Contact.objects.get(pk=contact_id)
+        json_ld = json.dumps(getContactJsonLd(request, contact, render=True), indent=2)
+    except Exception as e:
+        raise Http404("Contact does not exist")
+    return render(request, 'contact_detail.html', {'contact': contact, 'JSON_LD': json_ld})
 
-
-def getJSONLD(request):
+def getContactJsonLd(request, contact, render=False):
+    if type(contact) == int:
+        try:
+            contact = Contact.objects.get(pk=contact)
+        except Exception as e:
+            raise Http404("Contact does not exist")
+    site = get_current_site(request)
+    context = {
+        "@vocab": "http://schema.org/",
+        "endDate": {
+            "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+        },
+        "startDate": {
+            "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+        }
+    }
     doc = {
         "http://schema.org/name": "West Coast Blue Pages",
-        "http://schema.org/url": {"@id": "https://bluepages.westcoastoceanalliance.org/"},
-        "http://schema.org/image": {"@id": "https://bluepages.westcoastoceanalliance.org/static/app/img/wcoa_header_blue.jpg"}
+        "http://schema.org/url": {"@id": "{}/".format(site)},
+        "http://schema.org/image": {"@id": "{}/static/app/img/wcoa_header_blue.jpg".format(site)}
     }
-
-    context = {
-        "name": "http://schema.org/name",
-        "homepage": {"@id": "http://schema.org/url", "@type": "@id"},
-        "image": {"@id": "http://schema.org/image", "@type": "@id"}
-    }
-
-    # print(json.dumps(compacted, indent=2))
-
     compacted = jsonld.compact(doc, context)
 
-    return compacted
-
+    if render:
+        return compacted
+    else:
+        return JsonResponse(compacted)
 
 
 

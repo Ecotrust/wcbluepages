@@ -9,7 +9,7 @@ from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmVie
 from app.views import (
     home, regionJSON, regionPicker, wireframe, getSuggestionMenu, contactSuggestionMenu, contactSuggestionForm, 
     recordSuggestionForm, deleteSuggestedContact, deleteSuggestedRecord, getProfile, editProfile, changePassword, 
-    filterContactsRequest, contactList, contactDetail
+    filterContactsRequest, contactList, contactDetail, contactDetailHTML, getContactJsonLd
 )
 
 
@@ -20,7 +20,9 @@ urlpatterns = [
     path('suggestion_form/<int:contact_id>/', contactSuggestionForm),
     re_path(r'^suggestion_form', contactSuggestionForm),
     path('contacts/', contactList, name='contact_list'),
-    path('contacts/<int:contact_id>/', contactDetail, name='contact_detail'),
+    path('contacts/<int:contact_id>/', contactDetailHTML, name='contact_detail_html'),
+    path('contacts/api/<int:contact_id>/', contactDetail, name='contact_detail'),
+    path('contacts/json_ld/<int:contact>/', getContactJsonLd, name='contact_json_ld'),
     path('contact_suggestion_menu/<int:contact_id>/', contactSuggestionMenu),
     path('contact_suggestion_menu/', contactSuggestionMenu),
     path('record_suggestion_form/<int:contact_id>/<int:record_id>/', recordSuggestionForm),

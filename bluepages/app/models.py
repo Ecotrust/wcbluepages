@@ -402,7 +402,7 @@ class Contact(ContactBase):
         return out_dict
 
     def get_absolute_url(self):
-        return reverse('contact_detail', args=[str(self.id)])
+        return reverse('contact_detail_html', args=[str(self.id)])
 
     class Meta:
         ordering = ['last_name', 'first_name', 'middle_name', 'entity', 'job_title']
