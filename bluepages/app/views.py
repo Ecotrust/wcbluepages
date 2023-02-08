@@ -1,3 +1,4 @@
+import csv
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.forms import PasswordChangeForm
@@ -6,8 +7,10 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.http import JsonResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.views import View
+import os
 from pyld import jsonld
 import json
+import tempfile
 
 from app.models import Region, Topic, Entity, Contact, Record, RegionState, ContactSuggestion, RecordSuggestion
 from app.forms import ContactSuggestionForm, RecordSuggestionForm, UserProfileForm, ContactForm, RecordForm
@@ -25,6 +28,38 @@ def filterContactsRequest(request):
         filters = json.loads(request.POST.get('data'))
     contacts = filterContacts(filters)
     return JsonResponse(contacts)
+
+def exportCSVList(request):
+    filters = {}
+    if request.method == 'POST':
+        filters = json.loads(request.POST.get('data'))
+    contacts = filterContacts(filters, format='dict')['contacts']
+
+    try:
+        csv_file = tempfile.NamedTemporaryFile(delete=False)
+        with open(csv_file.name, 'w') as csv_contents:
+            fieldnames = [
+                'last_name', 'first_name', 'middle_name', 'post_title', 'title', 'full_name', 'preferred_pronouns',
+                'job_title', 'expertise', 
+                'entity_name', 'entity_type', 'entity_website', 'entity_address', 'entity_phone', 'entity_fax', 'entity_parent',
+                'email', 'phone', 'mobile_phone', 'office_phone', 'fax', 'address', 'preferred_contact_method',
+                'topics', 'regions',
+                'date_created', 'date_modified',
+                'notes', 'id', 'entity_id'
+            ]
+            writer = csv.DictWriter(csv_contents, fieldnames=fieldnames)
+
+            writer.writeheader()
+            for contact in contacts:
+                writer.writerow({contact.to_dict(flat=True)})
+
+
+        response = FileResponse(open(csv_file.name, 'rb'))
+        return response
+
+    finally:
+        os.remove(csv_file.name)
+
 
 def stringMatch(target, match_list):
     for match in match_list:
@@ -52,12 +87,8 @@ def filterContacts(filters={}, format='datatable'):
         contact_ids = list(set(x.contact.pk for x in records))
         contacts = contacts.filter(pk__in=contact_ids)
     if 'text' in filters.keys() and len(filters['text']) > 0:
-        # TODO: which fields is Data Tables looking at? How do we PERFECTLY replicate the search in python?
-        #     name (full_name)
         name_ids = [x.pk for x in contacts if stringMatch(x.full_name, filters['text'])]
-        #     role (job_title)
         role_ids = [x.pk for x in contacts if stringMatch(x.job_title, filters['text'])]
-        #     entity (entity.name)
         entity_ids = [x.pk for x in contacts if stringMatch(x.entity.name, filters['text'])]
         text_ids = list(set(name_ids + role_ids + entity_ids))
 

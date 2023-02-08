@@ -175,7 +175,7 @@ class Entity(models.Model):
         # default to transparency
         return True
 
-    def to_dict(self, include_contacts=False):
+    def to_dict(self, include_contacts=False, flat=False):
         
         out_dict = {
             'id': self.pk,
@@ -187,12 +187,16 @@ class Entity(models.Model):
             'phone': str(self.phone),
             'fax': str(self.fax),
             'show_contacts': self.allow_show_contacts(),
-            'parent': self.parent.to_dict(include_contacts=False) if self.parent else None,
             'notes': self.notes
         }
 
-        if include_contacts and self.allow_show_contacts():
+        if include_contacts and self.allow_show_contacts() and not flat:
             out_dict['contacts'] = [contact.to_dict(include_records=False) for contact in self.contacts_set.all()]
+
+        if flat:
+            out_dict['parent'] = str(self.parent)
+        else:
+            out_dict['parent'] = self.parent.to_dict(include_contacts=False, flat=flat) if self.parent else None
 
         return out_dict
 
@@ -380,11 +384,16 @@ class Contact(ContactBase):
         default=False
     )
 
-    def to_dict(self, include_entity=True, include_records=True, include_regions=True, include_geometry=False):
+    def to_dict(self, include_entity=True, include_records=True, include_regions=True, include_geometry=False, flat=False):
         # Maybe: list of rough region types that their regions fall into (state/depth)
         out_dict = {
             'id': self.pk,
-            'name': self.full_name,
+            'full_name': self.full_name,
+            'last_name': self.last_name,
+            'first_name': self.first_name,
+            'middle_name': self.middle_name,
+            'post_title': self.post_title,
+            'title': self.title,
             'pronouns': self.preferred_pronouns,
             'job_title': self.job_title,
             'expertise': self.expertise,
@@ -403,10 +412,33 @@ class Contact(ContactBase):
         }
 
         if include_entity:
-            out_dict['entity'] = self.entity.to_dict()
+            entity = self.entity.to_dict(flat=flat)
+            if flat:
+                out_dict['entity_name'] = entity['name']
+                out_dict['entity_type'] = entity['entity_type']
+                out_dict['entity_website'] = entity['website']
+                out_dict['entity_address'] = entity['address']
+                out_dict['entity_phone'] = entity['phone']
+                out_dict['entity_parent'] = entity['parent']
+
+            else:
+                out_dict['entity'] = entity
 
         if include_records:
-            out_dict['records'] = [record.to_dict(include_regions=include_regions, include_geometry=include_geometry) for record in self.record_set.all()]
+            records = [record.to_dict(include_regions=include_regions, include_geometry=include_geometry) for record in self.record_set.all().order_by('topic__name')]
+            if flat:
+                topics = []
+                region_ids = []
+                for record in records:
+                    topics.append(record['topic'])
+                    for region in record['regions']:
+                        region_ids.append(region['id'])
+                topics = list(set(topics))
+                out_dict['topics'] = ', '.join(topics)
+                regions = [x.name for x in Region.objects.filter(id__in=region_ids).order_by('name')]
+                out_dict['regions'] = ', '.join(regions)
+            else:
+                out_dict['records'] = records
 
         return out_dict
 
