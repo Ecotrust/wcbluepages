@@ -5,7 +5,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
-from django.http import JsonResponse, HttpResponseRedirect, Http404, FileResponse
+from django.http import JsonResponse, HttpResponseRedirect, Http404, FileResponse, HttpResponse
 from django.shortcuts import render
 from django.views import View
 import os
@@ -39,6 +39,8 @@ def exportCSVList(request):
     try:
         prefix = '{}_bluepages_'.format(datetime.now().strftime("%Y-%m-%d_%H%M%S"))
         csv_file = tempfile.NamedTemporaryFile(prefix=prefix, suffix=".csv", delete=False)
+
+
         with open(csv_file.name, 'w') as csv_contents:
             fieldnames = [
                 'last_name', 'first_name', 'middle_name', 'post_title', 'title', 'full_name', 'pronouns',
@@ -66,10 +68,16 @@ def exportCSVList(request):
         os.remove(csv_file.name)
 
 
-def stringMatch(target, match_list):
+def stringMatch(targets, match_list):
     for match in match_list:
-        if not match.lower() in target.lower():
+        match_found = False
+        for target in targets:
+            if match.lower() in target.lower():
+                match_found = True
+                break
+        if not match_found:
             return False
+            
     return True
 
 def filterContacts(filters={}, format='datatable'):
@@ -92,10 +100,7 @@ def filterContacts(filters={}, format='datatable'):
         contact_ids = list(set(x.contact.pk for x in records))
         contacts = contacts.filter(pk__in=contact_ids)
     if 'text' in filters.keys() and len(filters['text']) > 0:
-        name_ids = [x.pk for x in contacts if stringMatch(x.full_name, filters['text'])]
-        role_ids = [x.pk for x in contacts if stringMatch(x.job_title, filters['text'])]
-        entity_ids = [x.pk for x in contacts if stringMatch(x.entity.name, filters['text'])]
-        text_ids = list(set(name_ids + role_ids + entity_ids))
+        text_ids = [x.pk for x in contacts if stringMatch([x.full_name, x.job_title, x.entity.name], filters['text'])]
 
         contacts = contacts.filter(pk__in=text_ids)
 
