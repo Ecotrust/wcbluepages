@@ -1,13 +1,17 @@
+import csv
+from datetime import datetime
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
-from django.http import JsonResponse, HttpResponseRedirect, Http404
+from django.http import JsonResponse, HttpResponseRedirect, Http404, FileResponse, HttpResponse
 from django.shortcuts import render
 from django.views import View
+import os
 from pyld import jsonld
 import json
+import tempfile
 
 from app.models import Region, Topic, Entity, Contact, Record, RegionState, ContactSuggestion, RecordSuggestion
 from app.forms import ContactSuggestionForm, RecordSuggestionForm, UserProfileForm, ContactForm, RecordForm
@@ -20,12 +24,61 @@ def home(request):
     return render(request, "welcome.html", context)
 
 def filterContactsRequest(request):
-    import json
     filters = {}
     if request.method == 'POST':
         filters = json.loads(request.POST.get('data'))
     contacts = filterContacts(filters)
     return JsonResponse(contacts)
+
+def exportCSVList(request):
+    filters = {}
+    if request.method == 'POST':
+        filters = json.loads(request.POST.get('data'))
+    contacts = filterContacts(filters, format='dict')['contacts']
+
+    try:
+        prefix = '{}_bluepages_'.format(datetime.now().strftime("%Y-%m-%d_%H%M%S"))
+        csv_file = tempfile.NamedTemporaryFile(prefix=prefix, suffix=".csv", delete=False)
+
+
+        with open(csv_file.name, 'w') as csv_contents:
+            fieldnames = [
+                'last_name', 'first_name', 'middle_name', 'post_title', 'title', 'full_name', 'pronouns',
+                'job_title', 'expertise', 
+                'entity_name', 'entity_type', 'entity_website', 'entity_address', 'entity_phone', 'entity_fax', 'entity_parent',
+                'email', 'phone', 'mobile_phone', 'office_phone', 'fax', 'address', 'preferred_contact_method',
+                'topics', 'regions',
+                'date_created', 'date_modified',
+                'notes', 'id', 'entity_id'
+            ]
+            writer = csv.DictWriter(csv_contents, fieldnames=fieldnames)
+
+            writer.writeheader()
+            for contact in contacts.order_by('last_name', 'first_name', 'middle_name', 'post_title', 'entity__name', 'job_title'):
+                contact_dict = contact.to_dict(flat=True)
+                contact_dict.pop("is_test_data")
+                contact_dict.pop("show_on_entity_page")
+                writer.writerow(contact_dict)
+
+
+        response = FileResponse(open(csv_file.name, 'rb'))
+        return response
+
+    finally:
+        os.remove(csv_file.name)
+
+
+def stringMatch(targets, match_list):
+    for match in match_list:
+        match_found = False
+        for target in targets:
+            if match.lower() in target.lower():
+                match_found = True
+                break
+        if not match_found:
+            return False
+            
+    return True
 
 def filterContacts(filters={}, format='datatable'):
     # TODO: Consider faceted searches and indices
@@ -46,8 +99,11 @@ def filterContacts(filters={}, format='datatable'):
         records = records.filter(regions__pk__in=filters['map_regions'])
         contact_ids = list(set(x.contact.pk for x in records))
         contacts = contacts.filter(pk__in=contact_ids)
+    if 'text' in filters.keys() and len(filters['text']) > 0:
+        text_ids = [x.pk for x in contacts if stringMatch([x.full_name, x.job_title, x.entity.name], filters['text'])]
 
-    # TODO: getTopic and getRegion should accept filtered records, NOT contacts
+        contacts = contacts.filter(pk__in=text_ids)
+
     # TODO: Faster smarter queries and facets
     filters = {
         'Entities': getEntityFacetFilters(contacts),
@@ -63,7 +119,7 @@ def filterContacts(filters={}, format='datatable'):
                 'role': x.job_title,
                 'entity': x.entity.name, 
                 'entity_id': x.entity.pk 
-            } for x in contacts.order_by('last_name', 'first_name', 'middle_name', 'title', 'post_title', 'entity__name')
+            } for x in contacts.order_by('last_name', 'first_name', 'middle_name', 'post_title', 'entity__name', 'job_title')
         ]
     else:
         contacts_list = contacts
@@ -72,7 +128,6 @@ def filterContacts(filters={}, format='datatable'):
         'filters': filters,
         'contacts': contacts_list
     }
-
 
 def getProfile(request):
     context = {
@@ -99,7 +154,6 @@ class editProfile(View):
             context = {'form': 'Your profile has been updated.', 'hide_submit': True}
         return render(request, self.template_name, context)
 
-
 class changePassword(View):
     template_name='generic_form.html'
     extra_context={}
@@ -122,7 +176,6 @@ class changePassword(View):
 
         return render(request, self.template_name, context)
         
-
 def getEntityFacetFilters(contacts=None):
     if not contacts:
         contacts = Contact.objects.all()
@@ -339,7 +392,6 @@ def recordSuggestionForm(request, contact_id, record_id=None):
     }
     return render(request, 'record_suggestion_form.html', context)
 
-
 def wireframe(request):
 
     context = {}
@@ -472,9 +524,6 @@ def getContactJsonLd(request, contact, render=False):
         return doc
     else:
         return JsonResponse(doc)
-
-
-
 
 ####################################
 #   ADMIN VIEWS                    #
@@ -739,10 +788,6 @@ def adminSuggestionRejection(request, suggestion_id):
     # return render(request, 'admin/app/error_page.html', {'message': message})
     messages.add_message(request, messages.ERROR, message, extra_tags='error', fail_silently=False)
     return HttpResponseRedirect('/admin/app/contactsuggestion/'.format(suggestion_id), {'messages': [{'tags': 'error', 'message': message}]})
-
-    
-
-    
 
 ####################################
 #   REGION PICKER                  #
