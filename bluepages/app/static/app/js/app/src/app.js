@@ -335,9 +335,9 @@ app.loadSearchResults = function(results, status) {
             filter_col_html += '<li>' +
                     '<span type="' + key + '" value="' + filter.id + '" onclick="app.updateState(\'' + key.toLowerCase() + '\', \'' + filter.id + '\')">';
             if (app.filter_state[key.toLowerCase()].indexOf(filter.id) >= 0) {
-                filter_col_html += '<b>' + filter.name + '(' + filter.count + ')' + ' <i class="bi bi-check2-square"></i></b>';
+                filter_col_html += '<b>' + filter.name  + ' <i class="bi bi-check2-square"></i></b>';
             } else {
-                filter_col_html += filter.name + '(' + filter.count + ')';
+                filter_col_html += filter.name;
             }
             filter_col_html += '</span>' +
                 '</li>';

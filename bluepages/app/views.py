@@ -128,8 +128,7 @@ def getEntityFacetFilters(contacts=None):
             'id': entity.pk, 
             'count': contacts.filter(entity=entity).count()
         }
-        if entity_dict['count'] > 0:
-            entities.append(entity_dict)
+        entities.append(entity_dict)
     return entities
 
 def getTopicFacetFilters(contacts=None):
@@ -137,14 +136,14 @@ def getTopicFacetFilters(contacts=None):
         contacts = Contact.objects.all()
 
     topics_dict = {}
+    for topic in Topic.objects.all().order_by('name'):
+        topics_dict[topic.name] = {'name': topic.name, 'id': topic.pk, 'count': 0}
     for contact in contacts:
         contact_topics = []
         for record in contact.record_set.all():
             contact_topics.append(record.topic)
         contact_topics = list(set(contact_topics))
         for topic in contact_topics:
-            if topic.name not in topics_dict.keys():
-                topics_dict[topic.name] = {'name': topic.name, 'id': topic.pk, 'count':0}
             topics_dict[topic.name]['count'] += 1
     
     topic_names = list(topics_dict.keys())
@@ -178,11 +177,9 @@ def getRegionFacetFilters(contacts=None):
             if len(contact_regions) == 6:
                 break
             for state in states:
-                if state.name not in contact_regions and record.regions.filter(states=state).count() > 0:
-                    contact_regions.append(state.postal_code)
+                contact_regions.append(state.postal_code)
             for depth in depths:
-                if depth not in contact_regions and record.regions.filter(depth_type=depth).count() > 0:
-                    contact_regions.append(depth)
+                contact_regions.append(depth)
         for region_index in regions_dict.keys():
             region = regions_dict[region_index]
             if region['id'] in contact_regions:
