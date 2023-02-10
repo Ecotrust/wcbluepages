@@ -2,9 +2,11 @@ from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
-from django.http import JsonResponse, HttpResponseRedirect
+from django.contrib.sites.shortcuts import get_current_site
+from django.http import JsonResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.views import View
+from pyld import jsonld
 import json
 
 from app.models import Region, Topic, Entity, Contact, Record, RegionState, ContactSuggestion, RecordSuggestion
@@ -25,7 +27,7 @@ def filterContactsRequest(request):
     contacts = filterContacts(filters)
     return JsonResponse(contacts)
 
-def filterContacts(filters={}):
+def filterContacts(filters={}, format='datatable'):
     # TODO: Consider faceted searches and indices
     #   https://www.enterprisedb.com/postgres-tutorials/how-implement-faceted-search-django-and-postgresql
     contacts = Contact.objects.filter(is_test_data=False)
@@ -53,18 +55,22 @@ def filterContacts(filters={}):
         'Regions': getRegionFacetFilters(contacts)
     }
     
-    contacts_dict = [
-        {
-            'id':x.pk, 
-            'name': x.full_name,
-            'role': x.job_title,
-            'entity': x.entity.name, 
-            'entity_id': x.entity.pk 
-        } for x in contacts.order_by('last_name', 'first_name', 'middle_name', 'title', 'post_title', 'entity__name')
-    ]
+    if format == 'datatable':
+        contacts_list = [
+            {
+                'id':x.pk, 
+                'name': x.full_name,
+                'role': x.job_title,
+                'entity': x.entity.name, 
+                'entity_id': x.entity.pk 
+            } for x in contacts.order_by('last_name', 'first_name', 'middle_name', 'title', 'post_title', 'entity__name')
+        ]
+    else:
+        contacts_list = contacts
+
     return {
         'filters': filters,
-        'contacts': contacts_dict
+        'contacts': contacts_list
     }
 
 
@@ -339,6 +345,136 @@ def wireframe(request):
     context = {}
 
     return render(request, "wireframe.html", context)
+
+def contactList(request):
+    filters = {}
+    if request.method == 'POST':
+        filters = json.loads(request.POST.get('data'))
+    contacts = filterContacts(filters)['contacts']
+    return JsonResponse({'contacts': contacts})
+
+def contactDetail(request, contact_id):
+    try:
+        contact = Contact.objects.get(pk=contact_id)
+        response = contact.to_dict()
+    except Exception as e:
+        response = {
+            'status': 'Error',
+            'message': 'Contact with id {} not found'.format(contact_id)
+        }
+    return JsonResponse(response)
+    
+def contactDetailHTML(request, contact_id):
+    try:
+        contact = Contact.objects.get(pk=contact_id)
+        json_ld = json.dumps(getContactJsonLd(request, contact, render=True), indent=2)
+    except Exception as e:
+        raise Http404("Contact does not exist")
+    return render(request, 'contact_detail.html', {'contact': contact, 'JSON_LD': json_ld})
+
+def getContactJsonLd(request, contact, render=False):
+    if type(contact) == int:
+        try:
+            contact = Contact.objects.get(pk=contact)
+        except Exception as e:
+            raise Http404("Contact does not exist")
+    site = get_current_site(request)
+
+    context = {
+        "@vocab": "http://schema.org/",
+    }
+
+    doc = {
+        "@context": {
+            "@vocab": "https://schema.org/"
+        },
+        "@id": "https://{}/contacts/{}/".format(site, contact.pk),
+        "@type": "Person",
+        "name": contact.full_name,
+        "jobTitle": contact.job_title,
+        "telephone": str(contact.phone),
+        # "url": contact.url if contact.url else None,
+        "knowsAbout": [
+            # {
+            # "@type": "Text",
+            # "description": "Invasive species in brackish water"
+            # },
+            # {
+            # "@type": "URL",
+            # "url": "https://www.wikidata.org/wiki/Q183368"
+            # },
+            # {
+            # "@id": "https://example.org/id/course/x",
+            # "@type": "Course",
+            # "description": "In this course ...",
+            # "url": "URL to the course"
+            # }
+        ],
+        # "identifier": {
+        #     "@id": "https://{}/contacts/{}/".format(site, contact.pk),
+        #     "@type": "PropertyValue",
+        #     "propertyID": "https://registry.identifiers.org/registry/orcid",
+        #     "url": "https://orcid.org/0000-0002-2257-9127",
+        #     "description": "Optional description of this record..."
+        # },
+        # "nationality": [
+        #     {
+        #         "@type": "Country",
+        #         "name": contact.addresss.country if contact.address else None
+        #     },
+        #     {
+        #         "@type": "DefinedTerm",
+        #         "url": "https://unece.org/trade/cefact/unlocode-code-list-country-and-territory",
+        #         "inDefinedTermSet": "UN/LOCODE Code List by Country and Territory",
+        #         "name": "United States",
+        #         "termCode": "US"
+        #     } if contact.address and contact.address.country == 'USA' else None
+        # ],
+        # "knowsLanguage" :{
+        #     "@type": "Language",
+        #     "name": "Spanish",
+        #     "alternateName": "es"
+        # }
+    }
+
+    if contact.address and contact.address.country:
+        doc['nationality'] = [
+            {
+                "@type": "Country",
+                "name": contact.address.country
+            },
+            {
+                "@type": "DefinedTerm",
+                "url": "https://unece.org/trade/cefact/unlocode-code-list-country-and-territory",
+                "inDefinedTermSet": "UN/LOCODE Code List by Country and Territory",
+                "name": "United States",
+                "termCode": "US"
+            } if contact.address and contact.address.country == 'USA' else None
+        ]
+    for record in contact.record_set.all():
+        doc['knowsAbout'].append(
+            {
+                "@type":"Text",
+                "description":str(record.topic)
+            },
+            # {
+            # "@type": "URL",
+            # "url": "https://www.wikidata.org/wiki/Q188989"
+            # },
+        )
+    doc['@context'] = context
+
+
+    # The above is formatted correctly - I'm not sure we need jsonld (RDH 2023-02-07)
+    # compacted = jsonld.compact(doc, context)
+
+    if render:
+        return doc
+    else:
+        return JsonResponse(doc)
+
+
+
 
 ####################################
 #   ADMIN VIEWS                    #

@@ -1,6 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.gis.db.models import GeometryField
+from django.urls import reverse
+
 from phone_field import PhoneField
 
 from django.contrib.auth.models import User
@@ -407,6 +409,9 @@ class Contact(ContactBase):
             out_dict['records'] = [record.to_dict(include_regions=include_regions, include_geometry=include_geometry) for record in self.record_set.all()]
 
         return out_dict
+
+    def get_absolute_url(self):
+        return reverse('contact_detail_html', args=[str(self.id)])
 
     class Meta:
         ordering = ['last_name', 'first_name', 'middle_name', 'entity', 'job_title']
