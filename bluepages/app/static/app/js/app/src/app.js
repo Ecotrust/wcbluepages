@@ -332,12 +332,12 @@ app.loadSearchResults = function(results, status) {
             filter_col_html += '<ul class="collapse" id="' + key +'FilterOptions">';
         }
         results.filters[key].forEach( filter => {
-            filter_col_html += '<li>' +
+            filter_col_html += '<li class="filter-list-item">' +
                     '<span type="' + key + '" value="' + filter.id + '" onclick="app.updateState(\'' + key.toLowerCase() + '\', \'' + filter.id + '\')">';
             if (app.filter_state[key.toLowerCase()].indexOf(filter.id) >= 0) {
-                filter_col_html += '<b>' + filter.name  + ' <i class="bi bi-check2-square"></i></b>';
+                filter_col_html += '<b><i class="bi bi-check2-square"></i>' + filter.name  + '</b>';
             } else {
-                filter_col_html += filter.name;
+                filter_col_html += '<i class="bi bi-square"></i> ' + filter.name;
             }
             filter_col_html += '</span>' +
                 '</li>';

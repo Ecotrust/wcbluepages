@@ -1,6 +1,7 @@
 :root {
   --background: skyblue;
   --wc-blue: #002e7c;
+  --highlight: rgba(0,0,0,0.2);
 }
 
 body {
@@ -29,11 +30,23 @@ header {
   color: black;
 }
 
+.filter-header {
+  margin-top: 0.5rem;
+  >span {
+    padding: 0.2rem;
+    border-radius: 0.3rem;
+  }
+}
+
 .filter-header:hover,
 .home-link:hover,
 #header-title:hover {
   color: var(--wc-blue);
   text-decoration: none;
+}
+
+.filter-header>span:hover {
+  background-color: var(--highlight);
 }
 
 .header-flex {
@@ -91,9 +104,24 @@ main {
   width: auto;
 }
 
-#filter-column .filter-header>span {
-  cursor: pointer;
+#filter-column{
+    .filter-header>span {
+      cursor: pointer;
+    } 
+    li.filter-list-item {
+      list-style: none;
+      span {
+        cursor: pointer;
+        border-radius: 0.3rem;
+        padding: 0.2rem;
+      }
+      span:hover {
+        color: var(--wc-blue);
+        background-color: var(--highlight);
+      }
+    }
 }
+
 
 #map-column div.spinner-border,
 #filter-column div.spinner-border {
