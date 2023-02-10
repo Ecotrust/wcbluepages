@@ -522,6 +522,16 @@ def getContactJsonLd(request, contact, render=False):
     else:
         return JsonResponse(doc)
 
+def entityList(request): 
+    filters = {}
+    entities = {
+        'entities': []
+    }
+    for entity in Entity.objects.all().order_by('name'):
+        entities['entities'].append(entity.to_dict())
+    return JsonResponse(entities)
+#entityDetail, entityDetailHTML, getEntityJsonLd,
+
 ####################################
 #   ADMIN VIEWS                    #
 ####################################
