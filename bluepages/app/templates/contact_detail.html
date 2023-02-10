@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<head>
+    <!-- THIS NEEDS TO BE HERE FOR Ocean InfoHub Connectivity!-->
+    <script type="application/ld+json">
+        {{ JSON_LD|safe }}
+    </script>
+</head>
+<body>
+    <h1>{{ contact.full_name }}</h1>
+    <h3>{{ contact.job_title }}{% if contact.job_title and contact.entity %} at {% endif %}{{ contact.entity }}</h3>
+
+</body>
