@@ -530,7 +530,17 @@ def entityList(request):
     for entity in Entity.objects.all().order_by('name'):
         entities['entities'].append(entity.to_dict())
     return JsonResponse(entities)
-#entityDetail, entityDetailHTML, getEntityJsonLd,
+def entityDetail(request, id):
+    try:
+        entity = Entity.objects.get(pk=id)
+        response = entity.to_dict()
+    except Exception as e:
+        response = {
+            'status': 'Error',
+            'message': 'Error with id {} not found'.format(id)
+        }
+    return JsonResponse(response)
+# #entityDetailHTML, getEntityJsonLd,
 
 ####################################
 #   ADMIN VIEWS                    #
