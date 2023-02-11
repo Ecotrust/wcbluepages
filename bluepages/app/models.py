@@ -193,7 +193,7 @@ class Entity(models.Model):
         if include_contacts and self.allow_show_contacts() and not flat:
             out_dict['contacts'] = [contact.to_dict(include_records=False) for contact in self.contacts_set.all()]
 
-        if flat:
+        if flat or self.parent == self:
             out_dict['parent'] = str(self.parent)
         else:
             out_dict['parent'] = self.parent.to_dict(include_contacts=False, flat=flat) if self.parent else None
@@ -412,7 +412,7 @@ class Contact(ContactBase):
         }
 
         if include_entity:
-            entity = self.entity.to_dict(flat=flat)
+            entity = self.entity.to_dict(include_contacts=False, flat=flat)
             if flat:
                 out_dict['entity_name'] = entity['name']
                 out_dict['entity_type'] = entity['entity_type']

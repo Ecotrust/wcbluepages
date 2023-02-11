@@ -540,7 +540,15 @@ def entityDetail(request, id):
             'message': 'Error with id {} not found'.format(id)
         }
     return JsonResponse(response)
-# #entityDetailHTML, getEntityJsonLd,
+def entityDetailHTML(request, id):
+    try:
+        entity = Entity.objects.get(pk=id)
+        json_ld = 'TODO'
+    except Exception as e:
+        raise Http404("Entity does not exist")
+    return render(request, 'entity_detail.html', {'entity': entity, 'JSON_LD': json_ld})
+
+#getEntityJsonLd
 
 ####################################
 #   ADMIN VIEWS                    #
