@@ -171,7 +171,7 @@ class Entity(models.Model):
         else:
             # do what may parent (or nearest non-wishy-washy ancestor) does
             if not self.parent == None:
-                return parent.allow_show_contacts()
+                return self.parent.allow_show_contacts()
         # default to transparency
         return True
 
