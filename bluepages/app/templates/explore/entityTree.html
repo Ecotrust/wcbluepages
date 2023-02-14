@@ -4,13 +4,22 @@
             <li>
                 {{ entity.name }}
                 {% if entity.children|length > 0 %}
-                    <b>+</b>
+                    <a class='btn btn-primary' data-toggle="collapse" href="#explore-entity-children-{{ entity.id }}" 
+                    role="button" aria-expanded="false" aria-controls="explore-entity-children-{{ entity.id }}">
+                        <i id="explore-entity-chevron-{{ entity.id }}" class="bi bi-chevron-down explore-entity-chevron"></i>
+                    </a>
                 {% endif %} 
-                <button class="btn btn-primary" onclick="app.prepExploreDetailsModal('entities', {{entity.id}})">View</button>
+                <button class="btn btn-primary entity-details-button" onclick="app.prepExploreDetailsModal('entities', {{entity.id}})">View</button>
             </li>
-            {% with entity.children as entities %}
-                {% include "explore/entityTree.html" %}        
-            {% endwith %}
+            {% if entity.children|length > 0 %}
+                <div class="collapse" id="explore-entity-children-{{ entity.id }}">
+                    {% with entity.children as entities %}
+                        <div class="card card-body">
+                            {% include "explore/entityTree.html" %}        
+                        </div>
+                    {% endwith %}
+                </div>
+            {% endif %}
         {% endfor %}
     </ul>
 {% endif %}

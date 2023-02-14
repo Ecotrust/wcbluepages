@@ -1,7 +1,14 @@
+{% load static sass_tags %}
 <!doctype html>
 <html lang="en">
     <head>
         <meta charset="utf-8">
+        <link href="{% static 'app/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'app/vendor/bootstrap-icons/css/bootstrap-icons.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% sass_src 'app/scss/explorer.scss' %}" rel="stylesheet" type="text/css" />
+
+        <script src="{% static 'app/vendor/jquery/jquery-3.6.0.min.js' %}"></script>
+        <script src="{% static 'app/vendor/bootstrap/js/bootstrap.min.js' %}"></script>
     </head>
     <body>
 
