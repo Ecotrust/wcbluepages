@@ -1,11 +1,17 @@
+import csv
+from datetime import datetime
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
-from django.http import JsonResponse, HttpResponseRedirect
+from django.contrib.sites.shortcuts import get_current_site
+from django.http import JsonResponse, HttpResponseRedirect, Http404, FileResponse, HttpResponse
 from django.shortcuts import render
 from django.views import View
+import os
+from pyld import jsonld
 import json
+import tempfile
 
 from app.models import Region, Topic, Entity, Contact, Record, RegionState, ContactSuggestion, RecordSuggestion
 from app.forms import ContactSuggestionForm, RecordSuggestionForm, UserProfileForm, ContactForm, RecordForm
@@ -18,17 +24,69 @@ def home(request):
     return render(request, "welcome.html", context)
 
 def filterContactsRequest(request):
-    import json
     filters = {}
     if request.method == 'POST':
         filters = json.loads(request.POST.get('data'))
     contacts = filterContacts(filters)
     return JsonResponse(contacts)
 
-def filterContacts(filters={}):
+def exportCSVList(request):
+    filters = {}
+    if request.method == 'POST':
+        filters = json.loads(request.POST.get('data'))
+    contacts = filterContacts(filters, format='dict')['contacts']
+
+    try:
+        prefix = '{}_bluepages_'.format(datetime.now().strftime("%Y-%m-%d_%H%M%S"))
+        csv_file = tempfile.NamedTemporaryFile(prefix=prefix, suffix=".csv", delete=False)
+
+
+        with open(csv_file.name, 'w') as csv_contents:
+            fieldnames = [
+                'last_name', 'first_name', 'middle_name', 'post_title', 'title', 'full_name', 'pronouns',
+                'job_title', 'expertise', 
+                'entity_name', 'entity_type', 'entity_website', 'entity_address', 'entity_phone', 'entity_fax', 'entity_parent',
+                'email', 'phone', 'mobile_phone', 'office_phone', 'fax', 'address', 'preferred_contact_method',
+                'topics', 'regions',
+                'date_created', 'date_modified',
+                'notes', 'id', 'entity_id'
+            ]
+            writer = csv.DictWriter(csv_contents, fieldnames=fieldnames)
+
+            writer.writeheader()
+            for contact in contacts.order_by('last_name', 'first_name', 'middle_name', 'post_title', 'entity__name', 'job_title'):
+                contact_dict = contact.to_dict(flat=True)
+                contact_dict.pop("is_test_data")
+                contact_dict.pop("show_on_entity_page")
+                writer.writerow(contact_dict)
+
+
+        response = FileResponse(open(csv_file.name, 'rb'))
+        return response
+
+    finally:
+        os.remove(csv_file.name)
+
+
+def stringMatch(targets, match_list):
+    for match in match_list:
+        match_found = False
+        for target in targets:
+            if match.lower() in target.lower():
+                match_found = True
+                break
+        if not match_found:
+            return False
+            
+    return True
+
+def filterContacts(filters={}, format='datatable'):
     # TODO: Consider faceted searches and indices
     #   https://www.enterprisedb.com/postgres-tutorials/how-implement-faceted-search-django-and-postgresql
-    contacts = Contact.objects.all()
+    contacts = Contact.objects.filter(is_test_data=False)
+    if ('entities' not in filters.keys() or len(filters['entities']) == 0) and ('topics' not in filters.keys() or len(filters['topics']) == 0) and ('map_regions' not in filters.keys() or len(filters['map_regions']) == 0):
+        public_ids = [contact.pk for contact in contacts if contact.public]
+        contacts = contacts.filter(pk__in=public_ids)
     if 'entities' in filters.keys() and len(filters['entities']) > 0:
         contacts = contacts.filter(entity__pk__in=filters['entities'])
     if 'topics' in filters.keys() and len(filters['topics']) > 0:
@@ -41,8 +99,11 @@ def filterContacts(filters={}):
         records = records.filter(regions__pk__in=filters['map_regions'])
         contact_ids = list(set(x.contact.pk for x in records))
         contacts = contacts.filter(pk__in=contact_ids)
+    if 'text' in filters.keys() and len(filters['text']) > 0:
+        text_ids = [x.pk for x in contacts if stringMatch([x.full_name, x.job_title, x.entity.name], filters['text'])]
 
-    # TODO: getTopic and getRegion should accept filtered records, NOT contacts
+        contacts = contacts.filter(pk__in=text_ids)
+
     # TODO: Faster smarter queries and facets
     filters = {
         'Entities': getEntityFacetFilters(contacts),
@@ -50,20 +111,23 @@ def filterContacts(filters={}):
         'Regions': getRegionFacetFilters(contacts)
     }
     
-    contacts_dict = [
-        {
-            'id':x.pk, 
-            'name': x.full_name,
-            'role': x.job_title,
-            'entity': x.entity.name, 
-            'entity_id': x.entity.pk 
-        } for x in contacts.order_by('last_name', 'first_name', 'middle_name', 'title', 'post_title', 'entity__name')
-    ]
+    if format == 'datatable':
+        contacts_list = [
+            {
+                'id':x.pk, 
+                'name': x.full_name,
+                'role': x.job_title,
+                'entity': x.entity.name, 
+                'entity_id': x.entity.pk 
+            } for x in contacts.order_by('last_name', 'first_name', 'middle_name', 'post_title', 'entity__name', 'job_title')
+        ]
+    else:
+        contacts_list = contacts
+
     return {
         'filters': filters,
-        'contacts': contacts_dict
+        'contacts': contacts_list
     }
-
 
 def getProfile(request):
     context = {
@@ -90,7 +154,6 @@ class editProfile(View):
             context = {'form': 'Your profile has been updated.', 'hide_submit': True}
         return render(request, self.template_name, context)
 
-
 class changePassword(View):
     template_name='generic_form.html'
     extra_context={}
@@ -113,7 +176,6 @@ class changePassword(View):
 
         return render(request, self.template_name, context)
         
-
 def getEntityFacetFilters(contacts=None):
     if not contacts:
         contacts = Contact.objects.all()
@@ -330,12 +392,138 @@ def recordSuggestionForm(request, contact_id, record_id=None):
     }
     return render(request, 'record_suggestion_form.html', context)
 
-
 def wireframe(request):
 
     context = {}
 
     return render(request, "wireframe.html", context)
+
+def contactList(request):
+    filters = {}
+    if request.method == 'POST':
+        filters = json.loads(request.POST.get('data'))
+    contacts = filterContacts(filters)['contacts']
+    return JsonResponse({'contacts': contacts})
+
+def contactDetail(request, contact_id):
+    try:
+        contact = Contact.objects.get(pk=contact_id)
+        response = contact.to_dict()
+    except Exception as e:
+        response = {
+            'status': 'Error',
+            'message': 'Contact with id {} not found'.format(contact_id)
+        }
+    return JsonResponse(response)
+    
+def contactDetailHTML(request, contact_id):
+    try:
+        contact = Contact.objects.get(pk=contact_id)
+        json_ld = json.dumps(getContactJsonLd(request, contact, render=True), indent=2)
+    except Exception as e:
+        raise Http404("Contact does not exist")
+    return render(request, 'contact_detail.html', {'contact': contact, 'JSON_LD': json_ld})
+
+def getContactJsonLd(request, contact, render=False):
+    if type(contact) == int:
+        try:
+            contact = Contact.objects.get(pk=contact)
+        except Exception as e:
+            raise Http404("Contact does not exist")
+    site = get_current_site(request)
+
+    context = {
+        "@vocab": "http://schema.org/",
+    }
+
+    doc = {
+        "@context": {
+            "@vocab": "https://schema.org/"
+        },
+        "@id": "https://{}/contacts/{}/".format(site, contact.pk),
+        "@type": "Person",
+        "name": contact.full_name,
+        "jobTitle": contact.job_title,
+        "telephone": str(contact.phone),
+        # "url": contact.url if contact.url else None,
+        "knowsAbout": [
+            # {
+            # "@type": "Text",
+            # "description": "Invasive species in brackish water"
+            # },
+            # {
+            # "@type": "URL",
+            # "url": "https://www.wikidata.org/wiki/Q183368"
+            # },
+            # {
+            # "@id": "https://example.org/id/course/x",
+            # "@type": "Course",
+            # "description": "In this course ...",
+            # "url": "URL to the course"
+            # }
+        ],
+        # "identifier": {
+        #     "@id": "https://{}/contacts/{}/".format(site, contact.pk),
+        #     "@type": "PropertyValue",
+        #     "propertyID": "https://registry.identifiers.org/registry/orcid",
+        #     "url": "https://orcid.org/0000-0002-2257-9127",
+        #     "description": "Optional description of this record..."
+        # },
+        # "nationality": [
+        #     {
+        #         "@type": "Country",
+        #         "name": contact.addresss.country if contact.address else None
+        #     },
+        #     {
+        #         "@type": "DefinedTerm",
+        #         "url": "https://unece.org/trade/cefact/unlocode-code-list-country-and-territory",
+        #         "inDefinedTermSet": "UN/LOCODE Code List by Country and Territory",
+        #         "name": "United States",
+        #         "termCode": "US"
+        #     } if contact.address and contact.address.country == 'USA' else None
+        # ],
+        # "knowsLanguage" :{
+        #     "@type": "Language",
+        #     "name": "Spanish",
+        #     "alternateName": "es"
+        # }
+    }
+
+    if contact.address and contact.address.country:
+        doc['nationality'] = [
+            {
+                "@type": "Country",
+                "name": contact.address.country
+            },
+            {
+                "@type": "DefinedTerm",
+                "url": "https://unece.org/trade/cefact/unlocode-code-list-country-and-territory",
+                "inDefinedTermSet": "UN/LOCODE Code List by Country and Territory",
+                "name": "United States",
+                "termCode": "US"
+            } if contact.address and contact.address.country == 'USA' else None
+        ]
+    for record in contact.record_set.all():
+        doc['knowsAbout'].append(
+            {
+                "@type":"Text",
+                "description":str(record.topic)
+            },
+            # {
+            # "@type": "URL",
+            # "url": "https://www.wikidata.org/wiki/Q188989"
+            # },
+        )
+    doc['@context'] = context
+
+
+    # The above is formatted correctly - I'm not sure we need jsonld (RDH 2023-02-07)
+    # compacted = jsonld.compact(doc, context)
+
+    if render:
+        return doc
+    else:
+        return JsonResponse(doc)
 
 ####################################
 #   ADMIN VIEWS                    #
@@ -600,10 +788,6 @@ def adminSuggestionRejection(request, suggestion_id):
     # return render(request, 'admin/app/error_page.html', {'message': message})
     messages.add_message(request, messages.ERROR, message, extra_tags='error', fail_silently=False)
     return HttpResponseRedirect('/admin/app/contactsuggestion/'.format(suggestion_id), {'messages': [{'tags': 'error', 'message': message}]})
-
-    
-
-    
 
 ####################################
 #   REGION PICKER                  #

@@ -51,6 +51,12 @@
             {% block body_scripts %}
                 <script>
                     let app = {};
+                    app.csrf_element = '{% csrf_token %};'
+                    window.setTimeout
+                    let csrf_div = document.createElement('div');
+                    csrf_div.innerHTML = app.csrf_element.trim();
+                    app.csrftoken = csrf_div.firstChild.value;
+
                 </script>
                 <script src="{% static 'app/js/dist/app.min.js' %}"></script>
             {% endblock %}

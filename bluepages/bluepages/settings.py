@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.sitemaps',
+    'django.contrib.sites',
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'address',
@@ -191,6 +193,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 IMPORT_SRID = 3857
 
 REQUIRE_ACCOUNT = True
+
+SITE_ID = 1
 
 try:
     from .local_settings import *

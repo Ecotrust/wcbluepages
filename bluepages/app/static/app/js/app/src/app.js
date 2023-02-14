@@ -348,7 +348,10 @@ app.loadSearchResults = function(results, status) {
     $("#filter-column").html(filter_col_html);
         
     // (Re?)create DataTable, feeding in the 'contacts' results
-    let results_col_html = '<table id="contact-results-table">' +
+    let results_col_html = '<button type="button" class="btn btn-primary export export-csv" onclick="app.exportToCSV()">' +
+            'Export Data' +
+        '</button>';
+    results_col_html += '<table id="contact-results-table">' +
             '<thead>' +
                 '<tr>' +
                     '<th>Name</th>' +
@@ -604,24 +607,38 @@ app.getSearchResults = function() {
     });
 }
 
-// Copied from Django docs:
-//  https://docs.djangoproject.com/en/4.1/howto/csrf/#acquiring-the-token-if-csrf-use-sessions-and-csrf-cookie-httponly-are-false
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
+
+app.exportToCSV = function() {
+    // let text_search_array = $("#contact-results-table_filter input").value.split(' ');
+    // jquery with webpack is funky. Switching to vanilla JS for this:
+    let text_search_array = document.getElementById("contact-results-table_filter").getElementsByTagName('input')[0].value.split(' ');
+    let data = {
+        'entities': app.filter_state['entities'],
+        'topics': app.filter_state['topics'],
+        'map_regions': app.filter_state['map_regions'],
+        'text': text_search_array
     }
-    return cookieValue;
+    $.ajax({
+        url: "/export/csv/",
+        type: "post",
+        headers: {
+            'X-CSRFToken': app.csrftoken
+        },
+        mode: 'same-origin',
+        data: {'data': JSON.stringify(data)},
+        // dataType: "text/csv",
+        success: function(data) {
+            let blob = new Blob([data]);
+            let link = document.createElement('a');
+            link.href=window.URL.createObjectURL(blob);
+            link.download="bluepages_contacts.csv";
+            link.click();
+        }
+    })
+    .fail(function(){
+        alert('Unable to export data.')
+    });
 }
-app.csrftoken = getCookie('csrftoken');
 
 app.accountModal = new Modal(document.getElementById('accountModal'), {});
 app.suggestionMenuModal = new Modal(document.getElementById('suggestionMenuModal'), {});
