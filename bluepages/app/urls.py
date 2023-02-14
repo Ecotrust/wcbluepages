@@ -10,12 +10,16 @@ from app.views import (
     home, regionJSON, regionPicker, wireframe, getSuggestionMenu, contactSuggestionMenu, contactSuggestionForm, 
     recordSuggestionForm, deleteSuggestedContact, deleteSuggestedRecord, getProfile, editProfile, changePassword, 
     filterContactsRequest, contactList, contactDetail, contactDetailHTML, getContactJsonLd, exportCSVList,
-    entityList, entityDetail, entityDetailHTML, #getEntityJsonLd,
+    entityList, entityDetail, entityDetailHTML, exploreEntitiesPage, exploreEntitiesEmbedded,
 )
 
 
 urlpatterns = [
     path('filter_contacts', filterContactsRequest),
+
+    path('explore/entities/embedded/', exploreEntitiesEmbedded, name="explore_entities_embedded"),
+    path('explore/entities/', exploreEntitiesPage, name="explore_entities"),
+
     re_path(r'^regions.json', regionJSON),
     path('get_suggestion_menu/', getSuggestionMenu),
     path('suggestion_form/<int:contact_id>/', contactSuggestionForm),

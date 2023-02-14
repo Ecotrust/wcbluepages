@@ -548,7 +548,40 @@ def entityDetailHTML(request, id):
         raise Http404("Entity does not exist")
     return render(request, 'entity_detail.html', {'entity': entity, 'JSON_LD': json_ld})
 
-#getEntityJsonLd
+def exploreEntitiesPage(request):
+    entityExploreTree = buildExploreEntityTree()
+    context = {
+        'entities': entityExploreTree,
+    }
+    return render(request, "explore/entityPageWrapper.html", context)
+
+def exploreEntitiesEmbedded(request):
+    entityExploreTree = buildExploreEntityTree()
+    context = {
+        'entities': entityExploreTree,
+    }
+    return render(request, "explore/entityEmbeddedWrapper.html", context)
+
+def getEntityChildrenTree(entity):
+    children = []
+    # if entity.children:
+    if entity.children.count() > 0:
+        for child in entity.children:
+            child_dict = child.to_dict(flat=True)
+            child_dict['children'] = getEntityChildrenTree(child)
+            children.append(child_dict)
+    return children
+
+def buildExploreEntityTree():
+    entity_tree = []
+    for entity in Entity.objects.all().order_by('name'):
+        if entity.is_prime:
+            entity_dict = entity.to_dict(flat=True)
+            entity_dict['children'] = getEntityChildrenTree(entity)
+            entity_tree.append(entity_dict)
+    
+    return entity_tree
+
 
 ####################################
 #   ADMIN VIEWS                    #

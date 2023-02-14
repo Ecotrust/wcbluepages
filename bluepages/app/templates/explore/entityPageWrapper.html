@@ -1,0 +1,15 @@
+{% extends 'base.html' %} 
+
+{% load static sass_tags %}
+
+{% block head_css %}
+    <link href="{% static 'app/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'app/vendor/bootstrap-icons/css/bootstrap-icons.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% sass_src 'app/scss/bluepages.scss' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block body_main %}
+    <main>
+        {% include "explore/entityTree.html" %}
+    </main>
+{% endblock %}

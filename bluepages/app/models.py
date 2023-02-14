@@ -171,7 +171,7 @@ class Entity(models.Model):
         else:
             # do what may parent (or nearest non-wishy-washy ancestor) does
             if not self.parent == None:
-                return parent.allow_show_contacts()
+                return self.parent.allow_show_contacts()
         # default to transparency
         return True
 
@@ -199,6 +199,16 @@ class Entity(models.Model):
             out_dict['parent'] = self.parent.to_dict(include_contacts=False, flat=flat) if self.parent else None
 
         return out_dict
+
+    @property
+    def is_prime(self):
+        if self.parent == None or self.parent == self:
+            return True
+        return False
+
+    @property
+    def children(self):
+        return self.entity_set.exclude(pk=self.pk).order_by('name')
 
 
 # Topic

@@ -1,0 +1,12 @@
+{% if entities|length > 0 %}
+    <ul>
+        {% for entity in entities %}
+            <li>
+                {{ entity.name }}
+            </li>
+            {% with entity.children as entities %}
+                {% include "explore/entityTree.html" %}        
+            {% endwith %}
+        {% endfor %}
+    </ul>
+{% endif %}
