@@ -332,9 +332,25 @@ app.prepExploreModal = function(key) {
 }
 
 app.loadExploreModal = function(data) {
-        $('#exploreModalWrapper').html(data);
-        app.showExploreModal();
+    $('#exploreModalWrapper').html(data);
+    app.showExploreModal();
 }
+
+app.prepExploreDetailsModal = function(type, id) {
+    let url = "/" + type + "/" + id + "/embedded/";
+    app.exploreType = type;
+    $.ajax({
+        url: url,
+        success: app.loadExploreDetailsModal
+    })
+}
+
+app.loadExploreDetailsModal = function(data) {
+    let back_button = '<div><button class="btn btn-primary detail-back-button" onclick="app.prepExploreModal(\'' + app.exploreType + '\')">&lt; Back </button></div>';
+    $('#exploreModalWrapper').html(back_button + data);
+    app.showExploreModal();
+}
+
 
 app.loadSearchResults = function(results, status) {
     // pull filter/facets from data results to populate filters on left

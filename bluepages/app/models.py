@@ -191,7 +191,7 @@ class Entity(models.Model):
         }
 
         if include_contacts and self.allow_show_contacts() and not flat:
-            out_dict['contacts'] = [contact.to_dict(include_records=False) for contact in self.contacts_set.all()]
+            out_dict['contacts'] = [contact.to_dict(include_records=False) for contact in self.contact_set.all()]
 
         if flat or self.parent == self:
             out_dict['parent'] = str(self.parent)

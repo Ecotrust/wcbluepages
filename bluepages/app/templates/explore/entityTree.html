@@ -3,6 +3,10 @@
         {% for entity in entities %}
             <li>
                 {{ entity.name }}
+                {% if entity.children|length > 0 %}
+                    <b>+</b>
+                {% endif %} 
+                <button class="btn btn-primary" onclick="app.prepExploreDetailsModal('entities', {{entity.id}})">View</button>
             </li>
             {% with entity.children as entities %}
                 {% include "explore/entityTree.html" %}        

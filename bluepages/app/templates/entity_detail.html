@@ -1,105 +1,94 @@
-<!DOCTYPE html>
-<head>
-    <!-- THIS NEEDS TO BE HERE FOR Ocean InfoHub Connectivity!-->
-    <script type="application/ld+json">
-        {{ JSON_LD|safe }}
-    </script>
-</head>
-<body class="entity-page">
-    <h1>{{ entity.name|title }}</h1>
-    {% if entity.entity_type %} 
-        <h4>{{ entity.entity_type }}</h4>
+<h1>{{ entity.name|title }}</h1>
+{% if entity.entity_type %} 
+    <h4>{{ entity.entity_type }}</h4>
+{% endif %}
+<table>
+    {% if entity.website %} 
+        <tr>
+            <td>
+                Website
+            </td>
+            <td>
+                <a href="{{entity.website}}" target="_blank">{{ entity.website }}</a>
+            </td>
+        </tr>
     {% endif %}
+    {% if entity.address %} 
+        <tr>
+            <td>
+                Address
+            </td>
+            <td>
+                {{ entity.address }}        
+            </td>
+        </tr>
+    {% endif %}
+    {% if entity.email %} 
+        <tr>
+            <td>
+                Email
+            </td>
+            <td>
+                <a href="mailto:{{entity.email}}">{{ entity.email }}</a>
+            </td>
+        </tr>
+    {% endif %}
+    {% if entity.phone %} 
+        <tr>
+            <td>
+                Telephone
+            </td>
+            <td>
+                {{ entity.phone }}   
+            </td>
+        </tr>
+    {% endif %}
+    {% if entity.fax %} 
+        <tr>
+            <td>
+                Fax
+            </td>
+            <td>
+                {{ entity.fax }}   
+            </td>
+        </tr>
+    {% endif %}
+    {% if entity.parent %} 
+        <tr>
+            <td>
+                Parent
+            </td>
+            <td>
+                <a href="/entities/{{ entity.parent.id }}/">{{ entity.parent.name }}</a>   
+            </td>
+        </tr>
+    {% endif %}
+    {% if entity.notes %} 
+        <tr>
+            <td>
+                Notes
+            </td>
+            <td>
+                {{ entity.notes }}   
+            </td>
+        </tr>
+    {% endif %}
+</table>
+
+{% if entity.allow_show_contacts %} 
+    <h3>Contacts</h3>
     <table>
-        {% if entity.website %} 
-            <tr>
-                <td>
-                    Website
-                </td>
-                <td>
-                    <a href="{{entity.website}}" target="_blank">{{ entity.website }}</a>
-                </td>
-            </tr>
-        {% endif %}
-        {% if entity.address %} 
-            <tr>
-                <td>
-                    Address
-                </td>
-                <td>
-                    {{ entity.address }}        
-                </td>
-            </tr>
-        {% endif %}
-        {% if entity.email %} 
-            <tr>
-                <td>
-                    Email
-                </td>
-                <td>
-                    <a href="mailto:{{entity.email}}">{{ entity.email }}</a>
-                </td>
-            </tr>
-        {% endif %}
-        {% if entity.phone %} 
-            <tr>
-                <td>
-                    Telephone
-                </td>
-                <td>
-                    {{ entity.phone }}   
-                </td>
-            </tr>
-        {% endif %}
-        {% if entity.fax %} 
-            <tr>
-                <td>
-                    Fax
-                </td>
-                <td>
-                    {{ entity.fax }}   
-                </td>
-            </tr>
-        {% endif %}
-        {% if entity.parent %} 
-            <tr>
-                <td>
-                    Parent
-                </td>
-                <td>
-                    <a href="/entities/{{ entity.parent.id }}/">{{ entity.parent.name }}</a>   
-                </td>
-            </tr>
-        {% endif %}
-        {% if entity.notes %} 
-            <tr>
-                <td>
-                    Notes
-                </td>
-                <td>
-                    {{ entity.notes }}   
-                </td>
-            </tr>
-        {% endif %}
+        {% for contact in entity.contact_set.all %}
+            {% if contact.public %}
+                <tr>
+                    <td>
+                        <a href="/contacts/{{contact.id}}/">{{ contact.full_name }}</a>
+                    </td>
+                    <td>
+                        {{ contact.job_title }}
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
     </table>
-
-    {% if entity.show_contacts %} 
-        <h3>Contacts</h3>
-        <table>
-            {% for contact in entity.contact_set.all %}
-                {% if contact.public %}
-                    <tr>
-                        <td>
-                            <a href="/contacts/{{contact.id}}/">{{ contact.full_name }}</a>
-                        </td>
-                        <td>
-                            {{ contact.job_title }}
-                        </td>
-                    </tr>
-                {% endif %}
-            {% endfor %}
-        </table>
-    {% endif %}
-
-
-</body>
+{% endif %}
