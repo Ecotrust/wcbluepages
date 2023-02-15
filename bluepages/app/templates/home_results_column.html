@@ -3,15 +3,5 @@
         <span class="sr-only"></span>
     </div>
 </div>
-<div class="add-contact-control">
-    <p>
-        Know of someone missing?
-        {% if user.is_authenticated %}
-            <button type="button" class="btn btn-primary" onclick="app.loadSuggestionMenu()">
-                Suggest Contact
-            </button>
-        {% else %}
-            Log in to suggest updates.
-        {% endif %}
-    </p>
-</div>
+
+{% include "home_popover.html" %}

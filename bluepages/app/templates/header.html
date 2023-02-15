@@ -23,11 +23,11 @@
     </div>
     <div class="header-user">
         {% if user.is_authenticated %}
-            <button class="btn btn-primary" onclick="app.loadAccountModal()">Account</button>
-            <button class="btn btn-primary" onclick="app.logoutRUS()">Logout</button>
+            <button class="btn btn-link" onclick="app.loadAccountModal()">Account</button>
+            <button class="btn btn-link" onclick="app.logoutRUS()">Logout</button>
         {% else %}
-            <button class="btn btn-primary" onclick="app.loadRegistrationForm()">Register</button>
-            <button class="btn btn-primary" onclick="app.loadLoginForm()">Login</button>
+            <button class="btn btn-link" onclick="app.loadRegistrationForm()">Register</button>
+            <button class="btn btn-link" onclick="app.loadLoginForm()">Login</button>
         {% endif %}
     </div>
 </div>
