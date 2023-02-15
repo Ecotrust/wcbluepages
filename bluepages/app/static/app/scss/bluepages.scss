@@ -146,20 +146,18 @@ main {
   }
 }
 
-
 .contact-results {
-  height: 92%;
+  height: 100%;
   overflow: scroll;
 }
 
-.add-contact-control {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  background: rgba(255,255,255,0.4);
-  height: 8%;
-  border-top: 1px solid black;
-  width: 100%;
+.toast-wrap {
+  margin: 2% auto;
+}
+
+.toast {
+  width: 450px;
+  max-width: 450px;
 }
 
 #map-column {
