@@ -1,6 +1,10 @@
+$wc-green: rgb(49, 132, 147);
+$background: #f4f9f9;
+
 :root {
-  --background: skyblue;
-  --wc-blue: #002e7c;
+  --wc-green: rgb(49, 132, 147);
+  --wc-blue: rgb(0, 46, 124);
+  --background: #f4f9f9;
 }
 
 body {
@@ -11,6 +15,17 @@ body {
   min-height: 100vh;
   padding: 0;
   width: 100%;
+}
+
+
+/**
+* Global Elements
+*/
+
+a,
+.btn-link {
+  color: var(--wc-green);
+  text-decoration: none;
 }
 
 /**
@@ -76,6 +91,8 @@ header {
 
     &.btn-link {
       color: white;
+      letter-spacing: 0.1rem;
+      text-transform: uppercase;
     }
   }
 }
@@ -138,6 +155,18 @@ main {
 #results-column {
   display: flex;
   flex-direction: column;
+  position: relative;
+
+  &:after {
+    background: linear-gradient(rgba($background, 0), rgba($background,1));
+    bottom: 0;
+    content: "";
+    height: 8vh;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    z-index: 1;
+  }
 
   div.contact-results div.spinner-border {
     width: 15vw;
@@ -153,6 +182,7 @@ main {
 
 .toast-wrap {
   margin: 2% auto;
+  z-index: 9;
 }
 
 .toast {
