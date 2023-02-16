@@ -1,0 +1,18 @@
+#exploreModalWrapper li {
+    list-style: none;
+    a.explore-collapse-toggle-btn {
+        margin-left: -2.4rem;
+        margin-right: -0.9rem;
+        margin-top: -0.3rem;
+        i.explore-entity-chevron {
+            border: 1px solid gray;
+            border-radius: 0.3rem;
+            padding: 0.2rem;
+        }
+    }
+    a.explore-collapse-toggle-btn:focus {
+        box-shadow: none;
+    }
+
+}
+
