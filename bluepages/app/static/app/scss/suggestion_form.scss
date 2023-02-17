@@ -1,3 +1,6 @@
+/**
+ * Form styles
+ */
 ul.errorlist {
     color: rgb(100,0,0);
     border: 2px solid red;
@@ -13,18 +16,62 @@ div.hidden-fields {
     display: none;
 }
 
-label {
-    width: 10rem;
-    display: inline-block;
+/* Form elements */
+
+fieldset {
+    border-bottom: 1px solid #666;
+    padding: .5rem;
+    margin: .5rem 0;
 }
 
-.full-width-rows label {
-    width: unset;
-}
+.field-wrapper {
+    margin-bottom: .5rem;
 
-.help-text {
-    font-size: small;
-    color: gray;
+    &.col {
+    }
+
+    label {
+        display: block;
+        font-size: .8125em;
+        font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="email"] {
+        display: block;
+        font-size: .875em;
+        width: 100%;
+    }
+
+    select {
+        @extend input[type="text"];
+        max-width: 320px;
+    }
+
+    textarea {
+        @extend input[type="text"];
+        height: 60px;
+    }
+
+    .help-text {
+        font-size: .75em;
+        color: #666;
+
+        span {
+            display: block;
+        }
+    }
+
+    .phone-field-ext {
+        font-size: .875em;
+        font-weight: 500;
+        
+        &~ input {
+            display: inline-block;
+            margin: 4px auto 0;
+            width: 50%;
+        }
+    }
 }
 
 /* MODAL */
