@@ -467,7 +467,7 @@ class ContactSuggestion(ContactBase):
     other_entity_name = models.CharField(max_length=254, blank=True, default='', verbose_name='Other Entity Name', help_text = 'If contact belongs to an unlisted entity, name it here.')
     sub_entity_name = models.CharField(max_length=254, blank=True, default='', verbose_name='Division/Sub-entity', help_text='If contact belongs to a specific division within their organization, please specify it here.')
     status = models.CharField(max_length=20, default='Pending', choices=SUGGESTION_STATUS_CHOICES, verbose_name="Suggestion status", help_text="Has suggestion been approved or declined?")
-    description = models.TextField(null=True, blank=True, default=None, verbose_name="Describe the proposed update", help_text="If you are updating an existing contact, what specific changes are you trying to propose in this form?")
+    description = models.TextField(null=True, blank=True, default=None, verbose_name="Describe the desired result of your suggestion", help_text="If you are updating an existing contact, what specific changes are you trying to propose in this form?")
 
 
     def __str__(self):
