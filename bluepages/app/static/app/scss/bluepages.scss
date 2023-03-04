@@ -93,6 +93,12 @@ header {
       color: white;
       letter-spacing: 0.1rem;
       text-transform: uppercase;
+
+      &:hover {
+        color: aquamarine;
+        border: 1px solid white;
+        text-shadow: black;
+      }
     }
   }
 }
@@ -129,6 +135,8 @@ main {
       flex: .75;
       padding-bottom: 1rem;
       padding-top: 1rem;
+      overflow-y: auto;
+      overflow-x: hidden;
 
       .filter-header {
         font-size: 1.5em;
@@ -177,17 +185,24 @@ main {
 
 .contact-results {
   height: 100%;
-  overflow: scroll;
+  overflow-y: scroll;
 }
 
 .toast-wrap {
-  margin: 2% auto;
+  margin: 0;
   z-index: 9;
+  height: 0;
 }
 
 .toast {
   width: 450px;
   max-width: 450px;
+  bottom: 3px;
+  position: absolute;
+}
+
+.toast-body {
+  padding: 0.2rem 1rem;
 }
 
 #map-column {
