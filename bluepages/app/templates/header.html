@@ -10,23 +10,24 @@
             {% endcomment %}
         </a>
     </div>
-    <div class="row header-title">
-        <div class="col-12 text-center">
+    <div class="header-title">
+        <div class="text-center">
             <h1 id="header-title">
                 <a class="home-link" href='/'>
                     West Coast Blue Pages
+                    <span>Understand Your Impact</span>
                 </a>
             </h1>
-            <p id="header-subtitle" class="lead mb-2">Understand Your Impact</p>
+            {% comment %} <p id="header-subtitle" class="lead mb-2">Understand Your Impact</p> {% endcomment %}
         </div>
     </div>
     <div class="header-user">
         {% if user.is_authenticated %}
-            <button class="btn btn-primary" onclick="app.loadAccountModal()">Account</button>
-            <button class="btn btn-primary" onclick="app.logoutRUS()">Logout</button>
+            <button class="btn btn-link" onclick="app.loadAccountModal()">Account</button>
+            <button class="btn btn-link" onclick="app.logoutRUS()">Logout</button>
         {% else %}
-            <button class="btn btn-primary" onclick="app.loadRegistrationForm()">Register</button>
-            <button class="btn btn-primary" onclick="app.loadLoginForm()">Login</button>
+            <button class="btn btn-link" onclick="app.loadRegistrationForm()">Register</button>
+            <button class="btn btn-link" onclick="app.loadLoginForm()">Login</button>
         {% endif %}
     </div>
 </div>
