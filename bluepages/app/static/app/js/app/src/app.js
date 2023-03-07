@@ -351,6 +351,17 @@ app.loadExploreDetailsModal = function(data) {
     app.showExploreModal();
 }
 
+app.toggleFilter = function(key) {
+    app.updateState('open', key);
+    let chevron = $("#filter-category-chevron-" + key);
+    if (chevron.hasClass('bi-chevron-down')) {
+        chevron.removeClass('bi-chevron-down');
+        chevron.addClass('bi-chevron-right');
+    } else {
+        chevron.removeClass('bi-chevron-right');
+        chevron.addClass('bi-chevron-down');
+    }
+}
 
 app.loadSearchResults = function(results, status) {
     // pull filter/facets from data results to populate filters on left
@@ -359,11 +370,17 @@ app.loadSearchResults = function(results, status) {
         var is_expanded = app.filter_state['open'].indexOf(key) >= 0;
         filter_col_html += '<h2 class="filter-header">';
         if (is_expanded) {
+            var chevron = '<i id="filter-category-chevron-' + key + '" class="bi bi-chevron-down filter-category-chevron"></i>';
             filter_col_html += '<span class="" ';
         } else {
+            var chevron = '<i id="filter-category-chevron-' + key + '" class="bi bi-chevron-right filter-category-chevron"></i>';
             filter_col_html += '<span class="collapsed" ';
         }
-        filter_col_html += 'data-bs-toggle="collapse" href="#' + key + 'FilterOptions" aria-expanded="' + is_expanded + '" aria-controls="collapse' + key + '" onclick="app.updateState(\'open\', \'' + key + '\')">' +
+        filter_col_html += 'data-bs-toggle="collapse" href="#' + key + 'FilterOptions" ' +
+                    'aria-expanded="' + is_expanded + '" ' +
+                    'aria-controls="collapse' + key + '" ' +
+                    'onclick="app.toggleFilter(\'' + key + '\')">' +
+                    chevron + 
                     key +
                 '</span>';
         if (key.toLowerCase() == 'entities') {
