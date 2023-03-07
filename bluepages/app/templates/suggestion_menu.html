@@ -5,9 +5,9 @@
 
     {% for suggestion in suggestions %}
         <div class="row">
-            <div class="suggestion_container status_{{ suggestion.status }} col" onclick="app.prepContactMenuModal({contact_suggestion: {{ suggestion }} })">
-                <h4>{{ suggestion.contact_name }}</h4>
-                <p><b>Status: {{ suggestion.status }}</b></p>
+            <section class="suggestion_container col" onclick="app.prepContactMenuModal({contact_suggestion: {{ suggestion }} })">
+                <h3 class="lead">{{ suggestion.contact_name }}</h3>
+                <div class="status_{{ suggestion.status }}">Status: {{ suggestion.status }}</div>
                 {% if suggestion.topics|length > 0 %}
                     Topics:
                     <ul>
@@ -18,12 +18,15 @@
                 {% else %}
                     No topics provided.
                 {% endif %}
-            </div>
+            </section>
             <div class="suggestion_status_controls col-4">
                 <p>Created: {{ suggestion.date_created }}</p>
                 <p>Modified: {{ suggestion.date_modified }}</p>
-                <button type="button" class="btn btn-primary" onclick="app.confirmSuggestionDeletion({{ suggestion.id }})">
-                    Delete
+                <button type="button" class="btn btn-warning" onclick="app.prepContactMenuModal({contact_suggestion: {{ suggestion }} })">
+                    Edit
+                </button>
+                <button type="button" class="btn btn-danger" onclick="app.confirmSuggestionDeletion({{ suggestion.id }})">
+                    Archive
                 </button>
             </div>
     

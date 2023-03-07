@@ -6,9 +6,7 @@
             <div class="toast-body">
                 Know of someone missing?
                 {% if user.is_authenticated %}
-                    <button type="button" class="btn btn-link p-0" onclick="app.loadSuggestionMenu()">
-                        Suggest Contact
-                    </button>
+                    <a href="#" onclick="app.loadSuggestionMenu()">Suggest Contact</a>
                 {% else %}
                     <a href="#" onclick="app.loadLoginForm()">Login</a> to suggest updates.
                 {% endif %}

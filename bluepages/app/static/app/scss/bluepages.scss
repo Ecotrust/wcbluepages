@@ -1,11 +1,10 @@
-$wc-green: rgb(49, 132, 147);
-$background: #f4f9f9;
-
 :root {
   --wc-green: rgb(49, 132, 147);
   --wc-blue: rgb(0, 46, 124);
   --background: #f4f9f9;
 }
+
+@import "variables";
 
 body {
   background: var(--background);
@@ -22,10 +21,15 @@ body {
 * Global Elements
 */
 
-a,
-.btn-link {
+main a,
+main .btn-link {
   color: var(--wc-green);
-  text-decoration: none;
+  text-decoration: underline;
+}
+
+main a:hover, 
+main .btn-link:hover {
+  color: var(--wc-blue);
 }
 
 /**
