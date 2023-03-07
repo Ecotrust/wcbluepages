@@ -229,7 +229,7 @@ app.loadSuggestionForm = function(contact_suggestion_id) {
 }
 
 app.confirmSuggestionDeletion = function(contact_id) {
-    if (window.confirm("Are you sure you wish to delete this suggestion?")) {
+    if (window.confirm("Are you sure you wish to archive this suggestion?")) {
         $.ajax({
             url: "/delete_suggested_contact/" + contact_id + "/",
             success: window.setTimeout(app.loadSuggestionMenu, 200) 

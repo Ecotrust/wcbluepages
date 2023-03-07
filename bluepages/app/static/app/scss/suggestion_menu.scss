@@ -20,14 +20,21 @@
         border-width: 2px;
     }
     
-    .status_Pending {
+    .status_Pending,
+    .Pending {
         background-color: #ffc107;
     }
-    .status_Approved {
-        background-color: rgba(0,0,0,0.1);
+    .status_Approved,
+    .Approved {
+        background-color: lightgreen;
     }
-    .status_Rejected {
-        background-color: rgba(255,0,0,0.2);
+    .status_Rejected,
+    .Rejected {
+        background-color: red;
+    }
+
+    #contact-suggestion-description {
+        background-color: skyblue;
     }
 
     .suggestion_status_controls {
@@ -40,7 +47,18 @@
     }
 
     .contact-record-menu-entry {
-        margin: 0.5rem;
+        border-bottom: 1px solid grey;
+        margin: 0.75rem;
+        font-size: .875em;
+
+        .col-8 {
+            margin: .5rem 0;
+        }
+
+        .col-4 {
+            text-align: right;
+        }
     }
+
     
 }

@@ -1,17 +1,17 @@
-<button type="button" class="btn btn-primary" onclick="app.loadSuggestionMenu()">
-    &lt; Manage All Suggestions
+<button type="button" class="btn btn-secondary" onclick="app.loadSuggestionMenu()">
+    &lt; Back To All Suggestions
 </button>
-<p id="contact-suggestion-description">Proposed update: {{ contact.description }}</p>
+<p id="contact-suggestion-description" class="mt-3">Proposed update: {{ contact.description }}</p>
 <div id="container">
   <div class="row">
     <div class="col-1">
-        <button type="button" class="btn btn-primary" onclick="app.loadSuggestionForm({{ contact.id }})">
+        <button type="button" class="btn btn-warning" onclick="app.loadSuggestionForm({{ contact.id }})">
             Edit
         </button>
     </div>
     <div class="col-11">
         <div id="suggested_contact_details" class="left-panel">
-            <h4>Contact: {{ contact.name }}</h4>
+            <h4 class="lead">Contact: {{ contact.name }}</h4>
             <table>
                 <tr>
                     <td>Position:</td>
@@ -67,21 +67,21 @@
             <button id="add-topic-button" type="button" class="btn btn-primary" onclick="app.prepRecordSuggestions({{ contact.id }}, false)">
                 + Add Topic
             </button>
-            <h4>Topics:</h4>
+            <h4 class="lead">Topics:</h4>
         </div>
-    </div>
-    {% if contact.records|length == 0 %}
-        <div class="row">
-            <p>Contact has no associated topics.</p>
-        </div>
-    {% endif %}
-    {% for record in contact.records %}
-        <div class="contact-record-menu-entry row" >
-            <div class="col-8 {{ record.status }}"><b>{{ record.topic }}</b></div>
-            <div class="col-4">
-                <button class="btn btn-primary" onclick="app.prepRecordSuggestions({{ contact.id }}, {{ record.id }})">Edit</button>
-                <button class="btn btn-danger" onclick="app.deleteRecordSuggestions({{ contact.id }}, {{ record.id }})">Delete</button>
+        {% if contact.records|length == 0 %}
+            <div class="row">
+                <p>Contact has no associated topics.</p>
             </div>
-        </div>
-    {% endfor %}
+        {% endif %}
+        {% for record in contact.records %}
+            <div class="contact-record-menu-entry row" >
+                <div class="col-8 record_{{ record.status }}"><b>{{ record.topic }}</b></div>
+                <div class="col-4">
+                    <button class="btn btn-warning" onclick="app.prepRecordSuggestions({{ contact.id }}, {{ record.id }})">Edit</button>
+                    <button class="btn btn-danger" onclick="app.deleteRecordSuggestions({{ contact.id }}, {{ record.id }})">Delete</button>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 </div>
