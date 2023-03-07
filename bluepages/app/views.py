@@ -5,6 +5,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
+from django.forms.models import model_to_dict
 from django.http import JsonResponse, HttpResponseRedirect, Http404, FileResponse, HttpResponse
 from django.shortcuts import render
 from django.views import View
@@ -417,9 +418,10 @@ def contactDetailHTML(request, contact_id):
     try:
         contact = Contact.objects.get(pk=contact_id)
         json_ld = json.dumps(getContactJsonLd(request, contact, render=True), indent=2)
+        form = ContactForm(data=model_to_dict(contact))
     except Exception as e:
         raise Http404("Contact does not exist")
-    return render(request, 'contact_detail.html', {'contact': contact, 'JSON_LD': json_ld})
+    return render(request, 'contact_detail_page.html', {'contact': contact, 'JSON_LD': json_ld, 'form': form, 'embedded': False})
 
 def getContactJsonLd(request, contact, render=False):
     if type(contact) == int:

@@ -2,7 +2,18 @@
     div.modal-dialog {
         max-width: 80vw;
     }
+}
 
+body,
+#exploreModal {
+
+    main.contact-page,
+    main.entity-page {
+        margin: 0 10%;
+    }
+
+    main.contact-page,
+    main.entity-page,
     #exploreModalWrapper {
 
         h1 {
@@ -49,6 +60,7 @@
             }
         }
         div.entity-contacts,
+        table.contact-info-table,
         table.entity-detail-table,
         table.entity-contact-table {
             margin-left: 1.5rem;
