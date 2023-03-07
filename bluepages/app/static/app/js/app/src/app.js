@@ -384,7 +384,7 @@ app.loadSearchResults = function(results, status) {
                     key +
                 '</span>';
         if (key.toLowerCase() == 'entities') {
-            filter_col_html += '<button class="btn btn-primary explore-button" onclick="app.prepExploreModal(\'' + key + '\')">Explore</button>';
+            filter_col_html += '<button class="btn explore-button" onclick="app.prepExploreModal(\'' + key + '\')">Explore</button>';
         }
         filter_col_html += '</h2>';
         if (is_expanded) {

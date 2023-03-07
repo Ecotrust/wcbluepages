@@ -153,10 +153,23 @@ main {
 
       .filter-header {
         font-size: 1.5em;
+
+        button.btn.explore-button {
+          border: 1px solid gray;
+          padding: 0.2rem;
+          margin: 0 0 0.1rem 0.4rem;
+        
+          &:hover {
+            border: 1px solid var(--wc-blue);
+            background-color: var(--highlight);
+          }
+        }
+
       }
     }
   }
 }
+
 
 #contact-results-table_filter label {
   width: auto;
@@ -220,18 +233,23 @@ main {
   margin: 0;
   z-index: 9;
   height: 0;
+
+  div.toast {
+    width: 450px;
+    max-width: 450px;
+    bottom: 3px;
+    position: absolute;
+
+    .toast-body {
+      padding: 0.2rem 1rem;
+
+      button.btn {
+        margin-left: 1rem;
+      }
+    }
+  }
 }
 
-.toast {
-  width: 450px;
-  max-width: 450px;
-  bottom: 3px;
-  position: absolute;
-}
-
-.toast-body {
-  padding: 0.2rem 1rem;
-}
 
 #map-column {
   display: flex;

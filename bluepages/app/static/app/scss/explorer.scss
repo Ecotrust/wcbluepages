@@ -1,18 +1,59 @@
-#exploreModalWrapper li {
-    list-style: none;
-    a.explore-collapse-toggle-btn {
-        margin-left: -2.4rem;
-        margin-right: -0.9rem;
-        margin-top: -0.3rem;
-        i.explore-entity-chevron {
-            border: 1px solid gray;
-            border-radius: 0.3rem;
-            padding: 0.2rem;
+#exploreModal {
+    div.modal-dialog {
+        max-width: 80vw;
+    }
+
+    #exploreModalWrapper {
+
+        h1 {
+            margin-top: 1.5rem;
+        }
+
+        ul {
+            li {
+                border-bottom: 1px solid var(--bs-border-color);
+                margin-bottom: 0.3rem;
+                padding-bottom: 0.3rem;
+                list-style: none;
+    
+    
+                a.explore-collapse-toggle-btn {
+                    margin-left: -2.4rem;
+                    margin-right: -0.9rem;
+                    margin-top: -0.3rem;
+                    i.explore-entity-chevron {
+                        border: 1px solid transparent;
+                        border-radius: 0.3rem;
+                        padding: 0.2rem;
+            
+                        &:hover {
+                            border: 1px solid var(--wc-blue);
+                            background-color: var(--highlight);
+                        }
+                    }
+                }
+                a.explore-collapse-toggle-btn:focus {
+                    box-shadow: none;
+                }
+            
+                button.btn.entity-details-button {
+                    border: 1px solid gray;
+                    padding: 0.2rem;
+                    margin: 0 0 0.1rem 0.4rem;
+                  
+                    &:hover {
+                      border: 1px solid var(--wc-blue);
+                      background-color: var(--highlight);
+                    }
+                }
+            }
+        }
+        div.entity-contacts,
+        table.entity-detail-table,
+        table.entity-contact-table {
+            margin-left: 1.5rem;
         }
     }
-    a.explore-collapse-toggle-btn:focus {
-        box-shadow: none;
-    }
+    
 
-}
-
+}    

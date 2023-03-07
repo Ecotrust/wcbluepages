@@ -1,8 +1,8 @@
-<h1>{{ entity.name|title }}</h1>
+<h1>{{ entity }}</h1>
 {% if entity.entity_type %} 
     <h4>{{ entity.entity_type }}</h4>
 {% endif %}
-<table>
+<table class="entity-detail-table">
     {% if entity.website %} 
         <tr>
             <td>
@@ -75,20 +75,22 @@
     {% endif %}
 </table>
 
-{% if entity.allow_show_contacts %} 
-    <h3>Contacts</h3>
-    <table>
-        {% for contact in entity.contact_set.all %}
-            {% if contact.public %}
-                <tr>
-                    <td>
-                        <a href="/contacts/{{contact.id}}/">{{ contact.full_name }}</a>
-                    </td>
-                    <td>
-                        {{ contact.job_title }}
-                    </td>
-                </tr>
-            {% endif %}
-        {% endfor %}
-    </table>
+{% if entity.allow_show_contacts and entity.contact_set.all|length > 0 %} 
+    <div class="entity-contacts">
+        <h3>Contacts</h3>
+        <table class="entity-contact-table">
+            {% for contact in entity.contact_set.all %}
+                {% if contact.public %}
+                    <tr>
+                        <td>
+                            <a href="/contacts/{{contact.id}}/">{{ contact.full_name }}</a>
+                        </td>
+                        <td>
+                            {{ contact.job_title }}
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+    </div>
 {% endif %}

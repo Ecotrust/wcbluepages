@@ -5,7 +5,7 @@
                 {% if entity.children|length > 0 %}
                 <a class='btn btn-link explore-collapse-toggle-btn' data-toggle="collapse" href="#explore-entity-children-{{ entity.id }}" 
                     role="button" aria-expanded="false" aria-controls="explore-entity-children-{{ entity.id }}" onclick="app.explore.toggleCollapseChevron('{{ entity.id }}')">
-                    <i id="explore-entity-chevron-{{ entity.id }}" class="bi bi-chevron-down explore-entity-chevron"></i>
+                    <i id="explore-entity-chevron-{{ entity.id }}" class="bi bi-chevron-right explore-entity-chevron"></i>
                 </a>
                 {% endif %} 
                 {{ entity.name }}
