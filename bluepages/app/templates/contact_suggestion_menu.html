@@ -5,13 +5,13 @@
 <div id="container">
   <div class="row">
     <div class="col-1">
-        <button type="button" class="btn btn-standard" onclick="app.loadSuggestionForm({{ contact.id }})">
+        <button type="button" id="edit-contact-suggestion-btn" class="btn btn-standard" onclick="app.loadSuggestionForm({{ contact.id }})">
             Edit
         </button>
     </div>
     <div class="col-11">
         <div id="suggested_contact_details" class="left-panel">
-            <h4 class="lead">Contact: {{ contact.name }}</h4>
+            <h3>Contact: {{ contact.name }}</h3>
             <table>
                 <tr>
                     <td>Position:</td>
