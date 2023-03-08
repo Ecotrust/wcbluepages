@@ -5,7 +5,7 @@
 <div id="container">
   <div class="row">
     <div class="col-1">
-        <button type="button" class="btn btn-warning" onclick="app.loadSuggestionForm({{ contact.id }})">
+        <button type="button" class="btn btn-standard" onclick="app.loadSuggestionForm({{ contact.id }})">
             Edit
         </button>
     </div>
@@ -21,42 +21,6 @@
                     <td>Entity:</td>
                     <td>{{ contact.entity_name }}</td>
                 </tr>
-            <!--
-                <tr>
-                    <td>Email:</td>
-                    <td>{{ contact.email }}</td>
-                </tr>
-                <tr>
-                    <td>Phone:</td>
-                    <td>{{ contact.phone }}</td>
-                </tr>
-                <tr>
-                    <td>Address:</td>
-                    <td>
-                        {% if contact.address.proposed_address.line_1 %}
-                            Line 1: {{ contact.address.proposed_address.line_1 }}<br />
-                        {% endif %}
-                        {% if contact.address.proposed_address.line_2 %}
-                            Line 2: {{ contact.address.proposed_address.line_2 }}<br />
-                        {% endif %}
-                        {% if contact.address.proposed_address.city %}
-                            City: {{ contact.address.proposed_address.city }},&nbsp;
-                        {% endif %}
-                        {% if contact.address.proposed_address.state %}
-                            State: {{ contact.address.proposed_address.state }}&nbsp;
-                        {% endif %}
-                        {% if contact.address.proposed_address.zip_code %}
-                            Zip: {{ contact.address.proposed_address.zip_code }}
-                        {% endif %}
-                        {% if contact.address.proposed_address.country %}
-                            <br />
-                            Country: {{ contact.address.proposed_address.country }}
-                        {% endif %}
-                    </td>
-                </tr>
-
-            -->
-      
             </table>
         </div>
 
@@ -76,10 +40,10 @@
         {% endif %}
         {% for record in contact.records %}
             <div class="contact-record-menu-entry row" >
-                <div class="col-8 record_{{ record.status }}"><b>{{ record.topic }}</b></div>
-                <div class="col-4">
-                    <button class="btn btn-warning" onclick="app.prepRecordSuggestions({{ contact.id }}, {{ record.id }})">Edit</button>
-                    <button class="btn btn-danger" onclick="app.deleteRecordSuggestions({{ contact.id }}, {{ record.id }})">Delete</button>
+                <div class="col-5 record_{{ record.status }}"><b>{{ record.topic }}</b></div>
+                <div class="col-7">
+                    <button class="btn btn-standard" onclick="app.prepRecordSuggestions({{ contact.id }}, {{ record.id }})">Edit</button>
+                    <button class="btn btn-danger" onclick="app.deleteRecordSuggestions({{ contact.id }}, {{ record.id }})">Delete Topic</button>
                 </div>
             </div>
         {% endfor %}

@@ -21,11 +21,24 @@
     .suggestion_container {
         cursor: pointer;
         font-size: .875em;
+        border: 1px solid transparent;
+        border-radius: 0.3rem;
+        &:hover {
+            border: 1px solid gray;
+            background-color: rgba(80,80,80,0.1);
+        }
     }
-    .suggestion_container:hover {
-        border-width: 2px;
+
+    .status_Pending,
+    .Pending,
+    .status_Approved,
+    .Approved,
+    .status_Rejected,
+    .Rejected {
+        padding: 0.2rem;
+        border-radius: 0.3rem;
     }
-    
+
     .status_Pending,
     .Pending {
         background-color: #ffc107;
@@ -56,13 +69,14 @@
         border-bottom: 1px solid grey;
         margin: 0.75rem;
         font-size: .875em;
+        max-width: 500px;
+    }
 
-        .col-8 {
-            margin: .5rem 0;
-        }
-
-        .col-4 {
-            text-align: right;
+    button.btn-standard {
+        border: 1px solid var(--bs-modal-header-border-color);
+        &:hover {
+            background-color: rgba(80,80,80,0.2);
+            border-color: black;
         }
     }
 
