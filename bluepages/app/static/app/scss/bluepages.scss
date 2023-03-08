@@ -168,6 +168,15 @@ main {
   display: flex;
   flex-direction: column;
   position: relative;
+  padding-left: 0;
+  padding-right: 0;
+  div#contact-results-wrapper {
+    height: 100%;
+    overflow-y: scroll;
+    padding-left: calc(var(--bs-gutter-x) * .5);
+    padding-right: calc(var(--bs-gutter-x) * .5);
+    padding-bottom: 60px;
+  }
 
   &:after {
     background: linear-gradient(rgba($background, 0), rgba($background,1));
@@ -185,18 +194,15 @@ main {
     height: 15vw;
     margin: 20% 16vw;
   }
+
+  button.export-csv {
+    margin: 0.5rem 0;
+    float: right;
+  }
 }
 
 div#results-column {
-  padding-left: 0;
-  padding-right: 0;
-  div#contact-results-wrapper {
-    height: 100%;
-    overflow-y: scroll;
-    padding-left: calc(var(--bs-gutter-x) * .5);
-    padding-right: calc(var(--bs-gutter-x) * .5);
-    padding-bottom: 60px;
-  }
+  
 }
 
 .toast-wrap {
