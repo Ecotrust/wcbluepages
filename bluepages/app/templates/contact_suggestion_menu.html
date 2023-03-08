@@ -1,14 +1,21 @@
 <button type="button" class="btn btn-standard" onclick="app.loadSuggestionMenu()">
     &lt; Back To All Suggestions
 </button>
-<p id="contact-suggestion-description" class="mt-3">Proposed update: {{ contact.description }}</p>
+{% if contact.description %}
+    <p id="contact-suggestion-description" class="mt-3">Proposed update: {{ contact.description }}</p>
+{% endif %}
 <div id="container">
   <div class="row">
-    <div class="col-1">
-        <button type="button" id="edit-contact-suggestion-btn" class="btn btn-standard" onclick="app.loadSuggestionForm({{ contact.id }})">
-            Edit
-        </button>
-    </div>
+    <p>Status: <span class="{{ contact.status }}">{{ contact.status }}</span></p>
+  </div>
+  <div class="row">
+    {% if contact.status == "Pending" %}
+        <div class="col-1">
+            <button type="button" id="edit-contact-suggestion-btn" class="btn btn-standard" onclick="app.loadSuggestionForm({{ contact.id }})">
+                Edit
+            </button>
+        </div>
+    {% endif %}
     <div class="col-11">
         <div id="suggested_contact_details" class="left-panel">
             <h3>Contact: {{ contact.name }}</h3>
@@ -27,12 +34,14 @@
     </div>
   </div>
   <div class="row">
-        <div class="right-panel col-12">
-            <button id="add-topic-button" type="button" class="btn btn-primary" onclick="app.prepRecordSuggestions({{ contact.id }}, false)">
-                + Add Topic
-            </button>
-            <h4 class="lead">Topics:</h4>
-        </div>
+        {% if contact.status == "Pending" %}
+            <div class="right-panel col-12">
+                <button id="add-topic-button" type="button" class="btn btn-primary" onclick="app.prepRecordSuggestions({{ contact.id }}, false)">
+                    + Add Topic
+                </button>
+                <h4 class="lead">Topics:</h4>
+            </div>
+        {% endif %}
         {% if contact.records|length == 0 %}
             <div class="row">
                 <p>Contact has no associated topics.</p>
@@ -42,8 +51,12 @@
             <div class="contact-record-menu-entry row" >
                 <div class="col-5 record_{{ record.status }}"><b>{{ record.topic }}</b></div>
                 <div class="col-7">
-                    <button class="btn btn-standard" onclick="app.prepRecordSuggestions({{ contact.id }}, {{ record.id }})">Edit</button>
-                    <button class="btn btn-danger" onclick="app.deleteRecordSuggestions({{ contact.id }}, {{ record.id }})">Delete Topic</button>
+                    {% if contact.status == "Pending" %}
+                        <button class="btn btn-standard" onclick="app.prepRecordSuggestions({{ contact.id }}, {{ record.id }})">Edit</button>
+                        <button class="btn btn-danger" onclick="app.deleteRecordSuggestions({{ contact.id }}, {{ record.id }})">Delete Topic</button>
+                    {% else %}
+                        <p>Status: <span class="{{ record.status }}">{{ record.status }}</span></p>
+                    {% endif %}
                 </div>
             </div>
         {% endfor %}
