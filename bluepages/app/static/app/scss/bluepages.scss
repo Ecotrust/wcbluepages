@@ -187,6 +187,11 @@ table#contact-results-table {
   }
 }
 
+div#contact-results-table_paginate {
+  position: inherit;
+  z-index: 10;
+}
+
 #filter-column{
     .filter-header>span {
       cursor: pointer;
