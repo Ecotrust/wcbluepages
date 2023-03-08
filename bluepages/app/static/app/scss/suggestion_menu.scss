@@ -9,7 +9,13 @@
     }
 
     #add-topic-button {
-        float: right;
+        margin: 0 0 1.5rem -1.5rem;
+    }
+
+    .right-panel {
+        h4 {
+            margin: 0 1.5rem;
+        }
     }
 
     .suggestion_container {
