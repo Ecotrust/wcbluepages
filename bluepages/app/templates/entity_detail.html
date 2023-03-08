@@ -63,6 +63,16 @@
             </td>
         </tr>
     {% endif %}
+    {% if entity.children|length > 0 %} 
+        <tr>
+            <td>Child{% if entity.children|length > 1 %}ren{% endif %}</td>
+            <td>
+                {% for child in entity.children %}
+                    <a href="/entities/{{child.pk}}/">{{child}}</a>
+                {% endfor %}
+            </td>
+        </tr>
+    {% endif %}
     {% if entity.notes %} 
         <tr>
             <td>

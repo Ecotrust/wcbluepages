@@ -159,6 +159,10 @@ class Entity(models.Model):
         hierarchy_string = " > ".join([x.name for x in hierarchy_list])
         return hierarchy_string
 
+    @property
+    def children(self):
+        return Entity.objects.filter(parent=self).order_by('name')
+
     def __str__(self):
         if self.parent:
             return f"{self.name} ({self.ancestor})"
