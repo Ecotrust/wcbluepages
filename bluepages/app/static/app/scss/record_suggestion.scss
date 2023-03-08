@@ -5,7 +5,8 @@
 .map {
     float: left;
     width: 40vw;
-    height: calc(90vh - 85px);
+    height: calc(100vh - 280px);
+    min-height: 350px;
     border: 1px solid black;
 }
 
@@ -18,9 +19,12 @@
 
 .left-panel,
 #right-panel {
-    margin: 0 4vw;
-    max-width: 50vw;
+    margin: 0 2vw;
+    max-width: 40%;
     min-width: 250px;
+    p {
+        font-size: 13px;
+    }
 }
 
 #state-boxes-wrapper,
