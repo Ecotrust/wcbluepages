@@ -187,9 +187,16 @@ main {
   }
 }
 
-.contact-results {
-  height: 100%;
-  overflow-y: scroll;
+div#results-column {
+  padding-left: 0;
+  padding-right: 0;
+  div#contact-results-wrapper {
+    height: 100%;
+    overflow-y: scroll;
+    padding-left: calc(var(--bs-gutter-x) * .5);
+    padding-right: calc(var(--bs-gutter-x) * .5);
+    padding-bottom: 60px;
+  }
 }
 
 .toast-wrap {
