@@ -113,15 +113,21 @@ def filterContacts(filters={}, format='datatable'):
     }
     
     if format == 'datatable':
-        contacts_list = [
-            {
+        contacts_list = []
+        for x in contacts.order_by('last_name', 'first_name', 'middle_name', 'post_title', 'entity__name', 'job_title'):
+            if not x.entity:
+                entity_name = 'Unspecified'
+                entity_id = None
+            else:
+                entity_name = x.entity.name
+                entity_id = x.entity.pk
+            contacts_list.append({
                 'id':x.pk, 
                 'name': x.full_name,
                 'role': x.job_title,
-                'entity': x.entity.name, 
-                'entity_id': x.entity.pk 
-            } for x in contacts.order_by('last_name', 'first_name', 'middle_name', 'post_title', 'entity__name', 'job_title')
-        ]
+                'entity': entity_name, 
+                'entity_id': entity_id 
+            })
     else:
         contacts_list = contacts
 
