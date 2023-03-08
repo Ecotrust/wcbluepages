@@ -9,12 +9,12 @@
                 <td>
                 {% if field.name == 'entity' %}
                     {% if embedded %}
-                        {{field.data.name}}
-                    {% else %}
                         <a href="/entities/{{contact.entity.pk}}/" target="_blank">{{contact.entity}}</a>
+                    {% else %}
+                        <a href="/entities/{{contact.entity.pk}}/">{{contact.entity}}</a>
                     {% endif %}
                 {% elif field.name == 'email' %}
-                <a href="mailto:{{contact.email}}">{{contact.email}}</a>
+                    <a href="mailto:{{contact.email}}">{{contact.email}}</a>
                 {% elif field.name == 'phone' %}
                     {{ contact.phone.formatted}}
                 {% elif field.name == 'mobile_phone' %}
@@ -33,3 +33,20 @@
         {% endif %}
     {% endfor %}
 </table>
+{% if contact.record_set.all|length > 0 %}
+    <div class="contact-topics">
+        <h3>Topics</h3>
+        <table class="contact-topics-table">
+            <tr>
+                <th>Topic</th>
+                <th>Regions</th>
+            </tr>
+            {% for record in contact.record_set.all %}
+                <tr>
+                    <td><b>{{record.topic}}</b></td>
+                    <td>{{ record.general_regions }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endif %}

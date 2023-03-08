@@ -238,6 +238,48 @@ class RecordBase(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
 
+    @property
+    def general_regions(self):
+        state_list = ['Washington', 'Oregon', 'California']
+        depth_lookup = {
+            'N': 'near shore',
+            'M': 'mid',
+            'O': 'offshore'
+        }
+        region_map = {}
+        for region in self.regions.all():
+            for state in region.states.all():
+                if not str(state) in region_map.keys():
+                    region_map[str(state)] = []
+                if not region.depth_type in region_map.keys():
+                    region_map[region.depth_type] = []
+                if not region.depth_type in region_map[str(state)]:
+                    region_map[str(state)].append(region.depth_type)
+                if not str(state) in region_map[region.depth_type]:
+                    region_map[region.depth_type].append(str(state))
+        trifectas = []
+        general_region_list = []
+        for key in region_map.keys():
+            if len(region_map[key]) == 3:
+                trifectas.append(key)
+        if len(trifectas) == 6:
+            return 'West Coast waters'
+        elif len(trifectas) > 0:
+            for trifecta in trifectas:
+                region_label = trifecta
+                if trifecta in depth_lookup.keys():
+                    region_label = depth_lookup[trifecta]
+                general_region_list.append("{} waters".format(region_label))
+        for key in region_map.keys():
+            if key in state_list and not key in trifectas:
+                state_depth_list = []
+                for depth in region_map[key]:
+                    if not depth in trifectas:
+                        state_depth_list.append(depth_lookup[depth])
+                if len(state_depth_list) > 0:
+                    general_region_list.append("{} {} waters".format(key, ' and '.join(state_depth_list)))
+        return ', '.join(general_region_list)
+
     class Meta:
         abstract = True
 

@@ -60,10 +60,16 @@ body,
             }
         }
         div.entity-contacts,
+        div.contact-topics,
         table.contact-info-table,
+        table.contact-topics-table,
         table.entity-detail-table,
         table.entity-contact-table {
             margin-left: 1.5rem;
+            margin-bottom: 1rem;
+            td {
+                padding-right: 1rem;
+            }
         }
     }
     
