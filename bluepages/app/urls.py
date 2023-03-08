@@ -10,7 +10,8 @@ from app.views import (
     home, regionJSON, regionPicker, wireframe, getSuggestionMenu, contactSuggestionMenu, contactSuggestionForm, 
     recordSuggestionForm, deleteSuggestedContact, deleteSuggestedRecord, getProfile, editProfile, changePassword, 
     filterContactsRequest, contactList, contactDetail, contactDetailHTML, getContactJsonLd, exportCSVList,
-    entityList, entityDetail, entityDetailHTML, exploreEntitiesPage, exploreEntitiesEmbedded, entityDetailEmbedded
+    entityList, entityDetail, entityDetailHTML, exploreEntitiesPage, exploreEntitiesEmbedded, entityDetailEmbedded,
+    contactDetailEmbedded
 )
 
 
@@ -26,6 +27,7 @@ urlpatterns = [
     re_path(r'^suggestion_form', contactSuggestionForm),
     path('contacts/', contactList, name='contact_list'),
     path('contacts/<int:contact_id>/', contactDetailHTML, name='contact_detail_html'),
+    path('contacts/<int:contact_id>/embedded/', contactDetailEmbedded, name='contact_detail_embedded'),
     path('contacts/api/<int:contact_id>/', contactDetail, name='contact_detail'),
     path('contacts/json_ld/<int:contact>/', getContactJsonLd, name='contact_json_ld'),
     path('entities/', entityList, name='entity_list'),

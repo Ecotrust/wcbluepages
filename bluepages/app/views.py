@@ -423,6 +423,15 @@ def contactDetailHTML(request, contact_id):
         raise Http404("Contact does not exist")
     return render(request, 'contact_detail_page.html', {'contact': contact, 'JSON_LD': json_ld, 'form': form, 'embedded': False})
 
+def contactDetailEmbedded(request, contact_id):
+    try:
+        contact = Contact.objects.get(pk=contact_id)
+        json_ld = json.dumps(getContactJsonLd(request, contact, render=True), indent=2)
+        form = ContactForm(data=model_to_dict(contact))
+    except Exception as e:
+        raise Http404("Contact does not exist")
+    return render(request, 'contact_detail_embedded.html', {'contact': contact, 'JSON_LD': json_ld, 'form': form, 'embedded': True})
+
 def getContactJsonLd(request, contact, render=False):
     if type(contact) == int:
         try:
