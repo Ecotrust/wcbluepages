@@ -6,6 +6,7 @@ $background: #f4f9f9;
   --wc-green: rgb(49, 132, 147);
   --wc-blue: rgb(0, 46, 124);
   --background: #f4f9f9;
+  --dk-background: rgba(80, 80, 80, .15);
 }
 
 body {
@@ -143,7 +144,7 @@ main {
     }
 
     &#filter-column {
-      background: rgba(80, 80, 80, .15);
+      background: var(--dk-background);
       font-size: .875em;
       flex: .75;
       padding-bottom: 1rem;
@@ -173,6 +174,17 @@ main {
 
 #contact-results-table_filter label {
   width: auto;
+}
+
+table#contact-results-table {
+  tbody {
+    tr.contact-row {
+      cursor: pointer;
+      &:hover {
+        background-color: var(--highlight);
+      }
+    }
+  }
 }
 
 #filter-column{

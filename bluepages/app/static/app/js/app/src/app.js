@@ -346,8 +346,12 @@ app.prepExploreDetailsModal = function(type, id) {
 }
 
 app.loadExploreDetailsModal = function(data) {
-    let back_button = '<div><button class="btn btn-primary detail-back-button" onclick="app.prepExploreModal(\'' + app.exploreType + '\')">&lt; Back </button></div>';
-    $('#exploreModalWrapper').html(back_button + data);
+    if (this.url.indexOf('entities') >= 0) {
+        let back_button = '<div><button class="btn btn-primary detail-back-button" onclick="app.prepExploreModal(\'' + app.exploreType + '\')">&lt; Back </button></div>';
+        $('#exploreModalWrapper').html(back_button + data);
+    } else {
+        $('#exploreModalWrapper').html(data);
+    }
     app.showExploreModal();
 }
 
@@ -432,6 +436,9 @@ app.loadSearchResults = function(results, status) {
         '</table>';
     $("#results-column div.contact-results").html(results_col_html);
     $('#contact-results-table').DataTable();
+    $('#contact-results-table tbody').on('click', 'tr', function() {
+        app.prepExploreDetailsModal('contacts', this.id.replace(/contact-row-/g, ''));
+    })
     
 }
 
