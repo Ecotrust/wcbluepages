@@ -39,8 +39,8 @@
     .Pending,
     .status_Approved,
     .Approved,
-    .status_Rejected,
-    .Rejected {
+    .status_Declined,
+    .Declined {
         padding: 0.2rem;
         border-radius: 0.3rem;
     }
@@ -53,9 +53,9 @@
     .Approved {
         background-color: lightgreen;
     }
-    .status_Rejected,
-    .Rejected {
-        background-color: red;
+    .status_Declined,
+    .Declined {
+        background-color: rgba(255,0,0,0.5);
     }
 
     #contact-suggestion-description {

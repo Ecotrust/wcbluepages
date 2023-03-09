@@ -262,20 +262,25 @@ def getRegionFacetFilters(contacts=None):
 
     return [x for x in final_regions if x['count'] > 0]
 
+def formatSuggestionMenuEntry(contact_suggestion):
+    return {
+        'id': contact_suggestion.id,
+        'name': str(contact_suggestion),
+        'contact_name': contact_suggestion.contact_name,
+        'status': contact_suggestion.status,
+        'description': contact_suggestion.description,
+        'date_created': contact_suggestion.date_created.strftime('%m/%d/%Y %I:%M %p'),
+        'date_modified': contact_suggestion.date_modified.strftime('%m/%d/%Y %I:%M %p'),
+        'topics': [{'id': x.pk, 'topic': str(x.topic), 'topic_id': x.topic.pk, 'status': x.status} for x in contact_suggestion.recordsuggestion_set.all()]
+    }
+
 def getSuggestionMenu(request):
     user_suggestions = [
-        {
-            'id': contact_suggestion.id,
-            'name': str(contact_suggestion),
-            'contact_name': contact_suggestion.contact_name,
-            'status': contact_suggestion.status,
-            'description': contact_suggestion.description,
-            'date_created': contact_suggestion.date_created.strftime('%m/%d/%Y %I:%M %p'),
-            'date_modified': contact_suggestion.date_modified.strftime('%m/%d/%Y %I:%M %p'),
-            'topics': [{'id': x.pk, 'topic': str(x.topic), 'topic_id': x.topic.pk, 'status': x.status} for x in contact_suggestion.recordsuggestion_set.all()]
-        } 
-        for contact_suggestion in ContactSuggestion.objects.filter(user=request.user).order_by('status', 'last_name', 'first_name', 'date_modified', 'date_created')
+        formatSuggestionMenuEntry(contact_suggestion)
+        for contact_suggestion in ContactSuggestion.objects.filter(user=request.user, status='Pending').order_by('last_name', 'first_name', 'date_modified', 'date_created')
     ]
+    for contact_suggestion in ContactSuggestion.objects.filter(user=request.user).exclude(status='Pending').order_by('status', 'last_name', 'first_name', 'date_modified', 'date_created'):
+        user_suggestions.append(formatSuggestionMenuEntry(contact_suggestion))
     if len(user_suggestions) > 0:
         return render(request, 'suggestion_menu.html', {'suggestions': user_suggestions})
     else:
