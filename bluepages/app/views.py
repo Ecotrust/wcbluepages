@@ -298,6 +298,7 @@ def contactSuggestionMenu(request, contact_id=None):
                     'address': contact_suggestion.contact_address,
                     'records': contact_suggestion.recordsuggestion_set.all().order_by('topic'),
                     'description': contact_suggestion.description,
+                    'status': contact_suggestion.status
                 }
             }
             return render(request, 'contact_suggestion_menu.html', context)

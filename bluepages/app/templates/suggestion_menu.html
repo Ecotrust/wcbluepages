@@ -1,3 +1,9 @@
+<p id="suggestion-menu-details">
+    Your suggestions will be made available to the Blue Pages administrators to decide whether to include in the database. 
+    You can use these suggestions to recommend adding new contacts or to recommend updates to existing contacts in Blue Pages.
+    If a contact should be removed, please use this form, select your contact, and explain your recommendation and reasoning
+    in the "notes" section.
+</p>
 <button type="button" class="btn btn-primary" onclick="app.loadSuggestionForm()">
     + Add Another
 </button>
@@ -5,29 +11,35 @@
 
     {% for suggestion in suggestions %}
         <div class="row">
-            <div class="suggestion_container status_{{ suggestion.status }} col" onclick="app.prepContactMenuModal({contact_suggestion: {{ suggestion }} })">
-                <h4>{{ suggestion.contact_name }}</h4>
-                <p><b>Status: {{ suggestion.status }}</b></p>
+            <section class="suggestion_container col" onclick="app.prepContactMenuModal({contact_suggestion: {{ suggestion }} })">
+                <h3 class="lead">{{ suggestion.contact_name }}</h3>
+                <div>
+                    Status: <span class="status_{{ suggestion.status }}">{{ suggestion.status }}</span>
+                </div>
                 {% if suggestion.topics|length > 0 %}
                     Topics:
                     <ul>
                     {% for record in suggestion.topics %}
-                            <li class="{{ record.status }}">{{ record.topic }}</li>
+                            <li>
+                                {{ record.topic }}
+                                ( Status: <span  class="{{ record.status }}">{{ record.status }}</span> )
+                            </li>
                         {% endfor %}
                     </ul>
                 {% else %}
                     No topics provided.
                 {% endif %}
-            </div>
-            <div class="suggestion_status_controls col-4">
+            </section>
+            <div class="suggestion_status_controls col-6">
                 <p>Created: {{ suggestion.date_created }}</p>
                 <p>Modified: {{ suggestion.date_modified }}</p>
-                <button type="button" class="btn btn-primary" onclick="app.confirmSuggestionDeletion({{ suggestion.id }})">
-                    Delete
+                <button type="button" class="btn btn-standard" onclick="app.prepContactMenuModal({contact_suggestion: {{ suggestion }} })">
+                    View
+                </button>
+                <button type="button" class="btn btn-danger" onclick="app.confirmSuggestionDeletion({{ suggestion.id }})">
+                    Remove Suggestion
                 </button>
             </div>
-    
         </div>
-    
     {% endfor %}
 </div>
