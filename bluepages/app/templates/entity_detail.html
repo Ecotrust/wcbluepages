@@ -85,11 +85,11 @@
     {% endif %}
 </table>
 
-{% if entity.allow_show_contacts and entity.contact_set.all|length > 0 %} 
+{% if entity.allow_show_contacts and entity.contacts|length > 0 %} 
     <div class="entity-contacts">
         <h3>Contacts</h3>
         <table class="entity-contact-table">
-            {% for contact in entity.contact_set.all %}
+            {% for contact in entity.contacts %}
                 {% if contact.public %}
                     <tr>
                         <td>

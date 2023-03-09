@@ -22,7 +22,7 @@ from app.views import adminSuggestionReviewMenu, adminSuggestionRejection
 from app.models import Contact, Region, Record, Entity
 
 contact_dict = {
-    'queryset': Contact.objects.filter(pk__in=[contact.pk for contact in Contact.objects.all() if contact.public]),
+    'queryset': Contact.objects.filter(pk__in=[contact.pk for contact in Contact.objects.filter(is_test_data=False) if contact.public]),
     'date_field': 'date_modified',
 }
 

@@ -163,6 +163,10 @@ class Entity(models.Model):
     def children(self):
         return Entity.objects.filter(parent=self).order_by('name')
 
+    @property
+    def contacts(self):
+        return self.contact_set.filter(is_test_data=False)
+
     def __str__(self):
         if self.parent:
             return f"{self.name} ({self.ancestor})"
@@ -195,7 +199,7 @@ class Entity(models.Model):
         }
 
         if include_contacts and self.allow_show_contacts() and not flat:
-            out_dict['contacts'] = [contact.to_dict(include_records=False) for contact in self.contact_set.all()]
+            out_dict['contacts'] = [contact.to_dict(include_records=False) for contact in self.contacts]
 
         if flat or self.parent == self:
             out_dict['parent'] = str(self.parent)
