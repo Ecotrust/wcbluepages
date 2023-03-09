@@ -79,5 +79,9 @@ fieldset {
 
 .modal-body {
     overflow: auto;
+    max-height: calc(100vh - 185px);
+}
+
+div#recordSuggestionModal div.modal-body {
     max-height: calc(100vh - 125px);
 }
