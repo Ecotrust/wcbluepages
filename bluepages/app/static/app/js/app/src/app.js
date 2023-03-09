@@ -15,30 +15,42 @@ import GeoJSON from 'ol/format/GeoJSON';
 
 app.showAccountModal = function() {
     app.suggestionMenuModal.hide();
-    app.suggestionModal.hide();
+    app.exploreModal.hide();
     app.recordSuggestionModal.hide();
+    app.suggestionModal.hide();
     app.accountModal.show();
 }
 
 app.showSuggestionMenuModal = function() {
     app.accountModal.hide();
-    app.suggestionModal.hide();
+    app.exploreModal.hide();
     app.recordSuggestionModal.hide();
+    app.suggestionModal.hide();
     app.suggestionMenuModal.show();
 }
 
 app.showSuggestionFormModal = function() {
     app.accountModal.hide();
-    app.suggestionMenuModal.hide();
+    app.exploreModal.hide();
     app.recordSuggestionModal.hide();
+    app.suggestionMenuModal.hide();
     app.suggestionModal.show();
 }
 
 app.showRecordSuggestionFormModal = function() {
     app.accountModal.hide();
+    app.exploreModal.hide();
     app.suggestionMenuModal.hide();
     app.suggestionModal.hide();
     app.recordSuggestionModal.show();
+}
+
+app.showExploreModal = function() {
+    app.accountModal.hide();
+    app.recordSuggestionModal.hide();
+    app.suggestionMenuModal.hide();
+    app.suggestionModal.hide();
+    app.exploreModal.show();
 }
 
 app.checkRegistrationFormValidity = function() {
@@ -311,6 +323,50 @@ app.loadRecordSuggestionModal = function(data) {
     
 }
 
+app.prepExploreModal = function(key) {
+    let url = "/explore/" + key.toLowerCase() + "/embedded/";
+    $.ajax({
+        url: url,
+        success: app.loadExploreModal
+    })
+}
+
+app.loadExploreModal = function(data) {
+    $('#exploreModalWrapper').html(data);
+    app.showExploreModal();
+}
+
+app.prepExploreDetailsModal = function(type, id) {
+    let url = "/" + type + "/" + id + "/embedded/";
+    app.exploreType = type;
+    $.ajax({
+        url: url,
+        success: app.loadExploreDetailsModal
+    })
+}
+
+app.loadExploreDetailsModal = function(data) {
+    if (this.url.indexOf('entities') >= 0) {
+        let back_button = '<div><button class="btn btn-primary detail-back-button" onclick="app.prepExploreModal(\'' + app.exploreType + '\')">&lt; Back </button></div>';
+        $('#exploreModalWrapper').html(back_button + data);
+    } else {
+        $('#exploreModalWrapper').html(data);
+    }
+    app.showExploreModal();
+}
+
+app.toggleFilter = function(key) {
+    app.updateState('open', key);
+    let chevron = $("#filter-category-chevron-" + key);
+    if (chevron.hasClass('bi-chevron-down')) {
+        chevron.removeClass('bi-chevron-down');
+        chevron.addClass('bi-chevron-right');
+    } else {
+        chevron.removeClass('bi-chevron-right');
+        chevron.addClass('bi-chevron-down');
+    }
+}
+
 app.loadSearchResults = function(results, status) {
     // pull filter/facets from data results to populate filters on left
     let filter_col_html = '';
@@ -318,26 +374,35 @@ app.loadSearchResults = function(results, status) {
         var is_expanded = app.filter_state['open'].indexOf(key) >= 0;
         filter_col_html += '<h2 class="filter-header">';
         if (is_expanded) {
+            var chevron = '<i id="filter-category-chevron-' + key + '" class="bi bi-chevron-down filter-category-chevron"></i>';
             filter_col_html += '<span class="" ';
         } else {
+            var chevron = '<i id="filter-category-chevron-' + key + '" class="bi bi-chevron-right filter-category-chevron"></i>';
             filter_col_html += '<span class="collapsed" ';
         }
-        filter_col_html += 'data-bs-toggle="collapse" href="#' + key + 'FilterOptions" aria-expanded="' + is_expanded + '" aria-controls="collapse' + key + '" onclick="app.updateState(\'open\', \'' + key + '\')">' +
+        filter_col_html += 'data-bs-toggle="collapse" href="#' + key + 'FilterOptions" ' +
+                    'aria-expanded="' + is_expanded + '" ' +
+                    'aria-controls="collapse' + key + '" ' +
+                    'onclick="app.toggleFilter(\'' + key + '\')">' +
+                    chevron + 
                     key +
-                '</span>' +
-            '</h2>';
+                '</span>';
+        if (key.toLowerCase() == 'entities') {
+            filter_col_html += '<button class="btn explore-button" onclick="app.prepExploreModal(\'' + key + '\')">Explore</button>';
+        }
+        filter_col_html += '</h2>';
         if (is_expanded) {
             filter_col_html += '<ul class="collapse show" id="' + key +'FilterOptions">';
         } else {
             filter_col_html += '<ul class="collapse" id="' + key +'FilterOptions">';
         }
         results.filters[key].forEach( filter => {
-            filter_col_html += '<li>' +
+            filter_col_html += '<li class="filter-list-item">' +
                     '<span type="' + key + '" value="' + filter.id + '" onclick="app.updateState(\'' + key.toLowerCase() + '\', \'' + filter.id + '\')">';
             if (app.filter_state[key.toLowerCase()].indexOf(filter.id) >= 0) {
-                filter_col_html += '<b>' + filter.name + '(' + filter.count + ')' + ' <i class="bi bi-check2-square"></i></b>';
+                filter_col_html += '<b><i class="bi bi-check2-square"></i>' + filter.name  + '</b>';
             } else {
-                filter_col_html += filter.name + '(' + filter.count + ')';
+                filter_col_html += '<i class="bi bi-square"></i> ' + filter.name;
             }
             filter_col_html += '</span>' +
                 '</li>';
@@ -371,6 +436,9 @@ app.loadSearchResults = function(results, status) {
         '</table>';
     $("#results-column div.contact-results").html(results_col_html);
     $('#contact-results-table').DataTable();
+    $('#contact-results-table tbody').on('click', 'tr', function() {
+        app.prepExploreDetailsModal('contacts', this.id.replace(/contact-row-/g, ''));
+    })
     
 }
 
@@ -643,6 +711,7 @@ app.exportToCSV = function() {
 app.accountModal = new Modal(document.getElementById('accountModal'), {});
 app.suggestionMenuModal = new Modal(document.getElementById('suggestionMenuModal'), {});
 app.suggestionModal = new Modal(document.getElementById('suggestionModal'), {});
+app.exploreModal = new Modal(document.getElementById('exploreModal'), {});
 app.recordSuggestionModal = new Modal(document.getElementById('recordSuggestionModal'), {});
 app.filter_state = {
     'entities': [],

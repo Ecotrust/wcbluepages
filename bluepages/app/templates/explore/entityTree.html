@@ -1,0 +1,23 @@
+{% if entities|length > 0 %}
+    <ul>
+        {% for entity in entities %}
+            <li>
+                {% if entity.children|length > 0 %}
+                <a class='btn btn-link explore-collapse-toggle-btn' data-toggle="collapse" href="#explore-entity-children-{{ entity.id }}" 
+                    role="button" aria-expanded="false" aria-controls="explore-entity-children-{{ entity.id }}" onclick="app.explore.toggleCollapseChevron('{{ entity.id }}')">
+                    <i id="explore-entity-chevron-{{ entity.id }}" class="bi bi-chevron-right explore-entity-chevron"></i>
+                </a>
+                {% endif %} 
+                {{ entity.name }}
+                <button class="btn entity-details-button" onclick="app.prepExploreDetailsModal('entities', {{entity.id}})">View</button>
+            </li>
+            {% if entity.children|length > 0 %}
+                <div class="collapse" id="explore-entity-children-{{ entity.id }}">
+                    {% with entity.children as entities %}
+                            {% include "explore/entityTree.html" %}        
+                    {% endwith %}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </ul>
+{% endif %}

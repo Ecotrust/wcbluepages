@@ -1,13 +1,15 @@
 :root {
+  --highlight: rgba(0,0,0,0.2);
   --wc-green: rgb(49, 132, 147);
   --wc-blue: rgb(0, 46, 124);
   --background: #f4f9f9;
+  --dk-background: rgba(80, 80, 80, .15);
 }
 
 @import "variables";
 
 body {
-  background: var(--background);
+  background-color: var(--background) !important;
   display: flex;
   flex-flow: column;
   margin: 0;
@@ -41,12 +43,24 @@ header {
   height: 10vh;
 }
 
+.filter-header {
+  margin-top: 0.5rem;
+  >span {
+    padding: 0.2rem;
+    border-radius: 0.3rem;
+  }
+}
+
 .filter-header:hover,
 .home-link:hover,
 #header-title:hover {
   color: var(--wc-blue);
   text-decoration: none;
 } 
+
+.filter-header>span:hover {
+  background-color: var(--highlight);
+}
 
 .header-flex {
   align-content: center;
@@ -134,7 +148,7 @@ main {
     }
 
     &#filter-column {
-      background: rgba(80, 80, 80, .15);
+      background: var(--dk-background);
       font-size: .875em;
       flex: .75;
       padding-bottom: 1rem;
@@ -144,18 +158,62 @@ main {
 
       .filter-header {
         font-size: 1.5em;
+
+        button.btn.explore-button {
+          border: 1px solid gray;
+          padding: 0.2rem;
+          margin: 0 0 0.1rem 0.4rem;
+        
+          &:hover {
+            border: 1px solid var(--wc-blue);
+            background-color: var(--highlight);
+          }
+        }
+
       }
     }
   }
 }
 
+
 #contact-results-table_filter label {
   width: auto;
 }
 
-#filter-column .filter-header>span {
-  cursor: pointer;
+table#contact-results-table {
+  tbody {
+    tr.contact-row {
+      cursor: pointer;
+      &:hover {
+        background-color: var(--highlight);
+      }
+    }
+  }
 }
+
+div#contact-results-table_paginate {
+  position: inherit;
+  z-index: 10;
+}
+
+#filter-column{
+    .filter-header>span {
+      cursor: pointer;
+    } 
+    li.filter-list-item {
+      list-style: none;
+      span {
+        cursor: pointer;
+        border-radius: 0.3rem;
+        padding: 0.2rem;
+      }
+      span:hover {
+        color: var(--wc-blue);
+        background-color: var(--highlight);
+      }
+    }
+}
+
 
 #map-column div.spinner-border,
 #filter-column div.spinner-border {
@@ -209,18 +267,24 @@ div#results-column {
   margin: 0;
   z-index: 9;
   height: 0;
+
+  div.toast {
+    width: 450px;
+    max-width: 450px;
+    bottom: 3px;
+    position: absolute;
+
+    .toast-body {
+      padding: 0.2rem 1rem;
+
+      a,
+      button.btn {
+        margin-left: 1rem;
+      }
+    }
+  }
 }
 
-.toast {
-  width: 450px;
-  max-width: 450px;
-  bottom: 3px;
-  position: absolute;
-}
-
-.toast-body {
-  padding: 0.2rem 1rem;
-}
 
 #map-column {
   display: flex;

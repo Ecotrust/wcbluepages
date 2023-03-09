@@ -5,6 +5,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
+from django.forms.models import model_to_dict
 from django.http import JsonResponse, HttpResponseRedirect, Http404, FileResponse, HttpResponse
 from django.shortcuts import render
 from django.views import View
@@ -112,15 +113,21 @@ def filterContacts(filters={}, format='datatable'):
     }
     
     if format == 'datatable':
-        contacts_list = [
-            {
+        contacts_list = []
+        for x in contacts.order_by('last_name', 'first_name', 'middle_name', 'post_title', 'entity__name', 'job_title'):
+            if not x.entity:
+                entity_name = 'Unspecified'
+                entity_id = None
+            else:
+                entity_name = x.entity.name
+                entity_id = x.entity.pk
+            contacts_list.append({
                 'id':x.pk, 
                 'name': x.full_name,
                 'role': x.job_title,
-                'entity': x.entity.name, 
-                'entity_id': x.entity.pk 
-            } for x in contacts.order_by('last_name', 'first_name', 'middle_name', 'post_title', 'entity__name', 'job_title')
-        ]
+                'entity': entity_name, 
+                'entity_id': entity_id 
+            })
     else:
         contacts_list = contacts
 
@@ -187,8 +194,7 @@ def getEntityFacetFilters(contacts=None):
             'id': entity.pk, 
             'count': contacts.filter(entity=entity).count()
         }
-        if entity_dict['count'] > 0:
-            entities.append(entity_dict)
+        entities.append(entity_dict)
     return entities
 
 def getTopicFacetFilters(contacts=None):
@@ -196,14 +202,14 @@ def getTopicFacetFilters(contacts=None):
         contacts = Contact.objects.all()
 
     topics_dict = {}
+    for topic in Topic.objects.all().order_by('name'):
+        topics_dict[topic.name] = {'name': topic.name, 'id': topic.pk, 'count': 0}
     for contact in contacts:
         contact_topics = []
         for record in contact.record_set.all():
             contact_topics.append(record.topic)
         contact_topics = list(set(contact_topics))
         for topic in contact_topics:
-            if topic.name not in topics_dict.keys():
-                topics_dict[topic.name] = {'name': topic.name, 'id': topic.pk, 'count':0}
             topics_dict[topic.name]['count'] += 1
     
     topic_names = list(topics_dict.keys())
@@ -237,11 +243,9 @@ def getRegionFacetFilters(contacts=None):
             if len(contact_regions) == 6:
                 break
             for state in states:
-                if state.name not in contact_regions and record.regions.filter(states=state).count() > 0:
-                    contact_regions.append(state.postal_code)
+                contact_regions.append(state.postal_code)
             for depth in depths:
-                if depth not in contact_regions and record.regions.filter(depth_type=depth).count() > 0:
-                    contact_regions.append(depth)
+                contact_regions.append(depth)
         for region_index in regions_dict.keys():
             region = regions_dict[region_index]
             if region['id'] in contact_regions:
@@ -258,20 +262,25 @@ def getRegionFacetFilters(contacts=None):
 
     return [x for x in final_regions if x['count'] > 0]
 
+def formatSuggestionMenuEntry(contact_suggestion):
+    return {
+        'id': contact_suggestion.id,
+        'name': str(contact_suggestion),
+        'contact_name': contact_suggestion.contact_name,
+        'status': contact_suggestion.status,
+        'description': contact_suggestion.description,
+        'date_created': contact_suggestion.date_created.strftime('%m/%d/%Y %I:%M %p'),
+        'date_modified': contact_suggestion.date_modified.strftime('%m/%d/%Y %I:%M %p'),
+        'topics': [{'id': x.pk, 'topic': str(x.topic), 'topic_id': x.topic.pk, 'status': x.status} for x in contact_suggestion.recordsuggestion_set.all()]
+    }
+
 def getSuggestionMenu(request):
     user_suggestions = [
-        {
-            'id': contact_suggestion.id,
-            'name': str(contact_suggestion),
-            'contact_name': contact_suggestion.contact_name,
-            'status': contact_suggestion.status,
-            'description': contact_suggestion.description,
-            'date_created': contact_suggestion.date_created.strftime('%m/%d/%Y %I:%M %p'),
-            'date_modified': contact_suggestion.date_modified.strftime('%m/%d/%Y %I:%M %p'),
-            'topics': [{'id': x.pk, 'topic': str(x.topic), 'topic_id': x.topic.pk, 'status': x.status} for x in contact_suggestion.recordsuggestion_set.all()]
-        } 
-        for contact_suggestion in ContactSuggestion.objects.filter(user=request.user).order_by('status', 'last_name', 'first_name', 'date_modified', 'date_created')
+        formatSuggestionMenuEntry(contact_suggestion)
+        for contact_suggestion in ContactSuggestion.objects.filter(user=request.user, status='Pending').order_by('last_name', 'first_name', 'date_modified', 'date_created')
     ]
+    for contact_suggestion in ContactSuggestion.objects.filter(user=request.user).exclude(status='Pending').order_by('status', 'last_name', 'first_name', 'date_modified', 'date_created'):
+        user_suggestions.append(formatSuggestionMenuEntry(contact_suggestion))
     if len(user_suggestions) > 0:
         return render(request, 'suggestion_menu.html', {'suggestions': user_suggestions})
     else:
@@ -421,9 +430,19 @@ def contactDetailHTML(request, contact_id):
     try:
         contact = Contact.objects.get(pk=contact_id)
         json_ld = json.dumps(getContactJsonLd(request, contact, render=True), indent=2)
+        form = ContactForm(data=model_to_dict(contact))
     except Exception as e:
         raise Http404("Contact does not exist")
-    return render(request, 'contact_detail.html', {'contact': contact, 'JSON_LD': json_ld})
+    return render(request, 'contact_detail_page.html', {'contact': contact, 'JSON_LD': json_ld, 'form': form, 'embedded': False})
+
+def contactDetailEmbedded(request, contact_id):
+    try:
+        contact = Contact.objects.get(pk=contact_id)
+        json_ld = json.dumps(getContactJsonLd(request, contact, render=True), indent=2)
+        form = ContactForm(data=model_to_dict(contact))
+    except Exception as e:
+        raise Http404("Contact does not exist")
+    return render(request, 'contact_detail_embedded.html', {'contact': contact, 'JSON_LD': json_ld, 'form': form, 'embedded': True})
 
 def getContactJsonLd(request, contact, render=False):
     if type(contact) == int:
@@ -525,6 +544,75 @@ def getContactJsonLd(request, contact, render=False):
         return doc
     else:
         return JsonResponse(doc)
+
+def entityList(request): 
+    filters = {}
+    entities = {
+        'entities': []
+    }
+    for entity in Entity.objects.all().order_by('name'):
+        entities['entities'].append(entity.to_dict())
+    return JsonResponse(entities)
+def entityDetail(request, id):
+    try:
+        entity = Entity.objects.get(pk=id)
+        response = entity.to_dict()
+    except Exception as e:
+        response = {
+            'status': 'Error',
+            'message': 'Error with id {} not found'.format(id)
+        }
+    return JsonResponse(response)
+def entityDetailHTML(request, id):
+    try:
+        entity = Entity.objects.get(pk=id)
+        json_ld = 'TODO'
+    except Exception as e:
+        raise Http404("Entity does not exist")
+    return render(request, 'entity_detail_html.html', {'entity': entity, 'JSON_LD': json_ld})
+
+def entityDetailEmbedded(request, id):
+    try:
+        entity = Entity.objects.get(pk=id)
+        json_ld = 'TODO'
+    except Exception as e:
+        raise Http404("Entity does not exist")
+    return render(request, 'entity_detail_embedded_wrapper.html', {'entity': entity, 'JSON_LD': json_ld})
+
+def exploreEntitiesPage(request):
+    entityExploreTree = buildExploreEntityTree()
+    context = {
+        'entities': entityExploreTree,
+    }
+    return render(request, "explore/entityPageWrapper.html", context)
+
+def exploreEntitiesEmbedded(request):
+    entityExploreTree = buildExploreEntityTree()
+    context = {
+        'entities': entityExploreTree,
+    }
+    return render(request, "explore/entityEmbeddedWrapper.html", context)
+
+def getEntityChildrenTree(entity):
+    children = []
+    # if entity.children:
+    if entity.children.count() > 0:
+        for child in entity.children:
+            child_dict = child.to_dict(flat=True)
+            child_dict['children'] = getEntityChildrenTree(child)
+            children.append(child_dict)
+    return children
+
+def buildExploreEntityTree():
+    entity_tree = []
+    for entity in Entity.objects.all().order_by('name'):
+        if entity.is_prime:
+            entity_dict = entity.to_dict(flat=True)
+            entity_dict['children'] = getEntityChildrenTree(entity)
+            entity_tree.append(entity_dict)
+    
+    return entity_tree
+
 
 ####################################
 #   ADMIN VIEWS                    #

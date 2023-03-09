@@ -9,20 +9,32 @@ from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmVie
 from app.views import (
     home, regionJSON, regionPicker, wireframe, getSuggestionMenu, contactSuggestionMenu, contactSuggestionForm, 
     recordSuggestionForm, deleteSuggestedContact, deleteSuggestedRecord, getProfile, editProfile, changePassword, 
-    filterContactsRequest, contactList, contactDetail, contactDetailHTML, getContactJsonLd, exportCSVList
+    filterContactsRequest, contactList, contactDetail, contactDetailHTML, getContactJsonLd, exportCSVList,
+    entityList, entityDetail, entityDetailHTML, exploreEntitiesPage, exploreEntitiesEmbedded, entityDetailEmbedded,
+    contactDetailEmbedded
 )
 
 
 urlpatterns = [
     path('filter_contacts', filterContactsRequest),
+
+    path('explore/entities/embedded/', exploreEntitiesEmbedded, name="explore_entities_embedded"),
+    path('explore/entities/', exploreEntitiesPage, name="explore_entities"),
+
     re_path(r'^regions.json', regionJSON),
     path('get_suggestion_menu/', getSuggestionMenu),
     path('suggestion_form/<int:contact_id>/', contactSuggestionForm),
     re_path(r'^suggestion_form', contactSuggestionForm),
     path('contacts/', contactList, name='contact_list'),
     path('contacts/<int:contact_id>/', contactDetailHTML, name='contact_detail_html'),
+    path('contacts/<int:contact_id>/embedded/', contactDetailEmbedded, name='contact_detail_embedded'),
     path('contacts/api/<int:contact_id>/', contactDetail, name='contact_detail'),
     path('contacts/json_ld/<int:contact>/', getContactJsonLd, name='contact_json_ld'),
+    path('entities/', entityList, name='entity_list'),
+    path('entities/<int:id>/', entityDetailHTML, name='entity_detail_html'),
+    path('entities/<int:id>/embedded/', entityDetailEmbedded, name='entity_detail_html'),
+    path('entities/api/<int:id>/', entityDetail, name='entity_detail_embedded'),
+    # path('entities/json_ld/<int:id>/', getEntityJsonLd, name='entity_json_ld'),
     path('contact_suggestion_menu/<int:contact_id>/', contactSuggestionMenu),
     path('contact_suggestion_menu/', contactSuggestionMenu),
     path('record_suggestion_form/<int:contact_id>/<int:record_id>/', recordSuggestionForm),

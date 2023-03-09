@@ -30,7 +30,10 @@
                 <!-- <link href="{% sass_src 'app/scss/suggestion_menu.scss' %}" rel="stylesheet" type="text/css" /> -->
                 <!-- <link href="{% sass_src 'app/scss/suggestion_form.scss' %}" rel="stylesheet" type="text/css" /> -->
                 <!-- <link href="{% sass_src 'app/scss/record_suggestion.scss' %}" rel="stylesheet" type="text/css" /> -->
-            {% endblock %}          
+            {% endblock %}      
+            
+            {% block head_js %}
+            {% endblock %}
         </head>
     {% endblock %}
     {% block body %}
@@ -52,7 +55,6 @@
                 <script>
                     let app = {};
                     app.csrf_element = '{% csrf_token %};'
-                    window.setTimeout
                     let csrf_div = document.createElement('div');
                     csrf_div.innerHTML = app.csrf_element.trim();
                     app.csrftoken = csrf_div.firstChild.value;

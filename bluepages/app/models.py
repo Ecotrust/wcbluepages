@@ -159,6 +159,10 @@ class Entity(models.Model):
         hierarchy_string = " > ".join([x.name for x in hierarchy_list])
         return hierarchy_string
 
+    @property
+    def children(self):
+        return Entity.objects.filter(parent=self).order_by('name')
+
     def __str__(self):
         if self.parent:
             return f"{self.name} ({self.ancestor})"
@@ -191,14 +195,24 @@ class Entity(models.Model):
         }
 
         if include_contacts and self.allow_show_contacts() and not flat:
-            out_dict['contacts'] = [contact.to_dict(include_records=False) for contact in self.contacts_set.all()]
+            out_dict['contacts'] = [contact.to_dict(include_records=False) for contact in self.contact_set.all()]
 
-        if flat:
+        if flat or self.parent == self:
             out_dict['parent'] = str(self.parent)
         else:
             out_dict['parent'] = self.parent.to_dict(include_contacts=False, flat=flat) if self.parent else None
 
         return out_dict
+
+    @property
+    def is_prime(self):
+        if self.parent == None or self.parent == self:
+            return True
+        return False
+
+    @property
+    def children(self):
+        return self.entity_set.exclude(pk=self.pk).order_by('name')
 
 
 # Topic
@@ -227,6 +241,48 @@ class RecordBase(models.Model):
     regions = models.ManyToManyField(Region)
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
+
+    @property
+    def general_regions(self):
+        state_list = ['Washington', 'Oregon', 'California']
+        depth_lookup = {
+            'N': 'near shore',
+            'M': 'mid',
+            'O': 'offshore'
+        }
+        region_map = {}
+        for region in self.regions.all():
+            for state in region.states.all():
+                if not str(state) in region_map.keys():
+                    region_map[str(state)] = []
+                if not region.depth_type in region_map.keys():
+                    region_map[region.depth_type] = []
+                if not region.depth_type in region_map[str(state)]:
+                    region_map[str(state)].append(region.depth_type)
+                if not str(state) in region_map[region.depth_type]:
+                    region_map[region.depth_type].append(str(state))
+        trifectas = []
+        general_region_list = []
+        for key in region_map.keys():
+            if len(region_map[key]) == 3:
+                trifectas.append(key)
+        if len(trifectas) == 6:
+            return 'West Coast waters'
+        elif len(trifectas) > 0:
+            for trifecta in trifectas:
+                region_label = trifecta
+                if trifecta in depth_lookup.keys():
+                    region_label = depth_lookup[trifecta]
+                general_region_list.append("{} waters".format(region_label))
+        for key in region_map.keys():
+            if key in state_list and not key in trifectas:
+                state_depth_list = []
+                for depth in region_map[key]:
+                    if not depth in trifectas:
+                        state_depth_list.append(depth_lookup[depth])
+                if len(state_depth_list) > 0:
+                    general_region_list.append("{} {} waters".format(key, ' and '.join(state_depth_list)))
+        return ', '.join(general_region_list)
 
     class Meta:
         abstract = True
@@ -412,7 +468,7 @@ class Contact(ContactBase):
         }
 
         if include_entity:
-            entity = self.entity.to_dict(flat=flat)
+            entity = self.entity.to_dict(include_contacts=False, flat=flat)
             if flat:
                 out_dict['entity_name'] = entity['name']
                 out_dict['entity_type'] = entity['entity_type']

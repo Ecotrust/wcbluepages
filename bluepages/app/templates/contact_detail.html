@@ -1,12 +1,52 @@
-<!DOCTYPE html>
-<head>
-    <!-- THIS NEEDS TO BE HERE FOR Ocean InfoHub Connectivity!-->
-    <script type="application/ld+json">
-        {{ JSON_LD|safe }}
-    </script>
-</head>
-<body>
-    <h1>{{ contact.full_name }}</h1>
-    <h3>{{ contact.job_title }}{% if contact.job_title and contact.entity %} at {% endif %}{{ contact.entity }}</h3>
+<h1>{{ contact.full_name }}</h1>
+<h3>{{ contact.job_title }}{% if contact.job_title and contact.entity %} at {% endif %}{{ contact.entity }}</h3>
 
-</body>
+<table class="contact-info-table">
+    {% for field in form %}
+        {% if not field.name == 'is_test_data' and not field.name == 'show_on_entity_page' %}
+            <tr>
+                <td><b>{{ field.label }}:</b></td>
+                <td>
+                {% if field.name == 'entity' %}
+                    {% if embedded %}
+                        <a href="/entities/{{contact.entity.pk}}/" target="_blank">{{contact.entity}}</a>
+                    {% else %}
+                        <a href="/entities/{{contact.entity.pk}}/">{{contact.entity}}</a>
+                    {% endif %}
+                {% elif field.name == 'email' %}
+                    <a href="mailto:{{contact.email}}">{{contact.email}}</a>
+                {% elif field.name == 'phone' %}
+                    {{ contact.phone.formatted}}
+                {% elif field.name == 'mobile_phone' %}
+                    {{ contact.mobile_phone.formatted}}
+                {% elif field.name == 'office_phone' %}
+                    {{ contact.office_phone.formatted}}
+                {% elif field.name == 'fax' %}
+                    {{ contact.fax.formatted}}
+                {% elif field.name == 'address' %}
+                    {{ contact.address }}
+                {% else %}
+                    {{ field.data }}
+                {% endif %}
+                </td>
+            </tr>
+        {% endif %}
+    {% endfor %}
+</table>
+{% if contact.record_set.all|length > 0 %}
+    <div class="contact-topics">
+        <h3>Topics</h3>
+        <table class="contact-topics-table">
+            <tr>
+                <th>Topic</th>
+                <th>Regions</th>
+            </tr>
+            {% for record in contact.record_set.all %}
+                <tr>
+                    <td><b>{{record.topic}}</b></td>
+                    <td>{{ record.general_regions }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endif %}
