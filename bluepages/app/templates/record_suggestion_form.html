@@ -35,11 +35,10 @@
     <!-- About Contact being suggested -->
     <div class="well" id="suggestion-form-topic">
         <div class="fieldWrapper">
-            {{ record_form.topic.errors }}
+            {% if record_form.topic.errors %}{{ record_form.topic.errors }}{% endif %}
             {{ record_form.topic.label_tag }}
             {{ record_form.topic }}
             {% if record_form.topic.help_text %}<span class="help-text">{{ record_form.topic.help_text|safe }}</span>{% endif %}
-            {% if record_form.topic.errors %}{{ record_form.topic.errors }}{% endif %}
         </div>
     </div>
 
@@ -93,12 +92,13 @@
         </div>
     </div>
 
-    {{ record_form.non_field_errors }}
-
-    <button type="button" class="btn btn-primary modal-submit-button" onclick="app.prepContactMenuModal({'contact_suggestion': {'id': {{ contact_id }}  } })">
-        &lt; Back
-    </button>
-    <button type="button" class="btn btn-primary modal-submit-button" onclick="app.submitRecordSuggestion()">
-        Submit
-    </button>
+    <div class="modal-footer">
+        {{ record_form.non_field_errors }}
+        <button type="button" class="btn btn-danger" onclick="app.prepContactMenuModal({'contact_suggestion': {'id': {{ contact_id }}  } })">
+            &lt; Cancel
+        </button>
+        <button type="button" class="btn btn-primary modal-submit-button" onclick="app.submitRecordSuggestion()">
+            Submit
+        </button>
+    </div>
 </form>

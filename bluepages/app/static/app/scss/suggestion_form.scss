@@ -27,9 +27,6 @@ fieldset {
 .field-wrapper {
     margin-bottom: .5rem;
 
-    &.col {
-    }
-
     label {
         display: block;
         font-size: .8125em;
@@ -82,5 +79,5 @@ fieldset {
 
 .modal-body {
     overflow: auto;
-    max-height: calc(100vh - 185px);
+    max-height: calc(100vh - 125px);
 }

@@ -5,7 +5,8 @@
 .map {
     float: left;
     width: 40vw;
-    height: calc(90vh - 85px);
+    height: calc(100vh - 280px);
+    min-height: 350px;
     border: 1px solid black;
 }
 
@@ -18,9 +19,12 @@
 
 .left-panel,
 #right-panel {
-    margin: 0 4vw;
-    max-width: 50vw;
+    margin: 0 2vw;
+    max-width: 40%;
     min-width: 250px;
+    p {
+        font-size: 13px;
+    }
 }
 
 #state-boxes-wrapper,
@@ -30,8 +34,7 @@
 }
 
 #filter-boxes-wrapper fieldset {
-    border-color: black;
-    border-radius: 0.5rem;
+    border: none;
 }
 
 textarea:disabled {
@@ -54,5 +57,14 @@ div.right-panel {
             font-size: small;
             padding: 5px 7px;
         }
+    }
+}
+
+#suggestion-form-topic {
+    margin-bottom: 1.5rem;
+
+    label {
+        font-size: 1.125em;
+        font-weight: bold;
     }
 }
