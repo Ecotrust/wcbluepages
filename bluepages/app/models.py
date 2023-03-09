@@ -532,10 +532,15 @@ class RecordSuggestion(RecordBase):
     status = models.CharField(max_length=20, default='Pending', choices=SUGGESTION_STATUS_CHOICES, verbose_name="Suggestion status", help_text="Has suggestion been approved or declined?")
 
     def clean(self):
-        if not self.pk and self.contact_suggestion.status == 'Pending' and self.status == 'Pending':
-            matches = RecordSuggestion.objects.filter(contact_suggestion=self.contact_suggestion, topic=self.topic, status=self.status)
-            if matches.count() > 0:
-                raise ValidationError('You already have a suggested edit pending for this contact for this topic. Please edit your existing suggestion.')
+        try:
+            if not self.pk and self.contact_suggestion.status == 'Pending' and self.status == 'Pending':
+                matches = RecordSuggestion.objects.filter(contact_suggestion=self.contact_suggestion, topic=self.topic, status=self.status)
+                if matches.count() > 0:
+                    raise ValidationError('You already have a suggested edit pending for this contact for this topic. Please edit your existing suggestion.')
+        except RecordSuggestion.topic.RelatedObjectDoesNotExist:
+            pass
+        except Exception:
+            raise ValidationError('Unknown error occurred! Please check your input and try again.')
 
     class Meta:
         ordering = ['topic', 'contact_suggestion']
