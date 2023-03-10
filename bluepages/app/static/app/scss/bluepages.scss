@@ -319,6 +319,23 @@ div#results-column {
   display: none;
 }
 
+div#accountModalWrapper {
+  div.user-actions {
+    min-width: 200px;
+    width: 200px;
+    max-width: 200px;
+  }
+  div.user-actions,
+  div.user-actions a {
+    display: grid;
+
+    button {
+      height: 50px;
+      margin: 0.3rem 0;
+    }
+  }
+}
+
 form#contact-suggestion-form button,
 form#profile-form button,
 form#password-form button {

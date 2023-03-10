@@ -1,29 +1,19 @@
 <h1>{{user.username}}</h1>
 <div class="container">
     <div class="row">
-        <div class="col-6">
+        <div class="col user-actions">
+            <button class="btn btn-primary" type="button" onclick="app.loadProfileForm()">Edit Profile</button>
+            <button class="btn btn-primary" type="button" onclick="app.loadPasswordChangeForm()">Change Password</button>
+            <button class="btn btn-primary" type="button" onclick="app.loadSuggestionMenu()">Suggestions</button>
+            <a href="/admin/" target="_blank">
+                <button class="btn btn-primary" type="button">Site Administration</button>
+            </a>
+        </div>
+        <div class="col">
             <p><b>First Name:</b> {{user.first_name}}</p>
             <p><b>Last Name:</b> {{user.last_name}}</p>
             <p><b>Email:</b> {{user.email}}</p>
             <p><b>Joined:</b> {{user.date_joined}}</p>
         </div>
-        <div class="col-6">
-            <button class="btn btn-primary" type="button" onclick="app.loadProfileForm()">Edit Profile</button>
-            <br />
-            <button class="btn btn-primary" type="button" onclick="app.loadPasswordChangeForm()">Change Password</button>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-1"></div>
-        <div class="col-10">
-            <button class="btn btn-primary" type="button" onclick="app.loadSuggestionMenu()">Suggestions</button>
-            {% if user.is_superuser %}
-                <br />
-                <a href="/admin/" target="_blank">
-                    <button class="btn btn-primary" type="button">Site Administration</button>
-                </a>
-            {% endif %}
-        </div>
-        <div class="col-1"></div>
     </div>
 </div>
