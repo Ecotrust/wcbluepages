@@ -22,6 +22,7 @@
         </div>
     </div>
     <div class="header-user">
+        <button class="btn btn-link" onclick="app.prepExploreModal('Entities')">Entities</button>
         {% if user.is_authenticated %}
             <button class="btn btn-link" onclick="app.loadAccountModal()">Account</button>
             <button class="btn btn-link" onclick="app.logoutRUS()">Logout</button>

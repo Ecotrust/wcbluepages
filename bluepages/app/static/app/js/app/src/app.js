@@ -387,9 +387,6 @@ app.loadSearchResults = function(results, status) {
                     chevron + 
                     key +
                 '</span>';
-        if (key.toLowerCase() == 'entities') {
-            filter_col_html += '<button class="btn explore-button" onclick="app.prepExploreModal(\'' + key + '\')">Explore</button>';
-        }
         filter_col_html += '</h2>';
         if (is_expanded) {
             filter_col_html += '<ul class="collapse show" id="' + key +'FilterOptions">';
