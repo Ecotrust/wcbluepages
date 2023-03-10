@@ -363,7 +363,9 @@ div#suggestionMenuModal {
 /* Dynamic Font-Size, Maximums and Minimums */
 
 div#contact-results-table_length,
-div#contact-results-table_filter {
+div#contact-results-table_filter,
+div#contact-results-table_info,
+div#contact-results-table_paginate {
   font-size: 1.5vw;
 }
 
@@ -393,7 +395,9 @@ div#map .ol-attribution ul {
   }
 
   div#contact-results-table_length,
-  div#contact-results-table_filter {
+  div#contact-results-table_filter,
+  div#contact-results-table_info,
+  div#contact-results-table_paginate {
     font-size: 10px;
   }
 
@@ -425,7 +429,9 @@ div#map .ol-attribution ul {
   }
 
   div#contact-results-table_length,
-  div#contact-results-table_filter {
+  div#contact-results-table_filter,
+  div#contact-results-table_info,
+  div#contact-results-table_paginate {
     font-size: 16.5px;
   }
 
