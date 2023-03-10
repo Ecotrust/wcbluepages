@@ -94,10 +94,11 @@ header {
   a {
     color: white;
     text-decoration: none;
+    font-size: 2.5vw;
 
     span {
       display: block;
-      font-size: 1rem;
+      font-size: 1.5vw;
     }
   }
 }
@@ -110,6 +111,7 @@ header {
       color: white;
       letter-spacing: 0.1rem;
       text-transform: uppercase;
+      font-size: 1.7vw;
 
       &:hover {
         color: aquamarine;
@@ -148,7 +150,7 @@ main {
 
     &#filter-column {
       background: var(--dk-background);
-      font-size: .875em;
+      font-size: 1.7vw;
       flex: .75;
       padding-bottom: 1rem;
       padding-top: 1rem;
@@ -156,7 +158,7 @@ main {
       overflow-x: hidden;
 
       .filter-header {
-        font-size: 1.5em;
+        font-size: 2.3vw;
 
         button.btn.explore-button {
           border: 1px solid gray;
