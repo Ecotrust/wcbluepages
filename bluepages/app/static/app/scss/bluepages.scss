@@ -362,6 +362,11 @@ div#suggestionMenuModal {
 
 /* Dynamic Font-Size, Maximums and Minimums */
 
+div#contact-results-table_length,
+div#contact-results-table_filter {
+  font-size: 1.5vw;
+}
+
 table#contact-results-table td {
   font-size: 1.7vw;
 }
@@ -387,6 +392,11 @@ div#map .ol-attribution ul {
     font-size: 10px;
   }
 
+  div#contact-results-table_length,
+  div#contact-results-table_filter {
+    font-size: 10px;
+  }
+
   table#contact-results-table td {
     font-size: 11.5px;
   }
@@ -401,9 +411,9 @@ div#map .ol-attribution ul {
     font-size: 28px;
   }
   
-    #home-columns-row .home-column#filter-column .filter-header {
-      font-size: 25px;
-    }
+  #home-columns-row .home-column#filter-column .filter-header {
+    font-size: 25px;
+  }
   
   #header-title a span {
     font-size: 16.5px;
@@ -412,6 +422,11 @@ div#map .ol-attribution ul {
   .header-user button.btn-link,
   #home-columns-row .home-column#filter-column {
     font-size: 19px;
+  }
+
+  div#contact-results-table_length,
+  div#contact-results-table_filter {
+    font-size: 16.5px;
   }
 
   table#contact-results-table td {
