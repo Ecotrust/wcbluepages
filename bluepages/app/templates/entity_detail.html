@@ -59,7 +59,7 @@
                 Parent
             </td>
             <td>
-                <a href="/entities/{{ entity.parent.id }}/">{{ entity.parent.name }}</a>   
+                <a href="/entities/{{ entity.parent.id }}/"{% if embedded %} target="_blank"{% endif %}>{{ entity.parent.name }}</a>                
             </td>
         </tr>
     {% endif %}
@@ -68,7 +68,7 @@
             <td>Child{% if entity.children|length > 1 %}ren{% endif %}</td>
             <td>
                 {% for child in entity.children %}
-                    <a href="/entities/{{child.pk}}/">{{child}}</a>
+                    <a href="/entities/{{child.pk}}/"{% if embedded %} target="_blank"{% endif %}>{{child}}</a>
                 {% endfor %}
             </td>
         </tr>
@@ -93,7 +93,7 @@
                 {% if contact.public %}
                     <tr>
                         <td>
-                            <a href="/contacts/{{contact.id}}/">{{ contact.full_name }}</a>
+                            <a href="/contacts/{{contact.id}}/"{% if embedded %} target="_blank"{% endif %}>{{ contact.full_name }}</a>
                         </td>
                         <td>
                             {{ contact.job_title }}

@@ -569,7 +569,7 @@ def entityDetailHTML(request, id):
         json_ld = 'TODO'
     except Exception as e:
         raise Http404("Entity does not exist")
-    return render(request, 'entity_detail_html.html', {'entity': entity, 'JSON_LD': json_ld})
+    return render(request, 'entity_detail_html.html', {'entity': entity, 'JSON_LD': json_ld, 'embedded': False})
 
 def entityDetailEmbedded(request, id):
     try:
@@ -577,7 +577,7 @@ def entityDetailEmbedded(request, id):
         json_ld = 'TODO'
     except Exception as e:
         raise Http404("Entity does not exist")
-    return render(request, 'entity_detail_embedded_wrapper.html', {'entity': entity, 'JSON_LD': json_ld})
+    return render(request, 'entity_detail_embedded_wrapper.html', {'entity': entity, 'JSON_LD': json_ld, 'embedded': True})
 
 def exploreEntitiesPage(request):
     entityExploreTree = buildExploreEntityTree()
