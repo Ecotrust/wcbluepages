@@ -40,7 +40,7 @@ main .btn-link:hover {
 
 header {
   background: var(--wc-blue);
-  height: 10vh;
+  height: 90px;
 }
 
 .filter-header {
@@ -83,7 +83,6 @@ header {
 
     #header-logo {
       border-radius: 0.7rem;
-      max-height: 5vh;
       max-width: 100%;
     }
   }
@@ -126,7 +125,7 @@ header {
 */
 
 main {
-  height: 90vh;
+  height: calc(100vh - 90px);
 
   .container-flex {
     display: flex;
