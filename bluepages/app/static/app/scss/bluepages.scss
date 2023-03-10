@@ -347,3 +347,13 @@ form#password-form button {
 button.modal-submit-button {
   margin-left: 1rem;
 }
+
+/* Suggestion Modal Overrides */
+div#suggestionModal,
+div#recordSuggestionModal,
+div#suggestionMenuModal {
+  div.modal-dialog {
+    width: 80vw;
+    min-width: 80vw;
+  }
+}
