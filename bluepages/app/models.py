@@ -355,7 +355,7 @@ class ContactBase(models.Model):
     preferred_pronouns = models.CharField(
         max_length=254, 
         blank=True, default='',
-        verbose_name='Preferred Pronouns',
+        verbose_name='Pronouns',
         help_text="She/Her, They/Them, etc...",
     )
     entity = models.ForeignKey(
