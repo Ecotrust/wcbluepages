@@ -636,7 +636,8 @@ def getSuggestionInitialValues(suggestion):
         'office_phone',
         'fax',
         'preferred_contact_method',
-        'show_on_entity_page'
+        'show_on_entity_page',
+        'notes'
     ]
 
     for field in fields:
