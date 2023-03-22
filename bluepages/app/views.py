@@ -640,9 +640,23 @@ def getSuggestionInitialValues(suggestion):
         'notes'
     ]
 
-    for field in fields:
-        value = getattr(suggestion, field)
-        if value:
+    if suggestion.contact:
+        # When overriding contact, 'null' values should be ignored
+        # This is especially true for 'entity' and 'address' drop-downs
+        # This is a gray area for 'show_on_entity_page' - a user-change can't
+        # be explicit about wanting to change visibility to 'default' (val=None)
+        for field in fields:
+            if hasattr(suggestion, field):
+                value = getattr(suggestion, field)
+                if not value == None:
+                    initial[field] = value
+    else:
+        for field in fields:
+            if hasattr(suggestion, field):
+                # Supports values including False and None
+                value = getattr(suggestion, field)
+            else:
+                value = None
             initial[field] = value
     
     return initial
@@ -758,7 +772,6 @@ def adminSuggestionReviewMenu(request, suggestion_id):
                     messages.add_message(request, messages.ERROR, message, extra_tags="error", fail_silently=False)
                 return HttpResponseRedirect('/admin/app/contactsuggestion/{}/change/'.format(suggestion_id))
 
-
         initial_dict = getSuggestionInitialValues(suggestion)
         contact_form = ContactForm(instance=contact, initial=initial_dict)
         header_cells = [{ 
@@ -809,13 +822,11 @@ def adminSuggestionReviewMenu(request, suggestion_id):
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'show_on_entity_page'))
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'notes'))
 
-
         record_suggestions = []
         contact_topics = {}
         if contact:
             for record in contact.record_set.all():
                 contact_topics[str(record.topic.id)] = record
-
 
         for record_suggestion in suggestion.recordsuggestion_set.all().order_by('topic'):
             overwrite = str(record_suggestion.topic.id) in contact_topics.keys()
@@ -843,7 +854,6 @@ def adminSuggestionReviewMenu(request, suggestion_id):
                 'removed_regions': removed_regions,
                 'shared_regions': shared_regions,
             })
-
 
     except Exception as e:
         print(e)
