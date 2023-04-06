@@ -45,6 +45,7 @@
             {% if contact_form.show_on_entity_page.help_text %}<span class="help-text">{{ contact_form.show_on_entity_page.help_text|safe }}</span>{% endif %}
             {% if contact_form.show_on_entity_page.errors %}{{ contact_form.show_on_entity_page.errors }}{% endif %}
         </div>
+        <hr />
         <div class="field-wrapper col-md-2">
             {{ contact_form.title.errors }}
             {{ contact_form.title.label_tag }}
@@ -52,14 +53,9 @@
             {% if contact_form.title.help_text %}<span class="help-text">{{ contact_form.title.help_text|safe }}</span>{% endif %}
             {% if contact_form.title.errors %}{{ contact_form.title.errors }}{% endif %}
         </div>
-        <div class="field-wrapper col-md-4">
-            {{ contact_form.last_name.errors }}
-            {{ contact_form.last_name.label_tag }}
-            {{ contact_form.last_name }}
-            {% if contact_form.last_name.help_text %}<span class="help-text">{{ contact_form.last_name.help_text|safe }}</span>{% endif %}
-            {% if contact_form.last_name.errors %}{{ contact_form.last_name.errors }}{% endif %}
+        <div class="field-wrapper col-md-10">
         </div>
-        <div class="field-wrapper col-md-4">
+        <div class="field-wrapper col-md-3">
             {{ contact_form.first_name.errors }}
             {{ contact_form.first_name.label_tag }}
             {{ contact_form.first_name }}
@@ -72,6 +68,15 @@
             {{ contact_form.middle_name }}
             {% if contact_form.middle_name.help_text %}<span class="help-text">{{ contact_form.middle_name.help_text|safe }}</span>{% endif %}
             {% if contact_form.middle_name.errors %}{{ contact_form.middle_name.errors }}{% endif %}
+        </div>
+        <div class="field-wrapper col-md-3">
+            {{ contact_form.last_name.errors }}
+            {{ contact_form.last_name.label_tag }}
+            {{ contact_form.last_name }}
+            {% if contact_form.last_name.help_text %}<span class="help-text">{{ contact_form.last_name.help_text|safe }}</span>{% endif %}
+            {% if contact_form.last_name.errors %}{{ contact_form.last_name.errors }}{% endif %}
+        </div>
+        <div class="field-wrapper col-md-3">
         </div>
         <div class="field-wrapper col-md-3">
             {{ contact_form.post_title.errors }}
@@ -87,6 +92,7 @@
             {% if contact_form.pronouns.help_text %}<span class="help-text">{{ contact_form.pronouns.help_text|safe }}</span>{% endif %}
             {% if contact_form.pronouns.errors %}{{ contact_form.pronouns.errors }}{% endif %}
         </div>
+        <hr />
     </fieldset>
 
     <!-- Job/Role -->
@@ -120,7 +126,7 @@
             {% if contact_form.job_title.help_text %}<span class="help-text">{{ contact_form.job_title.help_text|safe }}</span>{% endif %}
             {% if contact_form.job_title.errors %}{{ contact_form.job_title.errors }}{% endif %}
         </div>
-        <div class="field-wrapper col-md-9">
+        <div class="field-wrapper col-md-10">
             {{ contact_form.expertise.errors }}
             {{ contact_form.expertise.label_tag }}
             {{ contact_form.expertise }}
@@ -168,21 +174,23 @@
             {% if contact_form.fax.help_text %}<span class="help-text">{{ contact_form.fax.help_text|safe }}</span>{% endif %}
             {% if contact_form.fax.errors %}{{ contact_form.fax.errors }}{% endif %}
         </div>
-        <div class="field-wrapper col-md-9">
+        <hr />
+        <h5>Mailing Address:</h5>
+        <div class="field-wrapper col-md-10">
             {{ contact_form.line_1.errors }}
             {{ contact_form.line_1.label_tag }}
             {{ contact_form.line_1 }}
             {% if contact_form.line_1.help_text %}<span class="help-text">{{ contact_form.line_1.help_text|safe }}</span>{% endif %}
             {% if contact_form.line_1.errors %}{{ contact_form.line_1.errors }}{% endif %}
         </div>
-        <div class="field-wrapper col-md-9">
+        <div class="field-wrapper col-md-10">
             {{ contact_form.line_2.errors }}
             {{ contact_form.line_2.label_tag }}
             {{ contact_form.line_2 }}
             {% if contact_form.line_2.help_text %}<span class="help-text">{{ contact_form.line_2.help_text|safe }}</span>{% endif %}
             {% if contact_form.line_2.errors %}{{ contact_form.line_2.errors }}{% endif %}
         </div>
-        <div class="field-wrapper col-md-5">
+        <div class="field-wrapper col-md-3">
             {{ contact_form.city.errors }}
             {{ contact_form.city.label_tag }}
             {{ contact_form.city }}
@@ -210,6 +218,9 @@
             {% if contact_form.zip_code.help_text %}<span class="help-text">{{ contact_form.zip_code.help_text|safe }}</span>{% endif %}
             {% if contact_form.zip_code.errors %}{{ contact_form.zip_code.errors }}{% endif %}
         </div>
+        <div class="field-wrapper col-md-9">
+        </div>
+        <hr />
         <div class="field-wrapper col-md-5">
             {{ contact_form.preferred_contact_method.errors }}
             {{ contact_form.preferred_contact_method.label_tag }}
