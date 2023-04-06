@@ -300,7 +300,7 @@ def contactSuggestionMenu(request, contact_id=None):
                     'entity_name': str(contact_suggestion.entity),
                     'email': contact_suggestion.email,
                     'phone': contact_suggestion.phone,
-                    'address': contact_suggestion.contact_address,
+                    'address': contact_suggestion.full_address(),
                     'records': contact_suggestion.recordsuggestion_set.all().order_by('topic'),
                     'description': contact_suggestion.description,
                     'status': contact_suggestion.status
@@ -509,11 +509,11 @@ def getContactJsonLd(request, contact, render=False):
         # }
     }
 
-    if contact.address and contact.address.country:
+    if contact.country:
         doc['nationality'] = [
             {
                 "@type": "Country",
-                "name": contact.address.country
+                "name": contact.country
             },
             {
                 "@type": "DefinedTerm",
@@ -521,7 +521,7 @@ def getContactJsonLd(request, contact, render=False):
                 "inDefinedTermSet": "UN/LOCODE Code List by Country and Territory",
                 "name": "United States",
                 "termCode": "US"
-            } if contact.address and contact.address.country == 'USA' else None
+            } if contact.country == 'USA' else None
         ]
     for record in contact.record_set.all():
         doc['knowsAbout'].append(
@@ -635,6 +635,12 @@ def getSuggestionInitialValues(suggestion):
         'mobile_phone',
         'office_phone',
         'fax',
+        'line_1',
+        'line_2',
+        'city',
+        'state',
+        'country',
+        'zip_code',
         'preferred_contact_method',
         'show_on_entity_page',
         'notes'
@@ -648,7 +654,7 @@ def getSuggestionInitialValues(suggestion):
         for field in fields:
             if hasattr(suggestion, field):
                 value = getattr(suggestion, field)
-                if not value == None:
+                if not value in [None, '']:
                     initial[field] = value
     else:
         for field in fields:
@@ -670,7 +676,7 @@ def buildReviewRow(suggestion, contact, contact_form, field, contact_field=None,
     if not contact_field:
         contact_field = field
     match = False
-    overwrite = not getattr(suggestion, field) == None
+    overwrite = not getattr(suggestion, field) in [None, '']
     cells = [
         { 'value': getattr(suggestion, field), }
     ]
@@ -811,13 +817,12 @@ def adminSuggestionReviewMenu(request, suggestion_id):
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'office_phone'))
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'fax'))
         # Handle addresses!
-        rows.append(buildReviewRow(suggestion, contact, contact_form, 'address'))
-        rows.append(buildReviewRow(suggestion, contact, contact_form, 'address_line_1'))
-        rows.append(buildReviewRow(suggestion, contact, contact_form, 'address_line_2'))
-        rows.append(buildReviewRow(suggestion, contact, contact_form, 'address_city'))
-        rows.append(buildReviewRow(suggestion, contact, contact_form, 'address_state'))
-        rows.append(buildReviewRow(suggestion, contact, contact_form, 'address_country'))
-        rows.append(buildReviewRow(suggestion, contact, contact_form, 'address_zip_code'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'line_1'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'line_2'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'city'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'state'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'country'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'zip_code'))
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'preferred_contact_method'))
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'show_on_entity_page'))
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'notes'))

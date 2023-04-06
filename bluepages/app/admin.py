@@ -22,16 +22,6 @@ def get_entity_hierarchy_alias(prefix='entity__'):
         f"{prefix}parent__parent__parent__parent__parent__parent__parent__parent__parent__parent__name", Value(" "),
     )
 
-def get_address_components_alias(prefix=''):
-    return Concat(
-        f"{prefix}line_1", Value(" "),
-        f"{prefix}line_2", Value(" "),
-        f"{prefix}city", Value(" "),
-        f"{prefix}state", Value(" "),
-        # f"{prefix}city__state__postal_code", Value(" "),
-        f"{prefix}zip_code", Value(" "),
-    )
-
 class RecordForm(forms.ModelForm):
     class Meta:
         model = Record
@@ -71,14 +61,13 @@ class TopicAdmin(VersionAdmin):
     search_fields = ['name',]
 
 class EntityAdmin(VersionAdmin):
-    list_display = ('name', 'parent', 'address')
-    search_fields = ['name', 'entity_hierarchy', 'address_components']
+    list_display = ('name', 'parent', 'city', 'state')
+    search_fields = ['name', 'entity_hierarchy', 'line_1', 'line_2', 'city', 'state', 'country', 'zip_code']
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         qs = qs.alias(
             entity_hierarchy=get_entity_hierarchy_alias(''),
-            address_components=get_address_components_alias('address__')
         )
         return qs
 
@@ -120,7 +109,14 @@ class ContactAdmin(VersionAdmin):
                     'office_phone',
                     'fax', 
                 ),
-                'address',
+                (
+                    'line_1',
+                    'line_2',
+                    'city',
+                    'state',
+                    'zip_code',
+                    'country',
+                ),
                 'preferred_contact_method',
                 'show_on_entity_page',
                 'is_test_data'
@@ -185,10 +181,9 @@ class ContactSuggestionAdmin(VersionAdmin):
                     'office_phone',
                     'fax', 
                 ),
-                'address',
-                ('address_line_1', 'address_line_2',),
-                ('address_city', 'address_state', 'address_country'),
-                'address_zip_code',
+                ('line_1', 'line_2',),
+                ('city', 'state', 'country'),
+                'zip_code',
                 'preferred_contact_method',
                 'show_on_entity_page'
             )

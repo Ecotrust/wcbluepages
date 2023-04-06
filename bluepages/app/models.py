@@ -108,11 +108,12 @@ class Entity(models.Model):
         max_length=200,
         blank=True, default=None,
     )
-    address = models.ForeignKey(
-        'address.Address',
-        blank=True, null=True, default=None,
-        on_delete=models.SET_NULL
-    )
+    line_1 = models.CharField(max_length=254, blank=True, default=None, null=True)
+    line_2 = models.CharField(max_length=254, blank=True, default=None, null=True)
+    city = models.CharField(max_length=150, blank=True, null=True, default=None)
+    state = models.CharField(max_length=150, verbose_name='State/Province', blank=True, null=True, default=None)
+    country = models.CharField(max_length=150, blank=True, null=True, default=None)
+    zip_code = models.CharField(max_length=25, verbose_name='Zip/Postal Code', blank=True, default=None, null=True)
     email = models.EmailField(
         max_length=254,
         blank=True, default=None,
@@ -167,6 +168,24 @@ class Entity(models.Model):
     def contacts(self):
         return self.contact_set.filter(is_test_data=False)
 
+    def full_address(self):
+        full_address = self.line_1
+        if self.line_2:
+            full_address = "{} {}".format(full_address, self.line_2)
+        if self.city:
+            full_address = "{} {}".format(full_address, self.city)
+        if self.state:
+            full_address = "{}, {}".format(full_address, self.state)
+        full_address = "{} {}".format(full_address, self.zip_code)
+        if self.city and self.state and self.country:
+            full_address = "{} {}".format(full_address, self.country)
+        
+        return full_address
+    
+    @property
+    def address(self):
+        return self.full_address()
+
     def __str__(self):
         if self.parent:
             return f"{self.name} ({self.ancestor})"
@@ -190,7 +209,7 @@ class Entity(models.Model):
             'name': str(self),
             'entity_type': self.entity_type,
             'website': self.website,
-            'address': str(self.address),
+            'address': str(self.full_address()),
             'email': self.email,
             'phone': str(self.phone),
             'fax': str(self.fax),
@@ -382,11 +401,12 @@ class ContactBase(models.Model):
     mobile_phone = PhoneField(blank=True, null=True, default=None, verbose_name="Mobile phone no.")
     office_phone = PhoneField(blank=True, null=True, default=None, verbose_name="Department/General phone no.")
     fax = PhoneField(blank=True, null=True, default=None,)
-    address = models.ForeignKey(
-        'address.Address',
-        blank=True, null=True, default=None,
-        on_delete=models.SET_NULL
-    )
+    line_1 = models.CharField(max_length=254, blank=True, default=None, null=True)
+    line_2 = models.CharField(max_length=254, blank=True, default=None, null=True)
+    city = models.CharField(max_length=150, blank=True, null=True, default=None)
+    state = models.CharField(max_length=150, verbose_name='State/Province', blank=True, null=True, default=None)
+    country = models.CharField(max_length=150, blank=True, null=True, default=None)
+    zip_code = models.CharField(max_length=25, verbose_name='Zip/Postal Code', blank=True, default=None, null=True)
     preferred_contact_method = models.CharField(
         max_length=254, 
         blank=True, default='',
@@ -410,6 +430,23 @@ class ContactBase(models.Model):
     class Meta:
         ordering = ['last_name', 'first_name', 'middle_name', 'entity', 'job_title']
         abstract = True
+
+    def full_address(self):
+        full_address = self.line_1
+        if self.line_2:
+            full_address = "{} {}".format(full_address, self.line_2)
+        if self.city:
+            full_address = "{} {}".format(full_address, self.city)
+        if self.state:
+            full_address = "{}, {}".format(full_address, self.state)
+        full_address = "{} {}".format(full_address, self.zip_code)
+        if self.city and self.state and self.country:
+            full_address = "{} {}".format(full_address, self.country)
+        
+        return full_address
+    @property
+    def address(self):
+        return self.full_address()
 
     def __str__(self):
         full_name = self.last_name
@@ -462,7 +499,7 @@ class Contact(ContactBase):
             'mobile_phone': str(self.mobile_phone),
             'office_phone': str(self.office_phone),
             'fax': str(self.fax),
-            'address': str(self.address),
+            'address': str(self.full_address()),
             'preferred_contact_method': self.preferred_contact_method,
             'show_on_entity_page': self.show_on_entity_page,
             'is_test_data': self.is_test_data,
@@ -547,7 +584,14 @@ class ContactSuggestion(ContactBase):
     @property
     def contact_address(self):
         if self.contact:
-            current_address = self.contact.address
+            current_address = {
+                'line_1': self.contact.line_1,
+                'line_2': self.contact.line_2,
+                'city': self.contact.city,
+                'state': self.contact.state,
+                'zip_code': self.contact.zip_code,
+                'country': self.contact.country,
+            }
         else:
             current_address = {
                 'line_1': '',
@@ -559,12 +603,12 @@ class ContactSuggestion(ContactBase):
             }
         
         proposed_address = {
-            'line_1': self.address_line_1,
-            'line_2': self.address_line_2,
-            'city': self.address_city,
-            'state': self.address_state,
-            'zip_code': self.address_zip_code,
-            'country': self.address_country,
+            'line_1': self.line_1,
+            'line_2': self.line_2,
+            'city': self.city,
+            'state': self.state,
+            'zip_code': self.zip_code,
+            'country': self.country,
         }
 
         address = {
