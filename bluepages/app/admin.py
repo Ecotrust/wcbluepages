@@ -103,7 +103,7 @@ class ContactAdmin(VersionAdmin):
                 'title',
                 ('last_name', 'first_name', 'middle_name'),
                 'post_title',
-                'preferred_pronouns'
+                'pronouns'
             )
         }),
         ('Position', {
@@ -167,7 +167,7 @@ class ContactSuggestionAdmin(VersionAdmin):
                 'title',
                 ('last_name', 'first_name', 'middle_name'),
                 'post_title',
-                'preferred_pronouns'
+                'pronouns'
             )
         }),
         ('Position', {

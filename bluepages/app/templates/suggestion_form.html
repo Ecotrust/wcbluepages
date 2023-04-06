@@ -81,11 +81,11 @@
             {% if contact_form.post_title.errors %}{{ contact_form.post_title.errors }}{% endif %}
         </div>
         <div class="field-wrapper col-md-3">
-            {{ contact_form.preferred_pronouns.errors }}
-            {{ contact_form.preferred_pronouns.label_tag }}
-            {{ contact_form.preferred_pronouns }}
-            {% if contact_form.preferred_pronouns.help_text %}<span class="help-text">{{ contact_form.preferred_pronouns.help_text|safe }}</span>{% endif %}
-            {% if contact_form.preferred_pronouns.errors %}{{ contact_form.preferred_pronouns.errors }}{% endif %}
+            {{ contact_form.pronouns.errors }}
+            {{ contact_form.pronouns.label_tag }}
+            {{ contact_form.pronouns }}
+            {% if contact_form.pronouns.help_text %}<span class="help-text">{{ contact_form.pronouns.help_text|safe }}</span>{% endif %}
+            {% if contact_form.pronouns.errors %}{{ contact_form.pronouns.errors }}{% endif %}
         </div>
     </fieldset>
 

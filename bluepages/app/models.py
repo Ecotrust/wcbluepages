@@ -352,7 +352,7 @@ class ContactBase(models.Model):
         verbose_name='Additional Titles',
         help_text = 'Esq., III, Jr., etc...'
     )
-    preferred_pronouns = models.CharField(
+    pronouns = models.CharField(
         max_length=254, 
         blank=True, default='',
         verbose_name='Pronouns',
@@ -454,7 +454,7 @@ class Contact(ContactBase):
             'middle_name': self.middle_name,
             'post_title': self.post_title,
             'title': self.title,
-            'pronouns': self.preferred_pronouns,
+            'pronouns': self.pronouns,
             'job_title': self.job_title,
             'expertise': self.expertise,
             'email': self.email,

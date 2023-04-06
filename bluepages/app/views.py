@@ -626,7 +626,7 @@ def getSuggestionInitialValues(suggestion):
         'first_name',
         'middle_name',
         'post_title',
-        'preferred_pronouns',
+        'pronouns',
         'entity',
         'job_title',
         'expertise',
@@ -798,7 +798,7 @@ def adminSuggestionReviewMenu(request, suggestion_id):
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'first_name'))
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'middle_name'))
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'post_title'))
-        rows.append(buildReviewRow(suggestion, contact, contact_form, 'preferred_pronouns'))
+        rows.append(buildReviewRow(suggestion, contact, contact_form, 'pronouns'))
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'entity'))
         # handle entity name, sub_entity!!!
         rows.append(buildReviewRow(suggestion, contact, contact_form, 'other_entity_name'))
