@@ -123,7 +123,7 @@ def filterContacts(filters={}, format='datatable'):
                 entity_id = x.entity.pk
             contacts_list.append({
                 'id':x.pk, 
-                'name': x.full_name,
+                'name': x.simple_name,
                 'role': x.job_title,
                 'entity': entity_name, 
                 'entity_id': entity_id 

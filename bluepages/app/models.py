@@ -466,6 +466,17 @@ class ContactBase(models.Model):
     @property 
     def full_name(self):
         return str(self)
+    
+    @property
+    def simple_name(self):
+        name = self.last_name
+        if self.first_name and len(self.first_name) > 0:
+            name = "{}, {}".format(name, self.first_name)
+            if self.middle_name and len(self.middle_name) > 0:
+                name = "{} {}".format(name, self.middle_name)
+        elif self.middle_name and len(self.middle_name) > 0:
+            name = "{}, {}".format(name, self.middle_name)
+        return name
 
     @property
     def public(self):
