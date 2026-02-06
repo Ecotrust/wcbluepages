@@ -201,3 +201,12 @@ try:
 except Exception as e:
     print("Unable to import local_settings")
     pass
+
+# Import Docker settings if running in Docker
+if os.environ.get('DOCKER_CONTAINER'):
+    try:
+        from .docker_settings import *
+        print("Docker settings loaded")
+    except Exception as e:
+        print(f"Unable to import docker_settings: {e}")
+        pass
