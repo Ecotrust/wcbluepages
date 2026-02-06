@@ -34,6 +34,10 @@ RUN pip install --upgrade pip && \
 # Copy project files
 COPY . /app/
 
+# Copy and set entrypoint script
+COPY docker-entrypoint.sh /app/
+RUN chmod +x /app/docker-entrypoint.sh
+
 # Create necessary directories
 RUN mkdir -p /app/bluepages/static_root /app/bluepages/media_root
 
@@ -42,6 +46,9 @@ WORKDIR /app/bluepages
 
 # Expose port
 EXPOSE 8000
+
+# Use entrypoint script
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
 
 # Default command (can be overridden in docker-compose)
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
