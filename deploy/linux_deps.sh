@@ -13,5 +13,5 @@ apt install python3.12 python3.12-dev python3.12-venv python3-pip python3-virtua
 # 24.04 Noble
 apt install postgresql-16 postgresql-contrib postgresql-server-dev-16 postgis postgresql-16-postgis-3 -y
 
-curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 sudo apt install nodejs -y
