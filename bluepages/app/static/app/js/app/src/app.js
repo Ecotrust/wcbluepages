@@ -158,7 +158,7 @@ app.submitLoginForm = function() {
 }
 
 app.logoutRUS = function() {
-    let html = "<div id='logout-rus'><p>Are you sure you wish to log out?</p><button class='btn btn-primary' data-bs-dismiss='modal'>Nevemind</button><a href='/accounts/logout/'><button class='btn btn-primary'>Yes, log me out</button></a></div>";
+    let html = "<div id='logout-rus'><p>Are you sure you wish to log out?</p><button class='btn btn-primary' data-bs-dismiss='modal'>Nevermind</button><a href='/accounts/logout/'><button class='btn btn-primary'>Yes, log me out</button></a></div>";
     $("#accountModalWrapper").html(html);
     app.showAccountModal();
 }
