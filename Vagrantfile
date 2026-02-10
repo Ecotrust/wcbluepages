@@ -33,7 +33,8 @@ Vagrant.configure(2) do |config|
     puts "- Mac OS detected"
     puts "  -- Provider: QEMU"
     
-    config.vm.box = "perk/ubuntu-2204-arm64"
+    # config.vm.box = "perk/ubuntu-2204-arm64"
+    config.vm.box = "perk/ubuntu-24.04-arm64"
 
     config.vm.provider "qemu" do |qe|
       qe.memory = "4096" # 4GB
@@ -57,7 +58,8 @@ Vagrant.configure(2) do |config|
   elsif OS.linux?
 
     # config.vm.box = "ubuntu/focal64"
-    config.vm.box = "ubuntu/jammy64"
+    # config.vm.box = "ubuntu/jammy64"
+    config.vm.box = "bento/ubuntu-24.04"
     # config.vm.box_check_update = true
     if Vagrant.has_plugin?("vagrant-vbguest")
       config.vbguest.auto_update = false
