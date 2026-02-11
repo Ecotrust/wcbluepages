@@ -16,7 +16,7 @@
   "author": "ksdev@ecotrust.org",
   "license": "MIT",
   "dependencies": {
-    "bootstrap": "^5.2.3",
+    "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.10.3",
     "datatables": "^1.10.18",
     "jquery": "^3.6.2",
