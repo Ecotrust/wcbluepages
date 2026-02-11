@@ -1,7 +1,7 @@
 {
     "scripts": {
-        "build": "npm --prefix ./region_picker/ run build; npm --prefix ./app/ run build; npm --prefix ./record_suggestion/ run build; npm --prefix ./admin/ run build; cp ./app/node_modules/datatables/media/css/jquery.dataTables.min.css ./dist/; cp ./node_modules/ol/ol.css ./dist/",
-        "devbuild": "npm --prefix ./region_picker/ run devbuild; npm --prefix ./app/ run devbuild; npm --prefix ./record_suggestion/ run devbuild; npm --prefix ./admin/ run devbuild; cp ./app/node_modules/datatables/media/css/jquery.dataTables.min.css ./dist/; cp ./node_modules/ol/ol.css ./dist/",
+        "build": "npm --prefix ./region_picker/ run build; npm --prefix ./app/ run build; npm --prefix ./record_suggestion/ run build; npm --prefix ./admin/ run build; cp ./app/node_modules/datatables/media/css/jquery.dataTables.min.css ./dist/; cp ./app/node_modules/ol/ol.css ./dist/; cp ./app/node_modules/bootstrap/dist/css/bootstrap.min.css ./dist/; cp ./app/node_modules/bootstrap-icons/font/bootstrap-icons.min.css ./dist/; cp -r ./app/node_modules/bootstrap-icons/font/fonts ./dist/",
+        "devbuild": "npm --prefix ./region_picker/ run devbuild; npm --prefix ./app/ run devbuild; npm --prefix ./record_suggestion/ run devbuild; npm --prefix ./admin/ run devbuild; cp ./app/node_modules/datatables/media/css/jquery.dataTables.min.css ./dist/; cp ./app/node_modules/ol/ol.css ./dist/; cp ./app/node_modules/bootstrap/dist/css/bootstrap.min.css ./dist/; cp ./app/node_modules/bootstrap-icons/font/bootstrap-icons.min.css ./dist/; cp -r ./app/node_modules/bootstrap-icons/font/fonts ./dist/",
         "install": "npm --prefix ./region_picker/ install; npm --prefix ./app/ install; npm --prefix ./record_suggestion/ install; npm --prefix ./admin/ install"
     },
     "dependencies": {
