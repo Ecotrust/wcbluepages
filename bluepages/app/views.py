@@ -10,7 +10,6 @@ from django.http import JsonResponse, HttpResponseRedirect, Http404, FileRespons
 from django.shortcuts import render
 from django.views import View
 import os
-from pyld import jsonld
 import json
 import tempfile
 
