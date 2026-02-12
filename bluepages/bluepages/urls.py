@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.contrib.sitemaps import GenericSitemap
 from django.contrib.sitemaps.views import sitemap
@@ -22,16 +23,31 @@ from app.views import adminSuggestionReviewMenu, adminSuggestionRejection
 from app.models import Contact, Region, Record, Entity
 
 contact_dict = {
-    'queryset': Contact.objects.filter(pk__in=[contact.pk for contact in Contact.objects.filter(is_test_data=False) if contact.public]),
-    'date_field': 'date_modified',
+    "queryset": Contact.objects.filter(
+        pk__in=[
+            contact.pk
+            for contact in Contact.objects.filter(is_test_data=False)
+            if contact.public
+        ]
+    ),
+    "date_field": "date_modified",
 }
 
 urlpatterns = [
-    path('admin/app/contactsuggestion/<int:suggestion_id>/review-suggestion/', adminSuggestionReviewMenu),
-    path('admin/app/contactsuggestion/<int:suggestion_id>/reject/', adminSuggestionRejection),
-    path('admin/', admin.site.urls),
-
-    path('sitemap.xml', sitemap, {'sitemaps': {'contact': GenericSitemap(contact_dict)}}, name='django.contrib.sitemaps.views.sitemap'),
-
-    re_path(r'', include(app_urls)),
+    path(
+        "admin/app/contactsuggestion/<int:suggestion_id>/review-suggestion/",
+        adminSuggestionReviewMenu,
+    ),
+    path(
+        "admin/app/contactsuggestion/<int:suggestion_id>/reject/",
+        adminSuggestionRejection,
+    ),
+    path("admin/", admin.site.urls),
+    path(
+        "sitemap.xml",
+        sitemap,
+        {"sitemaps": {"contact": GenericSitemap(contact_dict)}},
+        name="django.contrib.sitemaps.views.sitemap",
+    ),
+    re_path(r"", include(app_urls)),
 ]
