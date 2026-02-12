@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    platform: linux/amd64
+    container_name: bluepages_db
+    environment:
+      POSTGRES_DB: bluepages
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db_dump.sql:/tmp/db_dump.sql:ro
+      - ./init-db.sh:/docker-entrypoint-initdb.d/01-init-db.sh:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    container_name: bluepages_web
+    volumes:
+      - .:/app
+      - static_volume:/app/bluepages/static_root
+      - media_volume:/app/bluepages/media_root
+    ports:
+      - "8000:8000"
+    environment:
+      - DOCKER_CONTAINER=1
+      - DEBUG=True
+      - DB_NAME=bluepages
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOST=db
+      - DB_PORT=5432
+    depends_on:
+      db:
+        condition: service_healthy
+    stdin_open: true
+    tty: true
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
