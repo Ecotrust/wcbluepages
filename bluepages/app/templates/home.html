@@ -1,37 +1,65 @@
-{% extends 'base.html' %}
-{% load sass_tags static %}
-
-
-{% block head_css %}
-    <link href="{% static 'app/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
-    <link href="{% static 'app/vendor/bootstrap-icons/css/bootstrap-icons.css' %}" rel="stylesheet" type="text/css" />
-    <link href="{% static 'app/vendor/openlayers/v6.15.1-dist/ol.css' %}" rel="stylesheet" type="text/css" />
-    <link href="{% static 'app/js/dist/jquery.dataTables.min.css' %}" rel="stylesheet" type="text/css" />
-    <link href="{% sass_src 'app/scss/bluepages.scss' %}" rel="stylesheet" type="text/css" />
-    <link href="{% sass_src 'app/scss/suggestion_menu.scss' %}" rel="stylesheet" type="text/css" />
-    <link href="{% sass_src 'app/scss/suggestion_form.scss' %}" rel="stylesheet" type="text/css" />
-    <link href="{% sass_src 'app/scss/record_suggestion.scss' %}" rel="stylesheet" type="text/css" />
-{% endblock %}
-
-{% block body_main %}
-    <main>
-        <div class="container-flex">
-            <div id="home-columns-row" class="row">
-                <div id="filter-column" class="home-column">
-                    {% include "home_filter_column.html" %}
-                </div> 
-                <div id="results-column" class="home-column">
-                    {% include "home_results_column.html" %}
-                </div>
-                <div id="map-column" class="home-column">
-                    {% include "home_map_column.html" %}
-                </div>
-            </div>
+{% extends 'base.html' %} {% load sass_tags static %} {% block head_css %}
+<link
+  href="{% static 'app/vendor/bootstrap/css/bootstrap.min.css' %}"
+  rel="stylesheet"
+  type="text/css"
+/>
+<link
+  href="{% static 'app/vendor/bootstrap-icons/css/bootstrap-icons.css' %}"
+  rel="stylesheet"
+  type="text/css"
+/>
+<link
+  href="{% static 'app/vendor/openlayers/v6.15.1-dist/ol.css' %}"
+  rel="stylesheet"
+  type="text/css"
+/>
+<link
+  href="{% static 'app/js/dist/jquery.dataTables.min.css' %}"
+  rel="stylesheet"
+  type="text/css"
+/>
+<link
+  href="{% sass_src 'app/scss/bluepages.scss' %}"
+  rel="stylesheet"
+  type="text/css"
+/>
+<link
+  href="{% sass_src 'app/scss/suggestion_menu.scss' %}"
+  rel="stylesheet"
+  type="text/css"
+/>
+<link
+  href="{% sass_src 'app/scss/suggestion_form.scss' %}"
+  rel="stylesheet"
+  type="text/css"
+/>
+<link
+  href="{% sass_src 'app/scss/record_suggestion.scss' %}"
+  rel="stylesheet"
+  type="text/css"
+/>
+{% endblock %} {% block body_main %}
+<main>
+  <div class="container-flex">
+    <div id="home-columns-row" class="row">
+      <div class="home-column border-right p-3">
+        <h3>Filters</h3>
+        <p>Refine your search by selecting filters</p>
+        <div id="filter-column">
+          {% include "home_filter_column.html" %}
         </div>
-    </main>
-{% endblock %}
+      </div>
 
-{% block body_scripts %}
-    {{ block.super }}
-    <script src="{% static 'app/js/dist/record_suggestion.min.js' %}"></script>
+      <div id="results-column" class="home-column">
+        {% include "home_results_column.html" %}
+      </div>
+      <div id="map-column" class="home-column">
+        {% include "home_map_column.html" %}
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %} {% block body_scripts %} {{ block.super }}
+<script src="{% static 'app/js/dist/record_suggestion.min.js' %}"></script>
 {% endblock %}

@@ -370,42 +370,30 @@ app.toggleFilter = function(key) {
 app.loadSearchResults = function(results, status) {
     // pull filter/facets from data results to populate filters on left
     let filter_col_html = '';
-    Object.keys(results.filters).forEach( key => {
-        var is_expanded = app.filter_state['open'].indexOf(key) >= 0;
-        filter_col_html += '<h2 class="filter-header">';
-        if (is_expanded) {
-            var chevron = '<i id="filter-category-chevron-' + key + '" class="bi bi-chevron-down filter-category-chevron"></i>';
-            filter_col_html += '<span class="" ';
-        } else {
-            var chevron = '<i id="filter-category-chevron-' + key + '" class="bi bi-chevron-right filter-category-chevron"></i>';
-            filter_col_html += '<span class="collapsed" ';
+    Object.entries(results.filters).forEach(([key, filters]) => {
+        const isExpanded = app.filter_state.open?.indexOf(key) >= 0;
+        const filterKey = key.toLowerCase();
+        const collapseClass = isExpanded ? 'accordion-collapse collapse show' : 'accordion-collapse collapse';
+        const buttonClass = isExpanded ? 'accordion-button' : 'accordion-button collapsed';
+        const ariaExpanded = isExpanded ? 'true' : 'false';
+        const countChecked = app.filter_state[filterKey] ? app.filter_state[filterKey].length : 0;
+
+        filter_col_html += `<div class="accordion mb-3" id="accordionFilters-${key}"><div class="accordion-item"><h2 class="accordion-header"> <button class="${buttonClass}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${key}" aria-expanded="${ariaExpanded}" aria-controls="collapse-${key}" onclick="app.toggleFilter('${key}')">${key}`
+        if (countChecked > 0) {
+            filter_col_html += `<span class="badge text-bg-primary ms-2">${countChecked}</span>`;
         }
-        filter_col_html += 'data-bs-toggle="collapse" href="#' + key + 'FilterOptions" ' +
-                    'aria-expanded="' + is_expanded + '" ' +
-                    'aria-controls="collapse' + key + '" ' +
-                    'onclick="app.toggleFilter(\'' + key + '\')">' +
-                    chevron + 
-                    key +
-                '</span>';
-        filter_col_html += '</h2>';
-        if (is_expanded) {
-            filter_col_html += '<ul class="collapse show" id="' + key +'FilterOptions">';
-        } else {
-            filter_col_html += '<ul class="collapse" id="' + key +'FilterOptions">';
-        }
-        results.filters[key].forEach( filter => {
-            filter_col_html += '<li class="filter-list-item">' +
-                    '<span type="' + key + '" value="' + filter.id + '" onclick="app.updateState(\'' + key.toLowerCase() + '\', \'' + filter.id + '\')">';
-            if (app.filter_state[key.toLowerCase()].indexOf(filter.id) >= 0) {
-                filter_col_html += '<b><i class="bi bi-check2-square"></i>' + filter.name  + '</b>';
-            } else {
-                filter_col_html += '<i class="bi bi-square"></i> ' + filter.name;
-            }
-            filter_col_html += '</span>' +
-                '</li>';
+        filter_col_html += `</button></h2><div id="collapse-${key}" class="${collapseClass}" data-bs-parent="#accordionFilters-${key}"><div class="accordion-body"><ul class="list-unstyled">`;
+        filters.forEach(filter => {
+            const filterValue = isNaN(parseInt(filter.id)) ? filter.id : parseInt(filter.id);
+            const isChecked = app.filter_state[filterKey]?.indexOf(filterValue) >= 0;
+
+            filter_col_html +=`<li class="filter-list-item">`
+            filter_col_html += `<input class="form-check-input pr-2" type="checkbox" value="${filter.id}" id="${key}-${filter.id}" ${isChecked ? 'checked' : ''} onchange="app.updateState('${filterKey}', '${filter.id}')"><label class="form-check-label" for="${key}-${filter.id}">${filter.name}</label>`
+            filter_col_html +=`</li>`
+
         });
-        filter_col_html += '</ul>' +
-        '<br />';
+        
+       filter_col_html += `</ul></div></div></div></div>`;
     });
     $("#filter-column").html(filter_col_html);
         
