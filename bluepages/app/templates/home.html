@@ -3,8 +3,10 @@
 
 
 {% block head_css %}
-    <!-- These are now loaded from base.html and bundled in app.min.js -->
-     {{ block.super }}
+    {{ block.super }}
+    <link href="{% sass_src 'app/scss/suggestion_menu.scss' %}" rel="stylesheet" type="text/css" />
+    <link href="{% sass_src 'app/scss/suggestion_form.scss' %}" rel="stylesheet" type="text/css" />
+    <link href="{% sass_src 'app/scss/record_suggestion.scss' %}" rel="stylesheet" type="text/css" />
 {% endblock %}
 
 {% block body_main %}

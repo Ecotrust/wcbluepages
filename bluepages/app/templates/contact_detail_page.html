@@ -3,8 +3,10 @@
 
 {% block head_meta %}
     {{ block.super }}
-    <link href="{% static 'app/js/dist/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
-    <link href="{% static 'app/js/dist/bootstrap-icons.min.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block head_css %}
+    {{ block.super }}
     <link href="{% sass_src 'app/scss/explorer.scss' %}" rel="stylesheet" type="text/css" />
 {% endblock %}
 
