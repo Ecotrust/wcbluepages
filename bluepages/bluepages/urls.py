@@ -20,7 +20,7 @@ from django.contrib.sitemaps.views import sitemap
 from django.urls import path, re_path, include
 from app import urls as app_urls
 from app.views import adminSuggestionReviewMenu, adminSuggestionRejection
-from app.models import Contact, Region, Record, Entity
+from app.models import Contact
 
 contact_dict = {
     "queryset": Contact.objects.filter(

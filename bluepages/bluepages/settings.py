@@ -199,6 +199,6 @@ SITE_ID = 1
 
 try:
     from .local_settings import *
-except Exception as e:
+except Exception:
     print("Unable to import local_settings")
     pass

@@ -224,12 +224,12 @@ class Entity(models.Model):
         return self.name
 
     def allow_show_contacts(self):
-        if not self.show_contacts == None:
+        if self.show_contacts is not None:
             # explicitly set
             return self.show_contacts
         else:
             # do what may parent (or nearest non-wishy-washy ancestor) does
-            if not self.parent == None:
+            if self.parent is not None:
                 return self.parent.allow_show_contacts()
         # default to transparency
         return True
@@ -267,7 +267,7 @@ class Entity(models.Model):
 
     @property
     def is_prime(self):
-        if self.parent == None or self.parent == self:
+        if self.parent is None or self.parent == self:
             return True
         return False
 
@@ -313,13 +313,13 @@ class RecordBase(models.Model):
         region_map = {}
         for region in self.regions.all():
             for state in region.states.all():
-                if not str(state) in region_map.keys():
+                if str(state) not in region_map.keys():
                     region_map[str(state)] = []
-                if not region.depth_type in region_map.keys():
+                if region.depth_type not in region_map.keys():
                     region_map[region.depth_type] = []
-                if not region.depth_type in region_map[str(state)]:
+                if region.depth_type not in region_map[str(state)]:
                     region_map[str(state)].append(region.depth_type)
-                if not str(state) in region_map[region.depth_type]:
+                if str(state) not in region_map[region.depth_type]:
                     region_map[region.depth_type].append(str(state))
         trifectas = []
         general_region_list = []
@@ -335,10 +335,10 @@ class RecordBase(models.Model):
                     region_label = depth_lookup[trifecta]
                 general_region_list.append("{} waters".format(region_label))
         for key in region_map.keys():
-            if key in state_list and not key in trifectas:
+            if key in state_list and key not in trifectas:
                 state_depth_list = []
                 for depth in region_map[key]:
-                    if not depth in trifectas:
+                    if depth not in trifectas:
                         state_depth_list.append(depth_lookup[depth])
                 if len(state_depth_list) > 0:
                     general_region_list.append(
@@ -546,7 +546,7 @@ class ContactBase(models.Model):
 
     @property
     def public(self):
-        if not self.show_on_entity_page == None:
+        if self.show_on_entity_page is not None:
             return self.show_on_entity_page
         else:
             if self.entity:

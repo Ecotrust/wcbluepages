@@ -30,7 +30,7 @@ class StateModelTest(TestCase):
 
 class CityModelTest(TestCase):
     def create_city(self, name="Portland", state=None):
-        if state == None:
+        if state is None:
             state = StateModelTest.create_state(self)
         if state == False:  # workaround to test None, but also populate by default
             state = None
@@ -54,7 +54,7 @@ class AddressModelTest(TestCase):
         city=None,
         zip_code="97214",
     ):
-        if city == None:
+        if city is None:
             city = CityModelTest.create_city(self)
         return Address.objects.create(
             line_1=line_1, line_2=line_2, city=city, zip_code=zip_code

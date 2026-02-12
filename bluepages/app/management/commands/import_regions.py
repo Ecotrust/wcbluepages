@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.conf import settings
 
 
@@ -10,7 +10,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         import sys
-        from io import StringIO, BytesIO
+        from io import BytesIO
         import zipfile
         import shapefile
         from app.models import Region
@@ -53,7 +53,7 @@ class Command(BaseCommand):
                     self.stdout.write("--- ERROR: Zipfile format not supported ---")
                     self.stdout.write("--- Please install: %s ---" % format_name)
                     sys.exit()
-        if zip_format == None:
+        if zip_format is None:
             self.stdout.write("--- ERROR: Unable to open zipfile ---")
             sys.exit()
 
@@ -167,7 +167,7 @@ class Command(BaseCommand):
                             postal_code=state.strip().upper()
                         )
                         region.states.add(state_record)
-                    except Exception as e:
+                    except Exception:
                         print(
                             f'Error adding state "{state}" to region "{region.id}: {region.name}"'
                         )
