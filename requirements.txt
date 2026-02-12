@@ -1,23 +1,22 @@
 # REQUIRED
 django >=5.2,<6
-django-registration
+django-registration >=5.2,<5.3
 django-reversion == 6.1.0
-psycopg2-binary
-uwsgi
-pyshp
-PyLD
+psycopg[binary] >=3.3.2,<3.4.0
+uwsgi == 2.0.31
+pyshp >= 3.0.3,<3.1.0
 
 # 3rd Party Form Fields
-django-phone-field
+django-phone-field == 1.8.1
 
 # TESTING
-coverage
+coverage >=7.13.4,<7.14.0
 
 # FOR STYLING USING SASS OR SCSS
-libsass 
-django-compressor 
-django-sass-processor
+libsass == 0.23.0
+django-compressor >=4.6,<4.7.0
+django-sass-processor >=1.4.2,<1.5.0
 
 #OPTIONAL, BUT LOVELY FOR DEBUGGING
-ipdb
-ipython
+ipdb == 0.13.13
+ipython >= 9.10.0,<9.11.0
