@@ -591,7 +591,7 @@ def contactDetailEmbedded(request, contact_id):
 
 
 def getContactJsonLd(request, contact, render=False):
-    if type(contact) == int:
+    if isinstance(contact, int):
         try:
             contact = Contact.objects.get(pk=contact)
         except Exception:
@@ -686,7 +686,6 @@ def getContactJsonLd(request, contact, render=False):
 
 
 def entityList(request):
-    filters = {}
     entities = {"entities": []}
     for entity in Entity.objects.all().order_by("name"):
         entities["entities"].append(entity.to_dict())
@@ -1114,7 +1113,7 @@ def adminSuggestionRejection(request, suggestion_id):
         request, messages.ERROR, message, extra_tags="error", fail_silently=False
     )
     return HttpResponseRedirect(
-        "/admin/app/contactsuggestion/".format(suggestion_id),
+        "/admin/app/contactsuggestion/",
         {"messages": [{"tags": "error", "message": message}]},
     )
 

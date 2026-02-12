@@ -37,7 +37,8 @@ class Command(BaseCommand):
             formats = [zipfile.ZIP_DEFLATED, zipfile.ZIP_BZIP2, zipfile.ZIP_LZMA]
             for zipFormat in formats:
                 try:
-                    shape_zip = zipfile.ZipFile(in_file_name, compression=zipFormat)
+                    # TODO: figure out if shape_zip is used at all
+                    shape_zip = zipfile.ZipFile(in_file_name, compression=zipFormat)  # noqa: F841
                     zip_format = zipFormat
                     break
                 except NotImplementedError:

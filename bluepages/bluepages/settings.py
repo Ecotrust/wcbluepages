@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 import os
 from pathlib import Path
+from django.utils.log import DEFAULT_LOGGING
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -101,8 +103,6 @@ DATABASES = {
 
 # LOGGING
 # Set logging to default, and then make admin error emails come through as HTML
-from django.utils.log import DEFAULT_LOGGING
-
 LOGGING = DEFAULT_LOGGING
 LOGGING["handlers"]["mail_admins"]["include_html"] = True
 
@@ -198,7 +198,7 @@ REQUIRE_ACCOUNT = True
 SITE_ID = 1
 
 try:
-    from .local_settings import *
+    from .local_settings import *  # noqa: F403
 except Exception:
     print("Unable to import local_settings")
     pass

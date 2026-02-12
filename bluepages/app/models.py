@@ -235,7 +235,6 @@ class Entity(models.Model):
         return True
 
     def to_dict(self, include_contacts=False, flat=False):
-
         out_dict = {
             "id": self.pk,
             "name": str(self),
@@ -270,10 +269,6 @@ class Entity(models.Model):
         if self.parent is None or self.parent == self:
             return True
         return False
-
-    @property
-    def children(self):
-        return self.entity_set.exclude(pk=self.pk).order_by("name")
 
 
 # Topic
