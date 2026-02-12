@@ -4,17 +4,17 @@
   --wc-blue: rgb(0, 46, 124);
   --background: #ffffff;
   --dk-background: rgba(80, 80, 80, .15);
-  --gray-50: oklch(0.985 0.002 247.839);
-  --gray-100: oklch(0.967 0.003 264.542);
-  --gray-200: oklch(0.928 0.006 264.531);
-  --gray-300: oklch(0.872 0.01 258.338);
-  --gray-400: oklch(0.707 0.022 261.325);
-  --gray-500: oklch(0.551 0.027 264.364);
-  --gray-600: oklch(0.446 0.03 256.802);
-  --gray-700: oklch(0.373 0.034 259.733);
-  --gray-800: oklch(0.278 0.033 256.848);
-  --gray-900: oklch(0.21 0.034 264.665);
-  --gray-950: oklch(0.13 0.028 261.692);
+  --color-gray-50: oklch(0.985 0.002 247.839);
+  --color-gray-100: oklch(0.967 0.003 264.542);
+  --color-gray-200: oklch(0.928 0.006 264.531);
+  --color-gray-300: oklch(0.872 0.01 258.338);
+  --color-gray-400: oklch(0.707 0.022 261.325);
+  --color-gray-500: oklch(0.551 0.027 264.364);
+  --color-gray-600: oklch(0.446 0.03 256.802);
+  --color-gray-700: oklch(0.373 0.034 259.733);
+  --color-gray-800: oklch(0.278 0.033 256.848);
+  --color-gray-900: oklch(0.21 0.034 264.665);
+  --color-gray-950: oklch(0.13 0.028 261.692);
   --color-sky-50: oklch(0.977 0.013 236.62);
   --color-sky-100: oklch(0.951 0.026 236.824);
   --color-sky-200: oklch(0.901 0.058 230.902);
@@ -35,23 +35,26 @@
 */
 .accordion {
   --bs-accordion-bg: var(--background);
-  --bs-accordion-btn-bg: var(--gray-50);
-  --bs-accordion-active-bg: var(--gray-50);
-  --bs-accordion-btn-color: var(--gray-800);
-  --bs-accordion-active-color: var(--gray-800);
+  --bs-accordion-btn-bg: var(--color-gray-50);
+  --bs-accordion-active-bg: var(--color-gray-50);
+  --bs-accordion-btn-color: var(--color-gray-800);
+  --bs-accordion-active-color: var(--color-gray-800);
+
+  .accordion-body {
+    max-height: 35vh;
+    overflow-y: auto;
+  }
+}
+
+.form-check-input:checked {
+  background-color: var(--color-gray-900);
+  border-color: var(--color-gray-900) !important;
 }
 
 .text-bg-primary {
   --bs-bg-opacity: 1;
   background-color: var(--color-sky-700) !important;
   color: white !important;
-}
-
-/**
-* Bootstrap 5.3 Accordion Overrides
-*/
-.badge {
-
 }
 
 body {
@@ -185,9 +188,11 @@ main {
   align-items: stretch;
   margin: 0;
   flex: 1;
+  min-height: 0;
 
   .border-right {
     border-right: 2px solid gray;
+    overflow-y: scroll;
   }
 
 
@@ -204,6 +209,9 @@ main {
     &#filter-column {
       font-size: 1.7vw;
       flex: .75;
+      height: 100%;
+      max-height: calc(100vh - 90px);
+      min-height: 0;
       padding-bottom: 1rem;
       padding-top: 1rem;
       overflow-y: auto;

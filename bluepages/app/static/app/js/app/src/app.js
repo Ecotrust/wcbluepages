@@ -388,7 +388,7 @@ app.loadSearchResults = function(results, status) {
             const isChecked = app.filter_state[filterKey]?.indexOf(filterValue) >= 0;
 
             filter_col_html +=`<li class="filter-list-item">`
-            filter_col_html += `<input class="form-check-input pr-2" type="checkbox" value="${filter.id}" id="${key}-${filter.id}" ${isChecked ? 'checked' : ''} onchange="app.updateState('${filterKey}', '${filter.id}')"><label class="form-check-label" for="${key}-${filter.id}">${filter.name}</label>`
+            filter_col_html += `<input class="form-check-input" type="checkbox" value="${filter.id}" id="${key}-${filter.id}" ${isChecked ? 'checked' : ''} onchange="app.updateState('${filterKey}', '${filter.id}')"><label class="form-check-label" for="${key}-${filter.id}">${filter.name}</label>`
             filter_col_html +=`</li>`
 
         });
