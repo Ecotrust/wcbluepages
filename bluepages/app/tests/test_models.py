@@ -3,12 +3,13 @@ from app.models import Region, Entity, Topic, Contact, Record
 
 # Models Tests
 
+
 ## Geography
 class RegionModelTest(TestCase):
     def create_region(
         self,
         name="Oregon Coast",
-        geometry_json = (
+        geometry_json=(
             (-13604160.378157955, 5707298.111959826),
             (-13634735.189472025, 5136160.636612991),
             (-14637589.000573538, 5121484.7271822365),
@@ -17,10 +18,11 @@ class RegionModelTest(TestCase):
             (-13692215.83474248, 5821444.074199024),
             (-13665310.0007861, 5750510.51195038),
             (-13650634.091355344, 5721158.693088872),
-            (-13604160.378157955, 5707298.111959826)
-        )
+            (-13604160.378157955, 5707298.111959826),
+        ),
     ):
         from django.contrib.gis.geos import Polygon
+
         geom = Polygon(geometry_json)
 
         return Region.objects.create(name=name, geometry=geom)
@@ -30,22 +32,23 @@ class RegionModelTest(TestCase):
         self.assertTrue(isinstance(new_region, Region))
         self.assertEqual(str(new_region), new_region.name)
 
+
 ## Entity
 class EntityModelTest(TestCase):
     def create_entity(
         self,
-        name = 'Ecotrust',
-        website = 'https://www.ecotrust.org',
-        line_1 = None,
-        line_2 = None,
-        city = None,
-        state = None,
-        country = None,
-        zip_code = None,
-        email = 'ksdev@ecotrust.org',
-        phone = '+1.503.227.6225',
-        fax = '+1.503.222.1517',
-        parent = None,
+        name="Ecotrust",
+        website="https://www.ecotrust.org",
+        line_1=None,
+        line_2=None,
+        city=None,
+        state=None,
+        country=None,
+        zip_code=None,
+        email="ksdev@ecotrust.org",
+        phone="+1.503.227.6225",
+        fax="+1.503.222.1517",
+        parent=None,
     ):
         return Entity.objects.create(
             name=name,
@@ -59,7 +62,7 @@ class EntityModelTest(TestCase):
             email=email,
             phone=phone,
             fax=fax,
-            parent=parent
+            parent=parent,
         )
 
     def test_entity_creation(self):
@@ -68,11 +71,16 @@ class EntityModelTest(TestCase):
         self.assertEqual(str(new_entity), new_entity.name)
         # Test against self-referential infinite loops:
         new_entity.parent = new_entity
-        self.assertEqual(str(new_entity), '{} ({})'.format(new_entity.name, new_entity.get_root_organization()))
-        parent_entity = self.create_entity(name='Ecotrust Prime')
+        self.assertEqual(
+            str(new_entity),
+            "{} ({})".format(new_entity.name, new_entity.get_root_organization()),
+        )
+        parent_entity = self.create_entity(name="Ecotrust Prime")
         new_entity.parent = parent_entity
-        self.assertEqual(str(new_entity), '{} ({})'.format(new_entity.name, new_entity.get_root_organization()))
-
+        self.assertEqual(
+            str(new_entity),
+            "{} ({})".format(new_entity.name, new_entity.get_root_organization()),
+        )
 
 
 ## Topic
@@ -88,22 +96,23 @@ class TopicModelTest(TestCase):
         self.assertTrue(isinstance(new_topic, Topic))
         self.assertEqual(str(new_topic), new_topic.name)
 
+
 ## Contact
 class ContactModelTest(TestCase):
     def create_contact(
         self,
         last_name="Contact",
-        first_name='',
-        middle_name='',
-        title='',
-        post_title='',
-        pronouns='',
+        first_name="",
+        middle_name="",
+        title="",
+        post_title="",
+        pronouns="",
         entity=None,
-        job_title='Software Tester',
-        expertise='',
-        email='',
-        phone='',
-        fax='',
+        job_title="Software Tester",
+        expertise="",
+        email="",
+        phone="",
+        fax="",
         line_1=None,
         line_2=None,
         city=None,
@@ -136,26 +145,45 @@ class ContactModelTest(TestCase):
         new_contact = self.create_contact()
         self.assertTrue(isinstance(new_contact, Contact))
         self.assertEqual(str(new_contact), new_contact.last_name)
-        new_contact.middle_name = 'R.'
-        self.assertEqual(str(new_contact), "{}, {}".format(new_contact.last_name, new_contact.middle_name))
+        new_contact.middle_name = "R."
+        self.assertEqual(
+            str(new_contact),
+            "{}, {}".format(new_contact.last_name, new_contact.middle_name),
+        )
         new_contact.first_name = "Lucky"
-        self.assertEqual(str(new_contact), "{}, {} {}".format(new_contact.last_name, new_contact.first_name, new_contact.middle_name))
-        new_contact.middle_name = ''
-        self.assertEqual(str(new_contact), "{}, {}".format(new_contact.last_name, new_contact.first_name))
-        new_contact.title = 'Xs.'
-        self.assertEqual(str(new_contact), "{} {}, {}".format(new_contact.title, new_contact.last_name, new_contact.first_name))
-        new_contact.post_title = 'Esq.'
-        self.assertEqual(str(new_contact), "{} {}, {} {}".format(new_contact.title, new_contact.last_name, new_contact.first_name, new_contact.post_title))
+        self.assertEqual(
+            str(new_contact),
+            "{}, {} {}".format(
+                new_contact.last_name, new_contact.first_name, new_contact.middle_name
+            ),
+        )
+        new_contact.middle_name = ""
+        self.assertEqual(
+            str(new_contact),
+            "{}, {}".format(new_contact.last_name, new_contact.first_name),
+        )
+        new_contact.title = "Xs."
+        self.assertEqual(
+            str(new_contact),
+            "{} {}, {}".format(
+                new_contact.title, new_contact.last_name, new_contact.first_name
+            ),
+        )
+        new_contact.post_title = "Esq."
+        self.assertEqual(
+            str(new_contact),
+            "{} {}, {} {}".format(
+                new_contact.title,
+                new_contact.last_name,
+                new_contact.first_name,
+                new_contact.post_title,
+            ),
+        )
 
 
 ## Record
 class RecordModelTest(TestCase):
-    def create_record(
-        self,
-        contact=None,
-        topic=None,
-        regions=[]
-    ):
+    def create_record(self, contact=None, topic=None, regions=[]):
         new_record = Record.objects.create(contact=contact, topic=topic)
         for region in regions:
             new_record.regions.add(region)
@@ -170,8 +198,12 @@ class RecordModelTest(TestCase):
         new_record = self.create_record(
             contact=contact,
             topic=topic,
-            regions=[region,]
+            regions=[
+                region,
+            ],
         )
         self.assertTrue(isinstance(new_record, Record))
-        self.assertEqual(str(new_record), "{}: {}".format(new_record.topic, new_record.contact))
+        self.assertEqual(
+            str(new_record), "{}: {}".format(new_record.topic, new_record.contact)
+        )
         self.assertEqual(len(new_record.regions.all()), 1)
