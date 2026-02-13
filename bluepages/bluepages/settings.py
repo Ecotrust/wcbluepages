@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     "phone_field",
     "reversion",
     "sass_processor",
+    "crispy_forms",
+    "crispy_bootstrap5",
 ]
 
 MIDDLEWARE = [
@@ -196,6 +198,10 @@ IMPORT_SRID = 3857
 REQUIRE_ACCOUNT = True
 
 SITE_ID = 1
+
+# Crispy Forms
+CRISPY_ALLOWED_TEMPLATE_PACKS = ["bootstrap5"]
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 try:
     from .local_settings import *  # noqa: F403

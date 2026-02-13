@@ -424,7 +424,6 @@ div#accountModalWrapper {
   }
 }
 
-form#contact-suggestion-form button,
 form#profile-form button,
 form#password-form button {
   float: right;
@@ -432,9 +431,6 @@ form#password-form button {
   position: sticky;
 }
 
-button.modal-submit-button {
-  margin-left: 1rem;
-}
 
 /* Suggestion Modal Overrides */
 div#suggestionModal,
