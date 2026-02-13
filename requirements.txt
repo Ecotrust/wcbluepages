@@ -20,3 +20,5 @@ django-sass-processor >=1.4.2,<1.5.0
 #OPTIONAL, BUT LOVELY FOR DEBUGGING
 ipdb == 0.13.13
 ipython >= 9.10.0,<9.11.0
+
+ruff
