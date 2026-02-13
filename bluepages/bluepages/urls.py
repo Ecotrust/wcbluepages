@@ -15,23 +15,27 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.contrib.sitemaps import GenericSitemap
+from django.contrib.sitemaps import Sitemap
 from django.contrib.sitemaps.views import sitemap
 from django.urls import path, re_path, include
 from app import urls as app_urls
 from app.views import adminSuggestionReviewMenu, adminSuggestionRejection
 from app.models import Contact
 
-contact_dict = {
-    "queryset": Contact.objects.filter(
-        pk__in=[
-            contact.pk
+
+class ContactSitemap(Sitemap):
+    """Lazy sitemap that only queries database when accessed, not at import time."""
+
+    def items(self):
+        return [
+            contact
             for contact in Contact.objects.filter(is_test_data=False)
             if contact.public
         ]
-    ),
-    "date_field": "date_modified",
-}
+
+    def lastmod(self, obj):
+        return obj.date_modified
+
 
 urlpatterns = [
     path(
@@ -46,7 +50,7 @@ urlpatterns = [
     path(
         "sitemap.xml",
         sitemap,
-        {"sitemaps": {"contact": GenericSitemap(contact_dict)}},
+        {"sitemaps": {"contact": ContactSitemap}},
         name="django.contrib.sitemaps.views.sitemap",
     ),
     re_path(r"", include(app_urls)),

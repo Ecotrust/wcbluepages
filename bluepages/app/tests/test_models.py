@@ -30,7 +30,9 @@ class RegionModelTest(TestCase):
     def test_region_creation(self):
         new_region = self.create_region()
         self.assertTrue(isinstance(new_region, Region))
-        self.assertEqual(str(new_region), new_region.name)
+        # Region.__str__() returns "id | states | name | depth:type" format
+        self.assertIn(new_region.name, str(new_region))
+        self.assertIn(f"depth:{new_region.depth_type}", str(new_region))
 
 
 ## Entity
