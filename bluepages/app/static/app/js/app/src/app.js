@@ -398,10 +398,10 @@ app.loadSearchResults = function(results, status) {
     $("#filter-column").html(filter_col_html);
         
     // (Re?)create DataTable, feeding in the 'contacts' results
-    let results_col_html = '<button type="button" class="btn btn-primary export export-csv" onclick="app.exportToCSV()">' +
+    let results_col_html = '<button type="button" class="btn btn-outline-dark export export-csv" onclick="app.exportToCSV()">' +
             'Export Data' +
         '</button>';
-    results_col_html += '<table id="contact-results-table">' +
+    results_col_html += '<table id="contact-results-table" class="table table-striped table-hover">' +
             '<thead>' +
                 '<tr>' +
                     '<th>Name</th>' +

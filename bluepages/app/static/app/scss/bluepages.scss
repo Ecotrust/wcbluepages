@@ -139,6 +139,7 @@ header {
 
 #header-title {
   font-size: 2rem;
+  padding-left: 1rem;
 
   a {
     color: white;
@@ -150,6 +151,12 @@ header {
       font-size: 1.5vw;
     }
   }
+}
+
+.vertical-divider {
+  border-left: 2px solid white;
+  height: 50%;
+  margin: 0 1rem;
 }
 
 .header-user {
