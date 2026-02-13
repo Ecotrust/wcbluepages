@@ -1,11 +1,12 @@
 #exploreModal {
     div.modal-dialog {
-        max-width: 80vw;
+        max-width: 60vw;
     }
 }
 
 body,
 #exploreModal {
+    
 
     main.contact-page,
     main.entity-page {
@@ -21,45 +22,59 @@ body,
             margin-top: 1.5rem;
         }
 
-        ul {
-            li {
-                border-bottom: 1px solid var(--bs-border-color);
-                margin-bottom: 0.3rem;
-                padding-bottom: 0.3rem;
-                list-style: none;
-    
-    
-                a.explore-collapse-toggle-btn {
-                    margin-left: -2.4rem;
-                    margin-right: -0.9rem;
-                    margin-top: -0.3rem;
-                    i.explore-entity-chevron {
-                        border: 1px solid transparent;
-                        border-radius: 0.3rem;
-                        padding: 0.2rem;
-            
-                        &:hover {
-                            border: 1px solid var(--wc-blue);
-                            background-color: var(--highlight);
-                        }
-                    }
-                }
-                a.explore-collapse-toggle-btn:focus {
-                    box-shadow: none;
-                }
-            
-                button.btn.entity-details-button {
-                    border: 1px solid gray;
-                    padding: 0.2rem;
-                    margin: 0 0 0.1rem 0.4rem;
-                  
-                    &:hover {
-                      border: 1px solid var(--wc-blue);
-                      background-color: var(--highlight);
-                    }
-                }
+        .entity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .view-button {
+            display: none
+        }
+
+        .entity-list-item {
+            list-style: none;
+            padding: 0.5rem;
+            background-color: var(--color-gray-50);
+            border: 1px solid var(--color-gray-50);
+            border-radius: 0.3rem;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+
+            .left-items {
+                display: flex;
+                flex-direction: row;
+                gap: 0.25rem;
+            }
+
+            .entity-type-federal {
+            color: oklch(37.9% 0.146 265.522) !important;
+            background-color: oklch(88.2% 0.059 254.128) !important;
+            }
+
+            .entity-type-state{
+                color: oklch(39.3% 0.095 152.535) !important;
+                background-color: oklch(84.5% 0.143 164.978) !important;
+
+            }
+
+            .entity-type-tribal {   
+                color: oklch(38.1% 0.176 304.987) !important;
+                background-color: oklch(81.1% 0.111 293.571) !important;
             }
         }
+
+        .entity-list-item:hover{
+            background-color: oklch(97.7% 0.013 236.62);
+            border: 1px solid oklch(50% 0.134 242.749);
+            
+            .view-button {
+                display: block;
+            }
+        }   
+
         div.entity-contacts,
         div.contact-topics,
         table.contact-info-table,
