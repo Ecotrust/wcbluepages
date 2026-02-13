@@ -4,13 +4,24 @@
     }
 }
 
+.entity-details {
+    background-color: var(--color-gray-50);
+    border: 1px solid var(--color-gray-50);
+    border-radius: 0.3rem;
+    margin: 1rem 0;
+    padding: 1rem;
+
+    .no-entity-details {
+        font-style: italic;
+        color: var(--color-gray-500);
+        margin: 0;
+    }
+}
+
 body,
 #exploreModal {
-    
 
-    main.contact-page,
-    main.entity-page {
-        margin: 0 10%;
+    main.contact-page {
         height: calc( 100vh - 280px );
     }
 
@@ -49,9 +60,21 @@ body,
                 gap: 0.25rem;
             }
 
+
+        }
+
+        .entity-list-item:hover{
+            background-color: oklch(97.7% 0.013 236.62);
+            border: 1px solid oklch(50% 0.134 242.749);
+            
+            .view-button {
+                display: block;
+            }
+        }
+        
             .entity-type-federal {
-            color: oklch(37.9% 0.146 265.522) !important;
-            background-color: oklch(88.2% 0.059 254.128) !important;
+                color: oklch(37.9% 0.146 265.522) !important;
+                background-color: oklch(88.2% 0.059 254.128) !important;
             }
 
             .entity-type-state{
@@ -64,30 +87,22 @@ body,
                 color: oklch(38.1% 0.176 304.987) !important;
                 background-color: oklch(81.1% 0.111 293.571) !important;
             }
+    
+        .entity-contacts {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+
         }
 
-        .entity-list-item:hover{
-            background-color: oklch(97.7% 0.013 236.62);
-            border: 1px solid oklch(50% 0.134 242.749);
-            
-            .view-button {
-                display: block;
-            }
-        }   
-
-        div.entity-contacts,
-        div.contact-topics,
-        table.contact-info-table,
-        table.contact-topics-table,
-        table.entity-detail-table,
-        table.entity-contact-table {
-            margin-left: 1.5rem;
-            margin-bottom: 1rem;
-            td {
-                padding-right: 1rem;
-            }
+        .entity-contact-details {
+            display: flex;
+            flex-direction: row;
+            border: 1px solid var(--color-gray-200);
+            border-radius: 0.3rem;
+            padding: 1rem;
+            justify-content: space-between;
         }
     }
-    
 
 }    

@@ -347,7 +347,7 @@ app.prepExploreDetailsModal = function(type, id) {
 
 app.loadExploreDetailsModal = function(data) {
     if (this.url.indexOf('entities') >= 0) {
-        let back_button = '<div><button class="btn btn-primary detail-back-button" onclick="app.prepExploreModal(\'' + app.exploreType + '\')">&lt; Back </button></div>';
+        let back_button = '<div><button class="btn btn-light detail-back-button" onclick="app.prepExploreModal(\'' + app.exploreType + '\')"> <i class="bi bi-chevron-left explore-entity-chevron"></i>Back to All Entities</button></div>';
         $('#exploreModalWrapper').html(back_button + data);
     } else {
         $('#exploreModalWrapper').html(data);
