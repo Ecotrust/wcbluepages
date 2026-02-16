@@ -7,24 +7,24 @@
 <button type="button" class="btn btn-primary" onclick="app.loadSuggestionForm()">
     + Add Another
 </button>
-<div class="container">
+<div>
     {% for suggestion in suggestions %}
         <div class="section_container">
-            <section class="suggestion_container row" onclick="app.prepContactMenuModal({contact_suggestion: {{ suggestion }} })">
-                <div class="col-8">
+            <section class="suggestion_container" onclick="app.prepContactMenuModal({contact_suggestion: {{ suggestion }} })">
+                <div class="">
                     <div class="d-flex flex-row">
                         <h3 class="lead">{{ suggestion.contact_name }}</h3> 
-                        <span class="status_{{ suggestion.status }}">{{ suggestion.status }}</span>
+                        <span class="badge rounded-pill align-baseline status-{{ suggestion.status }} ">{{ suggestion.status }}</span>
                     </div>    
-                    <p class>Created: {{ suggestion.date_created }}</p>
-                    <p>Modified: {{ suggestion.date_modified }}</p>
+                    <p class="m-0">Created: {{ suggestion.date_created }}</p>
+                    <p class="m-0">Modified: {{ suggestion.date_modified }}</p>
                     {% if suggestion.topics|length > 0 %}
                     Topics:
                     <ul>
                     {% for record in suggestion.topics %}
                             <li>
                                 {{ record.topic }}
-                                ( Status: <span  class="{{ record.status }}">{{ record.status }}</span> )
+                                <span class="badge rounded-pill status-{{ record.status }}">{{ record.status }}</span>
                             </li>
                         {% endfor %}
                     </ul>
@@ -32,7 +32,7 @@
                         No topics provided.
                     {% endif %}
                 </div>
-                <div class="col-4 justify-content-end">
+                <div class="">
                     <button type="button" class="btn btn-standard" onclick="app.prepContactMenuModal({contact_suggestion: {{ suggestion }} })">
                     View
                 </button>

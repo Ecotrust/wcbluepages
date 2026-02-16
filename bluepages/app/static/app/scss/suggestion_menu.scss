@@ -27,30 +27,27 @@
     .suggestion_container {
         border: 1px solid transparent;
         border-radius: 0.3rem;
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
     }
 
-    .status_Pending,
-    .Pending,
-    .status_Approved,
-    .Approved,
-    .status_Declined,
-    .Declined {
-        padding: 0.5rem;
-        border-radius: 2rem;
-        width: fit-content;
+    .align-baseline {
+        align-self: baseline;
+        height: fit-content;
     }
 
-    .status_Pending,
-    .Pending {
+    .status-Pending {
         background-color: oklch(94.5% 0.129 101.54);
+        color: oklch(55.4% 0.135 66.442);
     }
-    .status_Approved,
-    .Approved {
+    .status-Approved {
         background-color: oklch(72.3% 0.219 149.579);
+        color: oklch(52.7% 0.154 150.069);
     }
-    .status_Declined,
-    .Declined {
-        background-color: oklch(63.7% 0.237 25.331);
+    .status-Declined {
+        background-color: oklch(88.5% 0.062 18.334);
+        color: oklch(50.5% 0.213 27.518);
     }
 
     #contact-suggestion-description {
