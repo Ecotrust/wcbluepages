@@ -252,7 +252,7 @@ app.confirmSuggestionDeletion = function(contact_id) {
 
 app.submitContactSuggestion = function() {
     let contact_form = $("#contact-suggestion-form");
-    let submitAction = contact_form .attr('action');
+    let submitAction = contact_form.attr('action');
 
     // TODO: Validate form
 

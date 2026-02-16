@@ -442,6 +442,13 @@ div#suggestionMenuModal {
   }
 }
 
+div#accountModal{
+  div.modal-dialog {
+    width: fit-content;
+    min-width: fit-content;
+  }
+}
+
 /* Dynamic Font-Size, Maximums and Minimums */
 
 div#contact-results-table_length,

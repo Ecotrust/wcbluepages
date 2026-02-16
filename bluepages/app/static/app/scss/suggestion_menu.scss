@@ -2,15 +2,15 @@
 
 #suggestionMenuModalWrapper {
 
-    .row {
-        border-bottom: 2px solid $wc-blue;
+    .section_container {
         padding: 0.75rem;
-        margin: 0.75rem 5%;
+        margin: 0.75rem 0;
+        border: 1px solid var(--bs-modal-header-border-color);
+        border-radius: 0.3rem;
     }
 
     p#suggestion-menu-details {
-        margin: 0 2rem 1rem;
-        font-size: 14px;
+        font-size: 12px;
     }
 
     #edit-contact-suggestion-btn,
@@ -25,14 +25,8 @@
     }
 
     .suggestion_container {
-        cursor: pointer;
-        font-size: .875em;
         border: 1px solid transparent;
         border-radius: 0.3rem;
-        &:hover {
-            border: 1px solid gray;
-            background-color: rgba(80,80,80,0.1);
-        }
     }
 
     .status_Pending,
@@ -41,21 +35,22 @@
     .Approved,
     .status_Declined,
     .Declined {
-        padding: 0.2rem;
-        border-radius: 0.3rem;
+        padding: 0.5rem;
+        border-radius: 2rem;
+        width: fit-content;
     }
 
     .status_Pending,
     .Pending {
-        background-color: #ffc107;
+        background-color: oklch(94.5% 0.129 101.54);
     }
     .status_Approved,
     .Approved {
-        background-color: lightgreen;
+        background-color: oklch(72.3% 0.219 149.579);
     }
     .status_Declined,
     .Declined {
-        background-color: rgba(255,0,0,0.5);
+        background-color: oklch(63.7% 0.237 25.331);
     }
 
     #contact-suggestion-description {
