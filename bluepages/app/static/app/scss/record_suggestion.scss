@@ -1,3 +1,5 @@
+@import "variables";
+
 #title-div {
     text-align: center;
 }
@@ -7,10 +9,9 @@
     width: 40vw;
     height: calc(100vh - 280px);
     min-height: 350px;
-    border: 1px solid black;
+    border: 1px solid var(--color-gray-300);
 }
 
-#filter-boxes-wrapper,
 #flex-container {
     display: flex;
     flex-direction: row;
@@ -25,12 +26,6 @@
     p {
         font-size: 13px;
     }
-}
-
-#state-boxes-wrapper,
-#depth-boxes-wrapper {
-    margin: 0.1rem 1rem;
-    min-width: 15vw;
 }
 
 #filter-boxes-wrapper fieldset {
@@ -56,5 +51,51 @@ div.right-panel {
     label {
         font-size: 1.125em;
         font-weight: bold;
+    }
+}
+
+.disclaimer-container {
+    padding: 1rem;
+    background-color: var(--alice-blue);
+    border: 1px solid var(--glaucous-2);
+    border-radius: 0.3rem;
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+
+    p {
+        color: var(--color-gray-700);
+    }
+}
+
+.region-container {
+    margin-top: 1.5rem;
+    
+    .number {
+        font-weight: bold;
+        color: var(--steel-azure);
+        background-color: var(--alice-blue);
+        border-radius: 50%;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        height: 30px;
+        width: 30px;
+    }
+
+    h4 {
+        color: var(--color-gray-700);
+    }
+
+    .checkboxes-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .checkboxes-container {
+        padding: 0.5rem;
+        background-color: var(--color-gray-50);
+        border-radius: 0.3rem;
     }
 }
