@@ -51,12 +51,12 @@
     {% for record in contact.records %}
     <div class="contact-record-menu-entry row" >
         <div class="record_{{ record.status }}"><b>{{ record.topic }}</b></div>
-        <div class="">
+        <div>
             {% if contact.status == "Pending" %}
                 <button class="btn btn-light btn-sm" onclick="app.prepRecordSuggestions({{ contact.id }}, {{ record.id }})">Edit</button>
                 <button class="btn btn-danger btn-sm" onclick="app.deleteRecordSuggestions({{ contact.id }}, {{ record.id }})">Delete Topic</button>
             {% else %}
-                <p>Status: <span class="{{ record.status }}">{{ record.status }}</span></p>
+                <p>Status: <span class="badge rounded-pill align-baseline status-{{ record.status }}">{{ record.status }}</span></p>
             {% endif %}
         </div>
     </div>

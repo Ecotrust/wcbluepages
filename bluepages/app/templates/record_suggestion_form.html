@@ -1,9 +1,10 @@
+{% load crispy_forms_tags %}
+
 <form method="post" action="{{action}}" id="record-suggestion-form">
     {% csrf_token %}
 
-    <!-- ABOUT SUGGESTION -->
-    <div class="well hidden-fields" id="suggestion-form-details">
-        <h3>Suggestion Details</h3>
+    <!-- Hidden fields for user and status -->
+    <div class="hidden-fields">
         <div class="fieldWrapper">
             {{ record_form.user.errors }}
             {{ record_form.user.label_tag }}
@@ -18,29 +19,16 @@
             {{ record_form.contact_suggestion.errors }}
             {{ record_form.contact_suggestion.label_tag }}
             {{ record_form.contact_suggestion }}
-            {% if record_form.contact_suggestion.help_text %}<span class="help-text">{{ record_form.contact_suggestion.help_text|safe }}</span>{% endif %}
-            {% if record_form.contact_suggestion.errors %}{{ record_form.contact_suggestion.errors }}{% endif %}
         </div>
-    </div>
-    <div class="well hidden-fields" id="suggestion-form-regions">
         <div class="fieldWrapper">
             {{ record_form.regions.errors }}
             {{ record_form.regions.label_tag }}
             {{ record_form.regions }}
-            {% if record_form.regions.help_text %}<span class="help-text">{{ record_form.regions.help_text|safe }}</span>{% endif %}
-            {% if record_form.regions.errors %}{{ record_form.regions.errors }}{% endif %}
         </div>
     </div>
-
-    <!-- About Contact being suggested -->
-    <div class="well" id="suggestion-form-topic">
-        <div class="fieldWrapper">
-            {% if record_form.topic.errors %}{{ record_form.topic.errors }}{% endif %}
-            {{ record_form.topic.label_tag }}
-            {{ record_form.topic }}
-            {% if record_form.topic.help_text %}<span class="help-text">{{ record_form.topic.help_text|safe }}</span>{% endif %}
-        </div>
-    </div>
+    
+    <!-- Use crispy forms to render the form -->
+    {% crispy record_form %}
 
     <div id="flex-container">
 
@@ -95,7 +83,7 @@
     <div class="modal-footer">
         {{ record_form.non_field_errors }}
         <button type="button" class="btn btn-danger" onclick="app.prepContactMenuModal({'contact_suggestion': {'id': {{ contact_id }}  } })">
-            &lt; Cancel
+            <i class="bi bi-chevron-left"></i>  Cancel
         </button>
         <button type="button" class="btn btn-primary modal-submit-button" onclick="app.submitRecordSuggestion()">
             Submit

@@ -94,6 +94,23 @@ class RecordSuggestionForm(ModelForm):
         # fields = '__all__'
         exclude = ["date_created", "date_modified"]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = "record-suggestion-form"
+        self.helper.form_method = "post"
+        self.helper.form_show_errors = True
+        self.helper.form_show_labels = True
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Fieldset(
+                "Topic Selection",
+                "topic",
+                css_class="well"
+            ),
+            
+        )
+
 
 class UserProfileForm(ModelForm):
     class Meta:
