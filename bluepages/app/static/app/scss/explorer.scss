@@ -64,6 +64,7 @@ body,
         }
 
         .entity-list-item:hover{
+            cursor: pointer;
             background-color: oklch(97.7% 0.013 236.62);
             border: 1px solid oklch(50% 0.134 242.749);
             
