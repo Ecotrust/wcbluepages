@@ -468,10 +468,23 @@ div#map .ol-attribution ul {
   font-size: 1.2vw;
 }
 
+@media screen and (max-width: 1200px) {
+  .header-user button.btn-primary,
+  #home-columns-row .home-column#filter-column {
+    font-size: 11px;
+  }
+
+  #header-title a span {
+    font-size: 10px;
+    display: none;
+  }
+}
+
 @media screen and (max-width: 670px) {
   #header-title a {
     font-size: 17px;
   }
+
 
   #home-columns-row .home-column#filter-column .filter-header {
     font-size: 15px;
@@ -483,6 +496,7 @@ div#map .ol-attribution ul {
 
   #header-title a span {
     font-size: 10px;
+    display: none;
   }
 
   div#contact-results-table_length,
@@ -502,6 +516,7 @@ div#map .ol-attribution ul {
 }
 
 @media screen and (min-width: 1100px) {
+
   #header-title a {
     font-size: 28px;
   }
@@ -516,7 +531,7 @@ div#map .ol-attribution ul {
 
   .header-user button.btn-primary,
   #home-columns-row .home-column#filter-column {
-    font-size: 16px;
+    font-size: 13px;
   }
 
   div#contact-results-table_length,
