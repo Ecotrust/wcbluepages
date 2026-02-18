@@ -5,9 +5,10 @@
     in the "notes" section.
 </p>
 <button type="button" class="btn btn-primary" onclick="app.loadSuggestionForm()">
-    + Add Another
+    + Add Suggestion
 </button>
 <div>
+    {% if suggestions|length > 0 %}
     {% for suggestion in suggestions %}
         <div class="section_container">
             <section class="suggestion_container" onclick="app.prepContactMenuModal({contact_suggestion: {{ suggestion }} })">
@@ -44,4 +45,9 @@
             
         </div>
     {% endfor %}
+    {% else %}
+        <div class="no-suggestions">
+            <p >No suggestions yet. Click the "Add Suggestion" button above to submit a suggestion.</p>
+        </div>
+    {% endif %}
 </div>

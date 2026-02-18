@@ -18,9 +18,9 @@
     
     <div class="header-user">
         {% if user.is_authenticated %}
-            <button class="btn btn-primary" onclick="app.loadSuggestionMenu()"><i class="bi bi-person-add"></i>
+            <button class="btn btn-primary" onclick="app.loadSuggestionForm()"><i class="bi bi-person-add"></i>
  Suggest Contact</button>
-            <button class="btn btn-primary" onclick="app.showSuggestionMenuModal()"><i class="bi bi-gear"></i> Manage</button>
+            <button class="btn btn-primary" onclick="app.loadSuggestionMenu()"><i class="bi bi-gear"></i> Manage</button>
             <div class="vertical-divider"></div>
         {% endif %}
         <button class="btn btn-primary" onclick="app.prepExploreModal('Entities')">Entities</button>

@@ -282,13 +282,8 @@ app.loadSuggestionMenu = function() {
     $.ajax({
         url: "/get_suggestion_menu/",
         success: function(data) {
-            if (typeof(data) == 'string') {
-                $("#suggestionMenuModalWrapper").html(data)
-                app.showSuggestionMenuModal();
-            } else {
-                // result not HTML, meaning no existing suggestion records were found
-                app.loadSuggestionForm();
-            }
+            $("#suggestionMenuModalWrapper").html(data)
+            app.showSuggestionMenuModal();
         }
     })
 }

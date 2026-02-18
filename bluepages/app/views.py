@@ -388,7 +388,7 @@ def getSuggestionMenu(request):
             request, "suggestion_menu.html", {"suggestions": user_suggestions}
         )
     else:
-        return JsonResponse({"has_suggestions": False})
+        return render(request, "suggestion_menu.html", {"suggestions": []})
 
 
 def contactSuggestionMenu(request, contact_id=None):
