@@ -1,27 +1,38 @@
 {% if entities|length > 0 %}
 <ul class="entity-list">
     {% for entity in entities %}
-        <li class="entity-list-item" onclick="app.prepExploreDetailsModal('entities', {{entity.id}})">
-            <div class="left-items">
+        <li class="entity-list-item">
+            <div class="entity-parent-row">
+                <div class="left-items">
                 <div>
                 {% if entity.children|length > 0 %}
-                    <a class='btn btn-link explore-collapse-toggle-btn' data-toggle="collapse" href="#explore-entity-children-{{ entity.id }}" 
-                        role="button" aria-expanded="false" aria-controls="explore-entity-children-{{ entity.id }}" onclick="app.explore.toggleCollapseChevron('{{ entity.id }}')">
+                    <a class='btn btn-link explore-collapse-toggle-btn' data-bs-toggle="collapse" href="#explore-entity-children-{{ entity.id }}" 
+                        role="button" aria-expanded="false" aria-controls="explore-entity-children-{{ entity.id }}" onclick="app.toggleCollapseChevron('{{ entity.id }}')">
                         <i id="explore-entity-chevron-{{ entity.id }}" class="bi bi-chevron-right explore-entity-chevron"></i>
                     </a>
                 {% endif %}
                 </div>
                 <div>
-                <h4>{{ entity.name }}</h4>
-                {% if entity.entity_type %}
-                    <span class="badge rounded-pill text-bg-primary entity-type-{{ entity.entity_type|lower }}">
-                        {{entity.entity_type}}
-                    </span>
-                {% endif %}
+                    <h4>{{ entity.name }}</h4>
+                    {% if entity.entity_type %}
+                        <span class="badge rounded-pill text-bg-primary entity-type-{{ entity.entity_type|lower }}">
+                            {{entity.entity_type}}
+                        </span>
+                    {% endif %}
                 </div>
             </div>
             <div>
-                <button class="btn entity-details-button btn-outline-secondary view-button">View</button>
+                <button class="btn entity-details-button btn-outline-secondary view-button" onclick="app.prepExploreDetailsModal('entities', {{entity.id}})">View</button>
+            </div>
+            </div>
+            <div class="entity-child">
+                {% if entity.children|length > 0 %}
+                <div class="collapse" id="explore-entity-children-{{ entity.id }}">
+                    {% with entity.children as entities %}
+                        {% include "explore/entityTree.html" %}        
+                    {% endwith %}
+                </div>
+            {% endif %}
             </div>
         </li>
     {% endfor %}
