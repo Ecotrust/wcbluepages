@@ -64,6 +64,7 @@ body,
             flex-direction: row;
             justify-content: space-between;
             align-items: center;
+            transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
 
             .left-items {
                 display: flex;
@@ -81,7 +82,7 @@ body,
         .entity-parent-row:hover {
             cursor: pointer;
             background-color: oklch(97.7% 0.013 236.62);
-            border: 1px solid oklch(50% 0.134 242.749);
+            border-color: oklch(50% 0.134 242.749);
             
             .view-button {
                 display: block;
