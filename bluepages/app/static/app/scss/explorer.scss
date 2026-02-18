@@ -23,6 +23,7 @@ body,
 
     main.contact-page {
         height: calc( 100vh - 280px );
+        margin: 1rem;
     }
 
     main.contact-page,
@@ -106,4 +107,32 @@ body,
         }
     }
 
-}    
+}
+
+// Styles for the contact details section within the entity details
+.section-container {
+    .section-header {
+        font-size: 1.25rem;
+        color: var(--color-gray-700);
+        margin-bottom: 0.5rem;
+    }
+    margin: 1rem 0;
+}
+
+.subtitle {
+    font-size: 1.25rem;
+    color: var(--color-gray-700);
+    margin-top: 0.5rem;
+}
+
+.background-container {
+    background-color: var(--color-gray-50);
+    border: 1px solid var(--color-gray-50);
+    border-radius: 0.3rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+
+    p {
+        margin-bottom: 0;
+    }
+}
