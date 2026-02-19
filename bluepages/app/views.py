@@ -388,7 +388,7 @@ def getSuggestionMenu(request):
             request, "suggestion_menu.html", {"suggestions": user_suggestions}
         )
     else:
-        return JsonResponse({"has_suggestions": False})
+        return render(request, "suggestion_menu.html", {"suggestions": []})
 
 
 def contactSuggestionMenu(request, contact_id=None):
@@ -561,18 +561,23 @@ def contactDetail(request, contact_id):
         }
     return JsonResponse(response)
 
+contact_info_fields = ["title", "post_title", "first_name", "middle_name", "last_name", "pronouns", "entity", "job_title", "expertise"]
+contact_details_fields = ["email", "phone", "mobile_phone", "office_phone", "fax", "address", "preferred_contact_method", "notes"]
+
 
 def contactDetailHTML(request, contact_id):
     try:
         contact = Contact.objects.get(pk=contact_id)
         json_ld = json.dumps(getContactJsonLd(request, contact, render=True), indent=2)
         form = ContactForm(data=model_to_dict(contact))
+        contact_info = contact_info_fields
+        contact_details = contact_details_fields
     except Exception:
         raise Http404("Contact does not exist")
     return render(
         request,
         "contact_detail_page.html",
-        {"contact": contact, "JSON_LD": json_ld, "form": form, "embedded": False},
+        {"contact": contact, "JSON_LD": json_ld, "form": form, "embedded": False, "contact_info": contact_info, "contact_details": contact_details},
     )
 
 
@@ -581,12 +586,15 @@ def contactDetailEmbedded(request, contact_id):
         contact = Contact.objects.get(pk=contact_id)
         json_ld = json.dumps(getContactJsonLd(request, contact, render=True), indent=2)
         form = ContactForm(data=model_to_dict(contact))
+        contact_info = contact_info_fields
+        contact_details = contact_details_fields
+
     except Exception:
         raise Http404("Contact does not exist")
     return render(
         request,
         "contact_detail_embedded.html",
-        {"contact": contact, "JSON_LD": json_ld, "form": form, "embedded": True},
+        {"contact": contact, "JSON_LD": json_ld, "form": form, "embedded": True, "contact_info": contact_info, "contact_details": contact_details},
     )
 
 

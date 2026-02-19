@@ -1,9 +1,10 @@
+{% load crispy_forms_tags %}
+
 <form method="post" action="{{action}}" id="record-suggestion-form">
     {% csrf_token %}
 
-    <!-- ABOUT SUGGESTION -->
-    <div class="well hidden-fields" id="suggestion-form-details">
-        <h3>Suggestion Details</h3>
+    <!-- Hidden fields for user and status -->
+    <div class="hidden-fields">
         <div class="fieldWrapper">
             {{ record_form.user.errors }}
             {{ record_form.user.label_tag }}
@@ -18,43 +19,96 @@
             {{ record_form.contact_suggestion.errors }}
             {{ record_form.contact_suggestion.label_tag }}
             {{ record_form.contact_suggestion }}
-            {% if record_form.contact_suggestion.help_text %}<span class="help-text">{{ record_form.contact_suggestion.help_text|safe }}</span>{% endif %}
-            {% if record_form.contact_suggestion.errors %}{{ record_form.contact_suggestion.errors }}{% endif %}
         </div>
-    </div>
-    <div class="well hidden-fields" id="suggestion-form-regions">
         <div class="fieldWrapper">
             {{ record_form.regions.errors }}
             {{ record_form.regions.label_tag }}
             {{ record_form.regions }}
-            {% if record_form.regions.help_text %}<span class="help-text">{{ record_form.regions.help_text|safe }}</span>{% endif %}
-            {% if record_form.regions.errors %}{{ record_form.regions.errors }}{% endif %}
         </div>
     </div>
+    
+    <!-- Use crispy forms to render the form -->
+    {% crispy record_form %}
 
-    <!-- About Contact being suggested -->
-    <div class="well" id="suggestion-form-topic">
-        <div class="fieldWrapper">
-            {% if record_form.topic.errors %}{{ record_form.topic.errors }}{% endif %}
-            {{ record_form.topic.label_tag }}
-            {{ record_form.topic }}
-            {% if record_form.topic.help_text %}<span class="help-text">{{ record_form.topic.help_text|safe }}</span>{% endif %}
+    <div>
+        <div class="section-header">
+            <i class="bi bi-map"></i>
+            <h4>Select Regions</h4>
         </div>
-    </div>
 
-    <div id="flex-container">
+        <div class="disclaimer-container">
+            <i class="bi bi-info-circle"></i>
+            <p>
+                You can select specific regions to define the proposed contact's area of interest for the given topic 
+                using the map and either of the two methods below:
+            </p>
+        </div>
 
-        <div id="record_map" class="map left-panel"></div>
-        <div id="right-panel">
-            <h2>Select your regions</h2>
+        <div class="region-container my-4">
+            <div class="row">
+                <div class="col">
+                    <p><span class="number">1</span> Click on the map</p>
+                    <div id="record_map" class="map"></div>
+                </div>
+                <div class="col">
+                    <p><span class="number">2</span> Or use checkboxes</p>
+                    <div class="checkboxes-wrapper">
+                        <div class="checkboxes-container" id="filter-boxes-wrapper">
+                            <fieldset id="state-boxes-fieldset">
+                                <b>States:</b>
+                                <div id="state-boxes-wrapper">
+                                    <div class="state-box filter-box">
+                                        <input type="checkbox" id="washington" name="washington" class="state-input filter-input" value="WA">
+                                        <label for="washington">Washington</label>
+                                    </div>
+                                    <div class="state-box filter-box">
+                                        <input type="checkbox" id="oregon" name="oregon" class="state-input filter-input" value="OR">
+                                        <label for="oregon">Oregon</label>
+                                    </div>
+                                    <div class="state-box filter-box">
+                                        <input type="checkbox" id="california" name="california" class="state-input filter-input" value="CA">
+                                        <label for="california">California</label>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="checkboxes-container">
+                            <fieldset id="depth-boxes-fieldset">
+                            <b>Depth:</b>
+                            <div id="depth-boxes-wrapper">
+                                <div class="depth-box filter-box">
+                                    <input type="checkbox" id="offshore" name="offshore" class="depth-input filter-input" value="O">
+                                    <label for="offshore">Offshore</label>
+                                </div>
+                                <div class="depth-box filter-box">
+                                    <input type="checkbox" id="middepth" name="middepth" class="depth-input filter-input" value="M">
+                                    <label for="middepth">Middle-depth</label>
+                                </div>
+                                <div class="depth-box filter-box">
+                                    <input type="checkbox" id="nearshore" name="nearshore" class="depth-input filter-input" value="N">
+                                    <label for="nearshore">Nearshore</label>
+                                </div>
+                            </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+         
+
+        {% comment %} <div id="record_map" class="map left-panel"></div> {% endcomment %}
+        {% comment %} <div id="right-panel">
+           
             <p>
                 You can select specific regions to define the proposed contact's area of interest for the given topic 
                 using the map and either of the two methods below:
             </p>
             <p><b>Option 1:</b> Click on each region on the map to select it. Click again to unselect.</p>
             <p><b>Option 2:</b> Filter which regions are selected with these checkboxes:</p>
-            <div id="filter-boxes-wrapper">
-                <fieldset id="state-boxes-fieldset">
+            <div id="filter-boxes-wrapper"> {% endcomment %}
+                {% comment %} <fieldset id="state-boxes-fieldset">
                     <b>States:</b>
                     <div id="state-boxes-wrapper">
                         <div class="state-box filter-box">
@@ -70,8 +124,8 @@
                             <label for="california">California</label>
                         </div>
                     </div>
-                </fieldset>
-                <fieldset id="depth-boxes-fieldset">
+                </fieldset> {% endcomment %}
+                {% comment %} <fieldset id="depth-boxes-fieldset">
                     <b>Depth:</b>
                     <div id="depth-boxes-wrapper">
                         <div class="depth-box filter-box">
@@ -87,15 +141,15 @@
                             <label for="nearshore">Nearshore</label>
                         </div>
                     </div>
-                </fieldset>
-            </div>
-        </div>
+                </fieldset> {% endcomment %}
+            {% comment %} </div>
+        </div> {% endcomment %}
     </div>
 
     <div class="modal-footer">
         {{ record_form.non_field_errors }}
         <button type="button" class="btn btn-danger" onclick="app.prepContactMenuModal({'contact_suggestion': {'id': {{ contact_id }}  } })">
-            &lt; Cancel
+            <i class="bi bi-chevron-left"></i>  Cancel
         </button>
         <button type="button" class="btn btn-primary modal-submit-button" onclick="app.submitRecordSuggestion()">
             Submit

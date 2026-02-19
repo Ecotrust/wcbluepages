@@ -478,8 +478,8 @@ class ContactBase(models.Model):
         choices=PUBLIC_CHOICES,
         default=None,
         verbose_name="Contact Visibility",
-        help_text="<span>Public: Display contact on the entity page.</span>"
-        + "<span>Filtered: Contact only disoverable via region/topic search.</span>"
+        help_text="<span>Public: Display contact on the entity page.</span><br />"
+        + "<span>Filtered: Contact only discoverable via region/topic search.</span><br />"
         + "<span>Default: Do whatever the entity does.</span>",
     )
     notes = models.TextField(null=True, blank=True, default=None)

@@ -1,106 +1,120 @@
 <h1>{{ entity }}</h1>
 {% if entity.entity_type %} 
-    <h4>{{ entity.entity_type }}</h4>
+    <span class="badge rounded-pill text-bg-primary entity-type-{{ entity.entity_type|lower }}">{{ entity.entity_type }}</span>
 {% endif %}
-<table class="entity-detail-table">
-    {% if entity.website %} 
-        <tr>
-            <td>
-                Website
-            </td>
-            <td>
-                <a href="{{entity.website}}" target="_blank">{{ entity.website }}</a>
-            </td>
-        </tr>
+<div class="entity-details">
+    {% if entity.website or entity.address and entity.address != 'None None' or entity.email or entity.phone or entity.fax or entity.parent or entity.children or entity.notes %}
+    <table class="entity-detail-table">
+        {% if entity.website %} 
+            <tr>
+                <td class="fw-bold">
+                    Website:
+                </td>
+                <td>
+                    <a href="{{entity.website}}" target="_blank">{{ entity.website }}</a>
+                </td>
+            </tr>
+        {% endif %}
+        {% if entity.address and entity.address != 'None None' %} 
+            <tr>
+                <td class="fw-bold">
+                    Address:
+                </td>
+                <td>
+                    {{ entity.address }}        
+                </td>
+            </tr>
+        {% endif %}
+        {% if entity.email %} 
+            <tr>
+                <td class="fw-bold">
+                    Email:
+                </td>
+                <td>
+                    <a href="mailto:{{entity.email}}">{{ entity.email }}</a>
+                </td>
+            </tr>
+        {% endif %}
+        {% if entity.phone %} 
+            <tr>
+                <td class="fw-bold">
+                    Telephone:
+                </td>
+                <td>
+                    {{ entity.phone }}   
+                </td>
+            </tr>
+        {% endif %}
+        {% if entity.fax %} 
+            <tr>
+                <td class="fw-bold">
+                    Fax:
+                </td>
+                <td>
+                    {{ entity.fax }}   
+                </td>
+            </tr>
+        {% endif %}
+        {% if entity.parent %} 
+            <tr>
+                <td class="fw-bold">
+                    Parent:
+                </td>
+                <td>
+                    <a href="/entities/{{ entity.parent.id }}/"{% if embedded %} target="_blank"{% endif %}>{{ entity.parent.name }}</a>                
+                </td>
+            </tr>
+        {% endif %}
+        {% if entity.children|length > 0 %} 
+            <tr>
+                <td class="fw-bold">Child{% if entity.children|length > 1 %}ren{% endif %}:</td>
+                <td>
+                    {% for child in entity.children %}
+                        <a href="/entities/{{child.pk}}/"{% if embedded %} target="_blank"{% endif %}>{{child}}</a>
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endif %}
+        {% if entity.notes %} 
+            <tr>
+                <td class="fw-bold">
+                    Notes:
+                </td>
+                <td>
+                    {{ entity.notes }}   
+                </td>
+            </tr>
+        {% endif %}
+    </table>
+    {% else%}
+        <p class="no-entity-details">No Entity details available.</p>
     {% endif %}
-    {% if entity.address %} 
-        <tr>
-            <td>
-                Address
-            </td>
-            <td>
-                {{ entity.address }}        
-            </td>
-        </tr>
-    {% endif %}
-    {% if entity.email %} 
-        <tr>
-            <td>
-                Email
-            </td>
-            <td>
-                <a href="mailto:{{entity.email}}">{{ entity.email }}</a>
-            </td>
-        </tr>
-    {% endif %}
-    {% if entity.phone %} 
-        <tr>
-            <td>
-                Telephone
-            </td>
-            <td>
-                {{ entity.phone }}   
-            </td>
-        </tr>
-    {% endif %}
-    {% if entity.fax %} 
-        <tr>
-            <td>
-                Fax
-            </td>
-            <td>
-                {{ entity.fax }}   
-            </td>
-        </tr>
-    {% endif %}
-    {% if entity.parent %} 
-        <tr>
-            <td>
-                Parent
-            </td>
-            <td>
-                <a href="/entities/{{ entity.parent.id }}/"{% if embedded %} target="_blank"{% endif %}>{{ entity.parent.name }}</a>                
-            </td>
-        </tr>
-    {% endif %}
-    {% if entity.children|length > 0 %} 
-        <tr>
-            <td>Child{% if entity.children|length > 1 %}ren{% endif %}</td>
-            <td>
-                {% for child in entity.children %}
-                    <a href="/entities/{{child.pk}}/"{% if embedded %} target="_blank"{% endif %}>{{child}}</a>
-                {% endfor %}
-            </td>
-        </tr>
-    {% endif %}
-    {% if entity.notes %} 
-        <tr>
-            <td>
-                Notes
-            </td>
-            <td>
-                {{ entity.notes }}   
-            </td>
-        </tr>
-    {% endif %}
-</table>
+</div>
 
 {% if entity.allow_show_contacts and entity.contacts|length > 0 %} 
-    <div class="entity-contacts">
-        <h3>Contacts</h3>
-        <table class="entity-contact-table">
+    <div >
+        <h3>Contacts <span>({{ entity.contacts|length }})</span></h3>
+        <div class="entity-contacts">
+            
             {% for contact in entity.contacts %}
                 {% if contact.public %}
-                    <tr>
-                        <td>
-                            <a href="/contacts/{{contact.id}}/"{% if embedded %} target="_blank"{% endif %}>{{ contact.full_name }}</a>
-                        </td>
-                        <td>
-                            {{ contact.job_title }}
-                        </td>
-                    </tr>
+                    <div class="entity-contact-details">
+                        <div class="col">
+                            <h4>{{ contact.full_name }}</h4>
+                            <p class="text-muted">{{ contact.job_title }}</p>
+                            {% if contact.email %}
+                                <p><a href="mailto:{{ contact.email }}">{{ contact.email }}</a></p>
+                            {% endif %}
+                            {% if contact.phone %}
+                                <p>{{ contact.phone }}</p>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <button class="btn btn-light"><a href="/contacts/{{contact.id}}/"{% if embedded %} target="_blank"{% endif %}>View Contact Details</a></button>
+                        </div>
+                    </div>
                 {% endif %}
             {% endfor %}
-        </table>
+        </div>
     </div>
 {% endif %}

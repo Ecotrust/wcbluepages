@@ -2,19 +2,18 @@
 
 #suggestionMenuModalWrapper {
 
-    .row {
-        border-bottom: 2px solid $wc-blue;
+    .section_container {
         padding: 0.75rem;
-        margin: 0.75rem 5%;
+        margin: 0.75rem 0;
+        border: 1px solid var(--bs-modal-header-border-color);
+        border-radius: 0.3rem;
     }
 
     p#suggestion-menu-details {
-        margin: 0 2rem 1rem;
-        font-size: 14px;
+        font-size: 12px;
     }
 
-    #edit-contact-suggestion-btn,
-    #add-topic-button {
+    #edit-contact-suggestion-btn {
         margin: 0 0 1.5rem -1.5rem;
     }
 
@@ -25,37 +24,29 @@
     }
 
     .suggestion_container {
-        cursor: pointer;
-        font-size: .875em;
         border: 1px solid transparent;
         border-radius: 0.3rem;
-        &:hover {
-            border: 1px solid gray;
-            background-color: rgba(80,80,80,0.1);
-        }
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
     }
 
-    .status_Pending,
-    .Pending,
-    .status_Approved,
-    .Approved,
-    .status_Declined,
-    .Declined {
-        padding: 0.2rem;
-        border-radius: 0.3rem;
+    .align-baseline {
+        align-self: baseline;
+        height: fit-content;
     }
 
-    .status_Pending,
-    .Pending {
-        background-color: #ffc107;
+    .status-Pending {
+        background-color: oklch(94.5% 0.129 101.54);
+        color: oklch(55.4% 0.135 66.442);
     }
-    .status_Approved,
-    .Approved {
-        background-color: lightgreen;
+    .status-Approved {
+        background-color: oklch(92.5% 0.084 155.995);
+        color: oklch(52.7% 0.154 150.069);
     }
-    .status_Declined,
-    .Declined {
-        background-color: rgba(255,0,0,0.5);
+    .status-Declined {
+        background-color: oklch(88.5% 0.062 18.334);
+        color: oklch(50.5% 0.213 27.518);
     }
 
     #contact-suggestion-description {
@@ -71,18 +62,25 @@
         }
     }
 
-    .contact-record-menu-entry {
-        border-bottom: 1px solid grey;
-        margin: 0.75rem;
-        font-size: .875em;
-        max-width: 500px;
-    }
-
     button.btn-standard {
         border: 1px solid var(--bs-modal-header-border-color);
         &:hover {
             background-color: rgba(80,80,80,0.2);
             border-color: black;
         }
-    }   
+    }
+
+    .no-suggestions {
+        background-color: var(--color-gray-50);
+        border: 1px solid var(--color-gray-50);
+        border-radius: 0.3rem;
+        margin: 1rem 0;
+        padding: 1rem;
+
+        p {
+            font-style: italic;
+            color: var(--color-gray-500);
+            margin: 0;
+        }
+    }
 }
