@@ -60,17 +60,18 @@
     <div class="section-container">
         <h6 class="section-header"><i class="bi bi-geo"></i> Topics</h6>
         <div class="background-container">
-        <table class="contact-topics-table">
-            <tr>
-                <th>Topic</th>
-                <th>Regions</th>
-            </tr>
-            {% for record in contact.record_set.all %}
+            <table class="contact-topics-table">
                 <tr>
-                    <td><b>{{record.topic}}</b></td>
-                    <td>{{ record.general_regions }}</td>
+                    <th>Topic</th>
+                    <th>Regions</th>
                 </tr>
-            {% endfor %}
-        </table>
+                {% for record in contact.record_set.all %}
+                    <tr>
+                        <td><b>{{record.topic}}</b></td>
+                        <td>{{ record.general_regions }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
     </div>
 {% endif %}

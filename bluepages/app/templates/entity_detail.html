@@ -67,7 +67,7 @@
         {% endif %}
         {% if entity.children|length > 0 %} 
             <tr>
-                <td class="fw-bold">Child: {% if entity.children|length > 1 %}ren{% endif %}</td>
+                <td class="fw-bold">Child{% if entity.children|length > 1 %}ren{% endif %}:</td>
                 <td>
                     {% for child in entity.children %}
                         <a href="/entities/{{child.pk}}/"{% if embedded %} target="_blank"{% endif %}>{{child}}</a>
