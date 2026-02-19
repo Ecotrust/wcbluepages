@@ -48,6 +48,15 @@
   }
 }
 
+.explore-collapse-toggle-btn {
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Rotate chevron when collapse is expanded (when button is not collapsed) */
+.explore-collapse-toggle-btn:not(.collapsed) {
+  transform: rotate(90deg);
+}
+
 .btn {
   &.btn-primary {
     background-color: var(--regal-navy);
