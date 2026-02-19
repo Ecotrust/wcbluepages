@@ -12,9 +12,9 @@
     {% for suggestion in suggestions %}
         <div class="section_container">
             <section class="suggestion_container" onclick="app.prepContactMenuModal({contact_suggestion: {{ suggestion }} })">
-                <div class="">
-                    <div class="d-flex flex-row">
-                        <h3 class="lead">{{ suggestion.contact_name }}</h3> 
+                <div>
+                    <div class="d-flex flex-row align-items-baseline gap-2 mb-0">
+                        <h3 class="lead mb-0">{{ suggestion.contact_name }}</h3> 
                         <span class="badge rounded-pill align-baseline status-{{ suggestion.status }} ">{{ suggestion.status }}</span>
                     </div>    
                     <p class="m-0">Created: {{ suggestion.date_created }}</p>
@@ -33,7 +33,7 @@
                         No topics provided.
                     {% endif %}
                 </div>
-                <div class="">
+                <div>
                     <button type="button" class="btn btn-standard" onclick="app.prepContactMenuModal({contact_suggestion: {{ suggestion }} })">
                     View
                 </button>
