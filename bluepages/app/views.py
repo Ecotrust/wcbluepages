@@ -1,7 +1,9 @@
 import csv
 from datetime import datetime
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
@@ -14,6 +16,7 @@ from django.http import (
 )
 from django.shortcuts import render
 from django.views import View
+
 import os
 import json
 import tempfile
@@ -69,11 +72,11 @@ fieldnames = [
 ]
 
 
+@login_required
 def home(request):
     context = {}
     if request.user.is_authenticated or not settings.REQUIRE_ACCOUNT:
         return render(request, "home.html", context)
-
     return render(request, "welcome.html", context)
 
 
@@ -95,6 +98,7 @@ def clean_contact(contact: Contact):
     return contact_dict
 
 
+@login_required
 def exportCSVList(request):
     filters = {}
     if request.method == "POST":
@@ -227,12 +231,13 @@ def filterContacts(filters={}, format="datatable"):
     return {"filters": filters, "contacts": contacts_list}
 
 
+@login_required
 def getProfile(request):
     context = {"user": request.user}
     return render(request, "profile_modal.html", context)
 
 
-class editProfile(View):
+class editProfile(LoginRequiredMixin, View):
     template_name = "generic_form.html"
     extra_context = {}
 
@@ -392,6 +397,7 @@ def formatSuggestionMenuEntry(contact_suggestion):
     }
 
 
+@login_required
 def getSuggestionMenu(request):
     user_suggestions = [
         formatSuggestionMenuEntry(contact_suggestion)
@@ -413,6 +419,7 @@ def getSuggestionMenu(request):
         return render(request, "suggestion_menu.html", {"suggestions": []})
 
 
+@login_required
 def contactSuggestionMenu(request, contact_id=None):
     if request.method == "POST":
         pass
@@ -440,6 +447,7 @@ def contactSuggestionMenu(request, contact_id=None):
             pass
 
 
+@login_required
 def deleteSuggestedContact(request, contact_id=None):
     contact_suggestion_matches = ContactSuggestion.objects.filter(
         pk=contact_id, user=request.user
@@ -451,6 +459,7 @@ def deleteSuggestedContact(request, contact_id=None):
     )
 
 
+@login_required
 def deleteSuggestedRecord(request, record_id=None):
     record_suggestion_matches = RecordSuggestion.objects.filter(
         pk=record_id, user=request.user
@@ -462,6 +471,7 @@ def deleteSuggestedRecord(request, record_id=None):
     )
 
 
+@login_required
 def contactSuggestionForm(request, contact_id=None):
     action = "/suggestion_form"
     contact_suggestion_record = False
@@ -505,6 +515,7 @@ def contactSuggestionForm(request, contact_id=None):
     return render(request, "suggestion_form.html", context)
 
 
+@login_required
 def recordSuggestionForm(request, contact_id, record_id=None):
     contact_suggestion = ContactSuggestion.objects.get(pk=contact_id)
     record_suggestion = False
@@ -564,6 +575,7 @@ def wireframe(request):
     return render(request, "wireframe.html", context)
 
 
+@login_required
 def contactList(request):
     filters = {}
     if request.method == "POST":
@@ -572,6 +584,7 @@ def contactList(request):
     return JsonResponse({"contacts": contacts})
 
 
+@login_required
 def contactDetail(request, contact_id):
     try:
         contact = Contact.objects.get(pk=contact_id)
@@ -607,6 +620,7 @@ contact_details_fields = [
 ]
 
 
+@login_required
 def contactDetailHTML(request, contact_id):
     try:
         contact = Contact.objects.get(pk=contact_id)
@@ -630,6 +644,7 @@ def contactDetailHTML(request, contact_id):
     )
 
 
+@login_required
 def contactDetailEmbedded(request, contact_id):
     try:
         contact = Contact.objects.get(pk=contact_id)
@@ -654,6 +669,7 @@ def contactDetailEmbedded(request, contact_id):
     )
 
 
+@login_required
 def getContactJsonLd(request, contact, render=False):
     if isinstance(contact, int):
         try:
@@ -749,6 +765,7 @@ def getContactJsonLd(request, contact, render=False):
         return JsonResponse(doc)
 
 
+@login_required
 def entityList(request):
     entities = {"entities": []}
     for entity in Entity.objects.all().order_by("name"):
@@ -756,6 +773,7 @@ def entityList(request):
     return JsonResponse(entities)
 
 
+@login_required
 def entityDetail(request, id):
     try:
         entity = Entity.objects.get(pk=id)
@@ -768,6 +786,7 @@ def entityDetail(request, id):
     return JsonResponse(response)
 
 
+@login_required
 def entityDetailHTML(request, id):
     try:
         entity = Entity.objects.get(pk=id)
@@ -781,6 +800,7 @@ def entityDetailHTML(request, id):
     )
 
 
+@login_required
 def entityDetailEmbedded(request, id):
     try:
         entity = Entity.objects.get(pk=id)
@@ -794,6 +814,7 @@ def entityDetailEmbedded(request, id):
     )
 
 
+@login_required
 def exploreEntitiesPage(request):
     entityExploreTree = buildExploreEntityTree()
     context = {
@@ -802,6 +823,7 @@ def exploreEntitiesPage(request):
     return render(request, "explore/entityPageWrapper.html", context)
 
 
+@login_required
 def exploreEntitiesEmbedded(request):
     entityExploreTree = buildExploreEntityTree()
     context = {
@@ -837,6 +859,7 @@ def buildExploreEntityTree():
 ####################################
 
 
+@login_required
 def getSuggestionInitialValues(suggestion):
     initial = {}
     fields = [
@@ -1187,6 +1210,7 @@ def adminSuggestionRejection(request, suggestion_id):
 ####################################
 
 
+@login_required
 def regionJSON(request):
     regions = Region.objects.all()
     geojson = {"type": "FeatureCollection", "features": []}
@@ -1214,6 +1238,7 @@ def regionJSON(request):
     return JsonResponse(geojson)
 
 
+@login_required
 def regionPicker(request):
     context = {}
 
