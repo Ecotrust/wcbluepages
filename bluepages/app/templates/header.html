@@ -39,7 +39,10 @@
     <button class="btn btn-primary" onclick="app.loadAccountModal()">
       Account
     </button>
-    <button class="btn btn-primary" onclick="app.logoutRUS()">Logout</button>
+    <form method="post" action="{% url 'logout' %}" style="display: inline;">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary">Logout</button>
+    </form>
     {% endif %}
   </div>
 </div>
