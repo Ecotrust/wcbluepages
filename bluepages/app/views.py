@@ -35,6 +35,39 @@ from app.forms import (
     ContactForm,
 )
 
+fieldnames = [
+    "last_name",
+    "first_name",
+    "middle_name",
+    "post_title",
+    "title",
+    "full_name",
+    "pronouns",
+    "job_title",
+    "expertise",
+    "entity_name",
+    "entity_type",
+    "entity_website",
+    "entity_address",
+    "entity_phone",
+    "entity_fax",
+    "entity_parent",
+    "email",
+    "phone",
+    "mobile_phone",
+    "office_phone",
+    "fax",
+    "address",
+    "preferred_contact_method",
+    "topics",
+    "regions",
+    "date_created",
+    "date_modified",
+    "notes",
+    "id",
+    "entity_id",
+]
+
 
 def home(request):
     context = {}
@@ -52,6 +85,16 @@ def filterContactsRequest(request):
     return JsonResponse(contacts)
 
 
+def clean_contact(contact: Contact):
+    contact_dict = {k: "" for k in fieldnames}
+    for field in fieldnames:
+        if getattr(contact, field, None) is None:
+            contact_dict[field] = ""
+        else:
+            contact_dict[field] = getattr(contact, field)
+    return contact_dict
+
+
 def exportCSVList(request):
     filters = {}
     if request.method == "POST":
@@ -65,38 +108,6 @@ def exportCSVList(request):
         )
 
         with open(csv_file.name, "w") as csv_contents:
-            fieldnames = [
-                "last_name",
-                "first_name",
-                "middle_name",
-                "post_title",
-                "title",
-                "full_name",
-                "pronouns",
-                "job_title",
-                "expertise",
-                "entity_name",
-                "entity_type",
-                "entity_website",
-                "entity_address",
-                "entity_phone",
-                "entity_fax",
-                "entity_parent",
-                "email",
-                "phone",
-                "mobile_phone",
-                "office_phone",
-                "fax",
-                "address",
-                "preferred_contact_method",
-                "topics",
-                "regions",
-                "date_created",
-                "date_modified",
-                "notes",
-                "id",
-                "entity_id",
-            ]
             writer = csv.DictWriter(csv_contents, fieldnames=fieldnames)
 
             writer.writeheader()
@@ -108,11 +119,11 @@ def exportCSVList(request):
                 "entity__name",
                 "job_title",
             ):
-                contact_dict = contact.to_dict(flat=True)
-                contact_dict.pop("is_test_data")
-                contact_dict.pop("show_on_entity_page")
-                writer.writerow(contact_dict)
-
+                try:
+                    cleaned_contact = clean_contact(contact)
+                    writer.writerow(cleaned_contact)
+                except Exception as e:
+                    print(f"Error calling to_dict for contact {contact}: {e}")
         response = FileResponse(open(csv_file.name, "rb"))
         return response
 
@@ -131,6 +142,17 @@ def stringMatch(targets, match_list):
             return False
 
     return True
+
+
+def create_match_list(contact: Contact):
+    match_list = []
+    if contact.full_name:
+        match_list.append(contact.full_name)
+    if contact.job_title:
+        match_list.append(contact.job_title)
+    if contact.entity and contact.entity.name:
+        match_list.append(contact.entity.name)
+    return match_list
 
 
 def filterContacts(filters={}, format="datatable"):
@@ -158,13 +180,13 @@ def filterContacts(filters={}, format="datatable"):
         records = records.filter(regions__pk__in=filters["map_regions"])
         contact_ids = list(set(x.contact.pk for x in records))
         contacts = contacts.filter(pk__in=contact_ids)
-    if "text" in filters.keys() and len(filters["text"]) > 0:
+    if (
+        "text" in filters.keys()
+        and len([filter_str for filter_str in filters["text"] if filter_str]) > 0
+    ):
         text_ids = [
-            x.pk
-            for x in contacts
-            if stringMatch([x.full_name, x.job_title, x.entity.name], filters["text"])
+            x.pk for x in contacts if stringMatch(create_match_list(x), filters["text"])
         ]
-
         contacts = contacts.filter(pk__in=text_ids)
 
     # TODO: Faster smarter queries and facets
@@ -561,8 +583,28 @@ def contactDetail(request, contact_id):
         }
     return JsonResponse(response)
 
-contact_info_fields = ["title", "post_title", "first_name", "middle_name", "last_name", "pronouns", "entity", "job_title", "expertise"]
-contact_details_fields = ["email", "phone", "mobile_phone", "office_phone", "fax", "address", "preferred_contact_method", "notes"]
+
+contact_info_fields = [
+    "title",
+    "post_title",
+    "first_name",
+    "middle_name",
+    "last_name",
+    "pronouns",
+    "entity",
+    "job_title",
+    "expertise",
+]
+contact_details_fields = [
+    "email",
+    "phone",
+    "mobile_phone",
+    "office_phone",
+    "fax",
+    "address",
+    "preferred_contact_method",
+    "notes",
+]
 
 
 def contactDetailHTML(request, contact_id):
@@ -577,7 +619,14 @@ def contactDetailHTML(request, contact_id):
     return render(
         request,
         "contact_detail_page.html",
-        {"contact": contact, "JSON_LD": json_ld, "form": form, "embedded": False, "contact_info": contact_info, "contact_details": contact_details},
+        {
+            "contact": contact,
+            "JSON_LD": json_ld,
+            "form": form,
+            "embedded": False,
+            "contact_info": contact_info,
+            "contact_details": contact_details,
+        },
     )
 
 
@@ -594,7 +643,14 @@ def contactDetailEmbedded(request, contact_id):
     return render(
         request,
         "contact_detail_embedded.html",
-        {"contact": contact, "JSON_LD": json_ld, "form": form, "embedded": True, "contact_info": contact_info, "contact_details": contact_details},
+        {
+            "contact": contact,
+            "JSON_LD": json_ld,
+            "form": form,
+            "embedded": True,
+            "contact_info": contact_info,
+            "contact_details": contact_details,
+        },
     )
 
 
