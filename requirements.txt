@@ -9,6 +9,9 @@ pyshp >= 3.0.3,<3.1.0
 # 3rd Party Form Fields
 django-phone-field == 1.8.1
 
+# FOR STYLING FORMS WITH BOOTSTRAP
+crispy-bootstrap5
+
 # TESTING
 coverage >=7.13.4,<7.14.0
 
@@ -20,3 +23,5 @@ django-sass-processor >=1.4.2,<1.5.0
 #OPTIONAL, BUT LOVELY FOR DEBUGGING
 ipdb == 0.13.13
 ipython >= 9.10.0,<9.11.0
+
+ruff

@@ -11,7 +11,6 @@ from django.http import (
     HttpResponseRedirect,
     Http404,
     FileResponse,
-    HttpResponse,
 )
 from django.shortcuts import render
 from django.views import View
@@ -34,7 +33,6 @@ from app.forms import (
     RecordSuggestionForm,
     UserProfileForm,
     ContactForm,
-    RecordForm,
 )
 
 fieldnames = [
@@ -413,7 +411,7 @@ def getSuggestionMenu(request):
             request, "suggestion_menu.html", {"suggestions": user_suggestions}
         )
     else:
-        return JsonResponse({"has_suggestions": False})
+        return render(request, "suggestion_menu.html", {"suggestions": []})
 
 
 def contactSuggestionMenu(request, contact_id=None):
@@ -579,7 +577,7 @@ def contactDetail(request, contact_id):
     try:
         contact = Contact.objects.get(pk=contact_id)
         response = contact.to_dict()
-    except Exception as e:
+    except Exception:
         response = {
             "status": "Error",
             "message": "Contact with id {} not found".format(contact_id),
@@ -587,17 +585,49 @@ def contactDetail(request, contact_id):
     return JsonResponse(response)
 
 
+contact_info_fields = [
+    "title",
+    "post_title",
+    "first_name",
+    "middle_name",
+    "last_name",
+    "pronouns",
+    "entity",
+    "job_title",
+    "expertise",
+]
+contact_details_fields = [
+    "email",
+    "phone",
+    "mobile_phone",
+    "office_phone",
+    "fax",
+    "address",
+    "preferred_contact_method",
+    "notes",
+]
+
+
 def contactDetailHTML(request, contact_id):
     try:
         contact = Contact.objects.get(pk=contact_id)
         json_ld = json.dumps(getContactJsonLd(request, contact, render=True), indent=2)
         form = ContactForm(data=model_to_dict(contact))
-    except Exception as e:
+        contact_info = contact_info_fields
+        contact_details = contact_details_fields
+    except Exception:
         raise Http404("Contact does not exist")
     return render(
         request,
         "contact_detail_page.html",
-        {"contact": contact, "JSON_LD": json_ld, "form": form, "embedded": False},
+        {
+            "contact": contact,
+            "JSON_LD": json_ld,
+            "form": form,
+            "embedded": False,
+            "contact_info": contact_info,
+            "contact_details": contact_details,
+        },
     )
 
 
@@ -606,20 +636,30 @@ def contactDetailEmbedded(request, contact_id):
         contact = Contact.objects.get(pk=contact_id)
         json_ld = json.dumps(getContactJsonLd(request, contact, render=True), indent=2)
         form = ContactForm(data=model_to_dict(contact))
-    except Exception as e:
+        contact_info = contact_info_fields
+        contact_details = contact_details_fields
+
+    except Exception:
         raise Http404("Contact does not exist")
     return render(
         request,
         "contact_detail_embedded.html",
-        {"contact": contact, "JSON_LD": json_ld, "form": form, "embedded": True},
+        {
+            "contact": contact,
+            "JSON_LD": json_ld,
+            "form": form,
+            "embedded": True,
+            "contact_info": contact_info,
+            "contact_details": contact_details,
+        },
     )
 
 
 def getContactJsonLd(request, contact, render=False):
-    if type(contact) == int:
+    if isinstance(contact, int):
         try:
             contact = Contact.objects.get(pk=contact)
-        except Exception as e:
+        except Exception:
             raise Http404("Contact does not exist")
     site = get_current_site(request)
 
@@ -711,7 +751,6 @@ def getContactJsonLd(request, contact, render=False):
 
 
 def entityList(request):
-    filters = {}
     entities = {"entities": []}
     for entity in Entity.objects.all().order_by("name"):
         entities["entities"].append(entity.to_dict())
@@ -722,7 +761,7 @@ def entityDetail(request, id):
     try:
         entity = Entity.objects.get(pk=id)
         response = entity.to_dict()
-    except Exception as e:
+    except Exception:
         response = {
             "status": "Error",
             "message": "Error with id {} not found".format(id),
@@ -734,7 +773,7 @@ def entityDetailHTML(request, id):
     try:
         entity = Entity.objects.get(pk=id)
         json_ld = "TODO"
-    except Exception as e:
+    except Exception:
         raise Http404("Entity does not exist")
     return render(
         request,
@@ -747,7 +786,7 @@ def entityDetailEmbedded(request, id):
     try:
         entity = Entity.objects.get(pk=id)
         json_ld = "TODO"
-    except Exception as e:
+    except Exception:
         raise Http404("Entity does not exist")
     return render(
         request,
@@ -835,7 +874,7 @@ def getSuggestionInitialValues(suggestion):
         for field in fields:
             if hasattr(suggestion, field):
                 value = getattr(suggestion, field)
-                if not value in [None, ""]:
+                if value not in [None, ""]:
                     initial[field] = value
     else:
         for field in fields:
@@ -867,7 +906,7 @@ def buildReviewRow(
     if not contact_field:
         contact_field = field
     match = False
-    overwrite = not getattr(suggestion, field) in [None, ""]
+    overwrite = getattr(suggestion, field) not in [None, ""]
     cells = [
         {
             "value": getattr(suggestion, field),
@@ -882,7 +921,7 @@ def buildReviewRow(
                 "is_field": True,
             }
         )
-    except (AttributeError, KeyError) as e:
+    except (AttributeError, KeyError):
         cells.append({"value": "----"})
     if contact:
         if hasattr(contact, field):
@@ -898,11 +937,11 @@ def buildReviewRow(
 
     try:
         cells.insert(0, {"value": cells[-1]["value"].label})
-    except AttributeError as e:
+    except AttributeError:
         cells.insert(0, {"value": field})
     try:
         cells.append({"value": cells[-1]["value"].help_text})
-    except AttributeError as e:
+    except AttributeError:
         cells.append({"value": " "})
 
     row["cells"] = cells
@@ -979,7 +1018,7 @@ def adminSuggestionReviewMenu(request, suggestion_id):
                                 extra_tags="success",
                                 fail_silently=False,
                             )
-                        except Exception as e:
+                        except Exception:
                             message = "Error saving record Suggestion '{}'.".format(
                                 suggestion
                             )
@@ -991,7 +1030,7 @@ def adminSuggestionReviewMenu(request, suggestion_id):
                                 fail_silently=False,
                             )
 
-                except Exception as e:
+                except Exception:
                     message = "Error updating status of '{}'.".format(suggestion)
                     messages.add_message(
                         request,
@@ -1126,11 +1165,11 @@ def adminSuggestionRejection(request, suggestion_id):
                 fail_silently=False,
             )
             return HttpResponseRedirect("/admin/app/contactsuggestion/")
-        except Exception as e:
+        except Exception:
             message = "An error occurred attempting to save rejection for suggestion {}".format(
                 suggestion
             )
-    except Exception as e:
+    except Exception:
         message = "An error occurred: Unable to identify a Contact Suggestion with given id '{}'.".format(
             suggestion_id
         )
@@ -1139,7 +1178,7 @@ def adminSuggestionRejection(request, suggestion_id):
         request, messages.ERROR, message, extra_tags="error", fail_silently=False
     )
     return HttpResponseRedirect(
-        "/admin/app/contactsuggestion/".format(suggestion_id),
+        "/admin/app/contactsuggestion/",
         {"messages": [{"tags": "error", "message": message}]},
     )
 

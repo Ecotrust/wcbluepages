@@ -1,0 +1,36 @@
+.contact-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+}
+
+.contact-details {
+    background-color: var(--color-gray-50);
+    padding: 1rem;
+    border-radius: 0.3rem;
+
+    th {
+        text-align: left;
+        color: var(--color-gray-700);
+        font-weight: bold;
+    }
+
+    td, th {
+        font-size: 0.875em;
+        padding: 0.5rem;
+    }
+}
+
+.topics-section {
+    margin: 2rem 0;
+}
+
+.contact-record-menu-entry {
+    margin-top: 0.75rem;
+}
+
+.no-topics-details {
+    font-style: italic;
+    color: var(--color-gray-500);
+}

@@ -1,71 +1,17 @@
 [
-{
-  "model": "address.country",
-  "pk": 1,
-  "fields": {
-    "name": "United States of America",
-    "postal_code": "USA"
+  {
+    "model": "address.country",
+    "pk": 1,
+    "fields": { "name": "United States of America", "postal_code": "USA" }
+  },
+  {
+    "model": "address.country",
+    "pk": 2,
+    "fields": { "name": "Mexico", "postal_code": "MX" }
+  },
+  {
+    "model": "address.country",
+    "pk": 3,
+    "fields": { "name": "Canada", "postal_code": "CAN" }
   }
-},
-{
-  "model": "address.country",
-  "pk": 2,
-  "fields": {
-    "name": "Mexico",
-    "postal_code": "MX"
-  }
-},
-{
-  "model": "address.country",
-  "pk": 3,
-  "fields": {
-    "name": "Canada",
-    "postal_code": "CAN"
-  }
-},
-{
-  "model": "address.state",
-  "pk": 1,
-  "fields": {
-    "name": "California",
-    "postal_code": "CA",
-    "country": 1
-  }
-},
-{
-  "model": "address.state",
-  "pk": 2,
-  "fields": {
-    "name": "Oregon",
-    "postal_code": "OR",
-    "country": 1
-  }
-},
-{
-  "model": "address.state",
-  "pk": 3,
-  "fields": {
-    "name": "Washington",
-    "postal_code": "WA",
-    "country": 1
-  }
-},
-{
-  "model": "address.state",
-  "pk": 5,
-  "fields": {
-    "name": "Baja California",
-    "postal_code": "MX",
-    "country": 2
-  }
-},
-{
-  "model": "address.state",
-  "pk": 7,
-  "fields": {
-    "name": "British Columbia",
-    "postal_code": "CAN",
-    "country": 3
-  }
-}
 ]
