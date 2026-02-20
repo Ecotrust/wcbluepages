@@ -62,6 +62,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "app.middleware.LoginRequiredMiddleware",
 ]
 
 ROOT_URLCONF = "bluepages.urls"
@@ -202,6 +203,11 @@ SITE_ID = 1
 # Crispy Forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = ["bootstrap5"]
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# Authentication settings
+LOGIN_URL = "/accounts/login/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/accounts/login/"
 
 try:
     from .local_settings import *  # noqa: F403
