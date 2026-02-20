@@ -99,7 +99,6 @@ def exportCSVList(request):
     filters = {}
     if request.method == "POST":
         filters = json.loads(request.POST.get("data"))
-        print(f"filters in exportCSVList: {filters}")
     contacts = filterContacts(filters, format="dict")["contacts"]
 
     try:
