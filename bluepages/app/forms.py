@@ -103,12 +103,7 @@ class RecordSuggestionForm(ModelForm):
         self.helper.form_show_labels = True
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            Fieldset(
-                "Topic Selection",
-                "topic",
-                css_class="well"
-            ),
-            
+            Fieldset("Topic Selection", "topic", css_class="well"),
         )
 
 
