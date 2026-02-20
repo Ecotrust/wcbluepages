@@ -203,11 +203,6 @@ SITE_ID = 1
 CRISPY_ALLOWED_TEMPLATE_PACKS = ["bootstrap5"]
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
-# Authentication settings
-LOGIN_URL = "/accounts/login/"
-LOGIN_REDIRECT_URL = "/"
-LOGOUT_REDIRECT_URL = "/accounts/login/"
-
 try:
     from .local_settings import *  # noqa: F403
 except Exception:
