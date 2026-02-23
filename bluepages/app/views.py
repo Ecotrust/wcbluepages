@@ -75,9 +75,7 @@ fieldnames = [
 @login_required
 def home(request):
     context = {}
-    if request.user.is_authenticated or not settings.REQUIRE_ACCOUNT:
-        return render(request, "home.html", context)
-    return render(request, "welcome.html", context)
+    return render(request, "home.html", context)
 
 
 def filterContactsRequest(request):
