@@ -857,7 +857,6 @@ def buildExploreEntityTree():
 ####################################
 
 
-@login_required
 def getSuggestionInitialValues(suggestion):
     initial = {}
     fields = [
