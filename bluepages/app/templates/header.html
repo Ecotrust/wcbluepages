@@ -31,20 +31,16 @@
       <i class="bi bi-gear"></i> Manage
     </button>
     <div class="vertical-divider"></div>
-    {% endif %}
     <button class="btn btn-primary" onclick="app.prepExploreModal('Entities')">
       Entities
     </button>
-    {% if user.is_authenticated %}
     <button class="btn btn-primary" onclick="app.loadAccountModal()">
       Account
     </button>
-    <button class="btn btn-primary" onclick="app.logoutRUS()">Logout</button>
-    {% else %}
-    <button class="btn btn-primary" onclick="app.loadRegistrationForm()">
-      Register
-    </button>
-    <button class="btn btn-primary" onclick="app.loadLoginForm()">Login</button>
+    <form method="post" action="{% url 'logout' %}" style="display: inline;">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary">Logout</button>
+    </form>
     {% endif %}
   </div>
 </div>
