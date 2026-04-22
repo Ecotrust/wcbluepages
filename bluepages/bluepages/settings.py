@@ -204,7 +204,16 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = ["bootstrap5"]
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 try:
-    from .local_settings import *  # noqa: F403
-except Exception:
-    print("Unable to import local_settings")
+    from .local_settings import *
+except Exception as e:
+    print(f"Unable to import local_settings: {e}")
     pass
+
+# Import Docker settings if running in Docker
+if os.environ.get('DOCKER_CONTAINER'):
+    try:
+        from .docker_settings import *
+        print("Docker settings loaded")
+    except Exception as e:
+        print(f"Unable to import docker_settings: {e}")
+        pass
