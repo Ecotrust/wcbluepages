@@ -16,4 +16,3 @@ python manage.py collectstatic --noinput
 
 echo "Starting python development server on :8000"
 python manage.py runserver 0.0.0.0:8000
-exec "$@"

@@ -7,6 +7,7 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+      DB_PORT: ${DB_PORT}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./db_dump.sql:/tmp/db_dump.sql:ro

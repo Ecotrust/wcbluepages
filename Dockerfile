@@ -33,8 +33,7 @@ RUN pip install --upgrade pip && \
 # Copy project files
 COPY . /app/
 
-# Copy and set entrypoint script
-COPY entrypoint.sh /app/entrypoint.sh
+# Make entrypoint script executable
 RUN chmod +x /app/entrypoint.sh
 
 # Create necessary directories
