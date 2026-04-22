@@ -182,6 +182,7 @@ class ContactAdmin(VersionAdmin):
                 )
             },
         ),
+        ("User Account", {"fields": ("user",)}),
         ("Additional Information", {"fields": ("notes",)}),
     )
 
