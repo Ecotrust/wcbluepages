@@ -551,7 +551,10 @@ class ContactBase(models.Model):
 
 class Contact(ContactBase):
     is_test_data = models.BooleanField(default=False)
-    user = models.OneToOneField("auth.User", on_delete=models.SET_NULL, null=True, blank=True, default=None)
+    user = models.OneToOneField(
+        "auth.User", on_delete=models.SET_NULL, null=True, blank=True, default=None
+    )
+
     def to_dict(
         self,
         include_entity=True,
