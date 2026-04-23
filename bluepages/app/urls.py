@@ -38,6 +38,7 @@ from app.views import (
     exploreEntitiesEmbedded,
     entityDetailEmbedded,
     contactDetailEmbedded,
+    contactForm,
 )
 
 
@@ -53,6 +54,8 @@ urlpatterns = [
     path("get_suggestion_menu/", getSuggestionMenu),
     path("suggestion_form/<int:contact_id>/", contactSuggestionForm),
     re_path(r"^suggestion_form", contactSuggestionForm),
+    path("contact_form/<int:contact_id>/", contactForm),
+    re_path(r"^contact_form", contactForm),
     path("contacts/", contactList, name="contact_list"),
     path("contacts/<int:contact_id>/", contactDetailHTML, name="contact_detail_html"),
     path(

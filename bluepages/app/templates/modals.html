@@ -1,74 +1,175 @@
-<div class="modal fade" id="accountModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="accountModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="accountModalWrapper"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
+<div
+  class="modal fade"
+  id="accountModal"
+  data-bs-backdrop="static"
+  tabindex="-1"
+  aria-labelledby="accountModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div id="accountModalWrapper"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
     </div>
+  </div>
 </div>
 
-<div class="modal fade" id="suggestionModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="suggestionModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="suggestionModalLabel">Suggest a Contact</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="suggestionModalWrapper"></div>
-            </div>
-        </div>
+<div
+  class="modal fade"
+  id="suggestionModal"
+  data-bs-backdrop="static"
+  tabindex="-1"
+  aria-labelledby="suggestionModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="suggestionModalLabel">Suggest a Contact</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div id="suggestionModalWrapper"></div>
+      </div>
     </div>
+  </div>
 </div>
 
-<div class="modal fade" id="suggestionMenuModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="suggestionMenuModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="suggestionMenuModalLabel">Manage Your Suggestion</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="suggestionMenuModalWrapper"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
+<div
+  class="modal fade"
+  id="suggestionMenuModal"
+  data-bs-backdrop="static"
+  tabindex="-1"
+  aria-labelledby="suggestionMenuModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="suggestionMenuModalLabel">Manage</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div id="suggestionMenuModalWrapper"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
     </div>
-</div>
-  
-<div class="modal fade" id="recordSuggestionModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="recordSuggestionModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="recordSuggestionModalLabel">Suggest a topic for <span id="topicSuggestionContactName"></span></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="recordSuggestionModalWrapper"></div>
-            </div>
-        </div>
-    </div>
+  </div>
 </div>
 
-<div class="modal fade" id="exploreModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exploreModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exploreModalLabel">Explore <span id="exploreModalName"></span></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="exploreModalWrapper"></div>
-            </div>
-        </div>
+<div
+  class="modal fade"
+  id="selfContactModal"
+  data-bs-backdrop="static"
+  tabindex="-1"
+  aria-labelledby="selfContactModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="selfContactModalLabel">
+          Your Contact Information
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div id="selfContactModalWrapper"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
     </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="recordSuggestionModal"
+  data-bs-backdrop="static"
+  tabindex="-1"
+  aria-labelledby="recordSuggestionModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="recordSuggestionModalLabel">
+          Suggest a topic for <span id="topicSuggestionContactName"></span>
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div id="recordSuggestionModalWrapper"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="exploreModal"
+  data-bs-backdrop="static"
+  tabindex="-1"
+  aria-labelledby="exploreModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exploreModalLabel">
+          Explore <span id="exploreModalName"></span>
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div id="exploreModalWrapper"></div>
+      </div>
+    </div>
+  </div>
 </div>

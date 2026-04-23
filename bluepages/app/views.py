@@ -397,6 +397,7 @@ def formatSuggestionMenuEntry(contact_suggestion):
 
 @login_required
 def getSuggestionMenu(request):
+    self_contact = Contact.objects.filter(user=request.user).first()
     user_suggestions = [
         formatSuggestionMenuEntry(contact_suggestion)
         for contact_suggestion in ContactSuggestion.objects.filter(
@@ -409,12 +410,15 @@ def getSuggestionMenu(request):
         .order_by("status", "last_name", "first_name", "date_modified", "date_created")
     ):
         user_suggestions.append(formatSuggestionMenuEntry(contact_suggestion))
-    if len(user_suggestions) > 0:
-        return render(
-            request, "suggestion_menu.html", {"suggestions": user_suggestions}
-        )
-    else:
-        return render(request, "suggestion_menu.html", {"suggestions": []})
+    print("self_contact", self_contact)
+    return render(
+        request,
+        "suggestion_menu.html",
+        {
+            "suggestions": user_suggestions if len(user_suggestions) > 0 else [],
+            "self_contact": self_contact if self_contact else None,
+        },
+    )
 
 
 @login_required
@@ -467,6 +471,19 @@ def deleteSuggestedRecord(request, record_id=None):
     return JsonResponse(
         {"status": 200, "success": True, "message": "Topic Record deleted."}
     )
+
+
+@login_required
+def contactForm(request, contact_id=None):
+    action = "/contact_form/"
+    if contact_id:
+        action = action + "{}/".format(contact_id)
+        contact = Contact.objects.get(pk=contact_id)
+        form = ContactForm(instance=contact)
+    else:
+        form = ContactForm()
+    context = {"form": form, "contact_id": contact_id, "action": action}
+    return render(request, "contact_form.html", context)
 
 
 @login_required

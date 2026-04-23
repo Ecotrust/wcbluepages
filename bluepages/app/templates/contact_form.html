@@ -1,0 +1,23 @@
+{% load crispy_forms_tags %}
+
+<form method="post" action="{{action}}" id="contact-form">
+  {% csrf_token %}
+
+  <!-- Hidden fields for user and status -->
+  <div class="hidden-fields">
+    {{ form.user.errors }} {{ form.user.label_tag }} {{ form.user }} {{
+    form.status.errors }} {{ form.status.label_tag }} {{ form.status }}
+  </div>
+
+  {% crispy form %}
+</form>
+
+<div class="mt-3">
+  <button
+    type="button"
+    class="btn btn-primary modal-submit-button"
+    onclick="app.submitContactForm()"
+  >
+    Submit
+  </button>
+</div>
