@@ -1,3 +1,13 @@
+# Stage 1: Build JS assets
+FROM node:20-slim AS js-builder
+
+WORKDIR /js
+COPY bluepages/app/static/app/js/app/package*.json ./
+RUN npm ci
+COPY bluepages/app/static/app/js/app/ ./
+RUN mkdir -p /dist && npm run build
+
+# Stage 2: Python application
 # Use Python 3.11 slim image as base
 FROM python:3.11-slim-bookworm
 
@@ -32,6 +42,9 @@ RUN pip install --upgrade pip && \
 
 # Copy project files
 COPY . /app/
+
+# Copy compiled JS assets from js-builder stage
+COPY --from=js-builder /dist/ /app/bluepages/app/static/app/js/dist/
 
 # Make entrypoint script executable
 RUN chmod +x /app/entrypoint.sh

@@ -25,6 +25,7 @@ services:
     container_name: bluepages_web
     volumes:
       - .:/app
+      - js_dist:/app/bluepages/app/static/app/js/dist
       - static_volume:/app/bluepages/static_root
       - media_volume:/app/bluepages/media_root
     ports:
@@ -40,3 +41,4 @@ volumes:
   postgres_data:
   static_volume:
   media_volume:
+  js_dist:
