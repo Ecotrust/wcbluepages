@@ -265,10 +265,10 @@ app.submitContactForm = () => {
     let submitAction = contact_form.attr('action');
 
     // TODO: Validate form
-    $.post(submitAction, contact_form.serialize(), app.prepContactMenuModal)
+    $.post(submitAction, contact_form.serialize(), app.afterContactSubmission)
         .fail(error_form => {
             alert("error");
-            $("#suggestionModalWrapper").html(error_form);
+            $("#selfContactModalWrapper").html(error_form);
         });
 }
 
@@ -284,16 +284,24 @@ app.loadSuggestionMenu = () => {
 
 app.prepContactMenuModal = (data) => {
     if (typeof(data) == 'string') {
-        //Form contained an error and was returned to us
+        // Form contained an error and was returned to us
         $("#suggestionModalWrapper").html(data);
     } else {
         app.suggested_contact = data.contact_suggestion;
-        $.ajax({
-            url:"contact_suggestion_menu/" + data.contact_suggestion.id + "/",
-            success: app.loadContactMenuModal
-        })
+        app.loadSuggestionMenu();
     }
 }
+
+// after submitting a contact form, we want to show the contact menu for the new/edited contact, so we use the same callback as after submitting a suggestion form
+app.afterContactSubmission = (data) => {
+    if (typeof(data) == 'string') {
+        // Form contained an error and was returned to us
+        $("#selfContactModalWrapper").html(data);
+    } else {
+        app.loadSuggestionMenu();
+    }
+}
+
 
 app.loadContactMenuModal = (form_html) => {
     $('#suggestionMenuModalWrapper').html(form_html);

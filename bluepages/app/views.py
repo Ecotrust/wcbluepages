@@ -476,12 +476,42 @@ def deleteSuggestedRecord(request, record_id=None):
 @login_required
 def contactForm(request, contact_id=None):
     action = "/contact_form/"
+    contact_record = None
     if contact_id:
         action = action + "{}/".format(contact_id)
-        contact = Contact.objects.get(pk=contact_id)
-        form = ContactForm(instance=contact)
+        contact_record = Contact.objects.filter(pk=contact_id, user=request.user).first()
     else:
-        form = ContactForm()
+        # Keep one contact record per user and edit it if it already exists.
+        contact_record = Contact.objects.filter(user=request.user).first()
+
+    if request.method != "POST":
+        form = ContactForm(instance=contact_record) if contact_record else ContactForm()
+
+    if request.method == "POST":
+        if contact_record:
+            form = ContactForm(request.POST, instance=contact_record)
+        else:
+            form = ContactForm(request.POST)
+        if form.is_valid():
+            contact = form.save(commit=False)
+            contact.user = request.user
+            contact.save()
+            return JsonResponse(
+                {
+                    "contact": {
+                        "id": contact.id,
+                        "name": str(contact),
+                        "job_title": contact.job_title,
+                        "entity_name": str(contact.entity),
+                        "email": contact.email,
+                        "phone": str(contact.phone),
+                        "address": contact.full_address(),
+                    }
+                }
+            )
+        else:
+            pass
+
     context = {"form": form, "contact_id": contact_id, "action": action}
     return render(request, "contact_form.html", context)
 

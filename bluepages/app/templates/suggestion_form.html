@@ -5,12 +5,12 @@
 
   <!-- Hidden fields for user and status -->
   <div class="hidden-fields">
-    {{ contact_formfo.user.errors }} {{ contact_formfo.user.label_tag }} {{
-    contact_formfo.user }} {{ contact_formfo.status.errors }} {{
-    contact_formfo.status.label_tag }} {{ contact_formfo.status }}
+    {{ contact_form.user.errors }} {{ contact_form.user.label_tag }} {{
+    contact_form.user }} {{ contact_form.status.errors }} {{
+    contact_form.status.label_tag }} {{ contact_form.status }}
   </div>
 
-  {% crispy contact_formfo %}
+  {% crispy contact_form %}
 </form>
 
 <div class="mt-3">
