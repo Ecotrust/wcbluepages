@@ -27,9 +27,8 @@ class ContactSuggestionForm(ModelForm):
                 "Contact Person",
                 Row(
                     Column("contact", css_class="col-md-6"),
-                    Column("self_suggestion", css_class="col-md-6 align-self-end"),
+                    Column("show_on_entity_page", css_class="col-md-6")
                 ),
-                Row("show_on_entity_page", css_class="col-md-6"),
                 HTML("<hr />"),
                 Row(
                     Column("title", css_class="col-md-2"),

@@ -220,7 +220,7 @@ class ContactSuggestionAdmin(VersionAdmin):
                 )
             },
         ),
-        ("Contact", {"fields": ("contact", "self_suggestion")}),
+        ("Contact", {"fields": ["contact"]}),
         (
             "Name",
             {
