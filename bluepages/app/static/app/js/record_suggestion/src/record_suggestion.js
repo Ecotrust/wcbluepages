@@ -168,8 +168,8 @@ app.recordMapZoomToBufferedExtent = function(extent, buffer) {
 
 app.submitRecordSuggestion = function() {
     let record_form = $("#record-suggestion-form");
-    let submitAction = record_form .attr('action');
-
+    let submitAction = record_form.attr('action');
+    console.log("Submitting record suggestion with action", submitAction, "and data", record_form.serialize());
     $.post(submitAction, record_form.serialize(), app.loadRecordSuggestionModal)
         .fail(function(error_form) {
             alert("error");
@@ -178,7 +178,7 @@ app.submitRecordSuggestion = function() {
 }
 
 app.recordMapLoadSelectedFeatures = function() {
-    let selected = $("#id_regions")[0].selectedOptions;
+    let selected = $("#id_regions")[0]?.selectedOptions ?? [];
     let features = app.recordMapRegionSource.getFeatures();
     for (var sel_idx=0; sel_idx < selected.length; sel_idx++) {
         var feature_id = selected[sel_idx].value;
@@ -245,7 +245,7 @@ app.deleteRecordSuggestions = function(contact_id, record_id) {
         $.ajax({
             url: "/delete_suggested_record/" + record_id + "/",
             success: window.setTimeout(function() {
-                app.prepContactMenuModal({'contact_suggestion': {'id': contact_id}});
+                app.prepContactSuggestionMenuModal({'contact': {'id': contact_id}});
             }, 200) 
         })
     }

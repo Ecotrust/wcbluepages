@@ -17,9 +17,12 @@ from app.views import (
     regionPicker,
     wireframe,
     getSuggestionMenu,
+    contactMenu,
     contactSuggestionMenu,
     contactSuggestionForm,
     recordSuggestionForm,
+    recordContactForm,
+    deleteRecord,
     deleteSuggestedContact,
     deleteSuggestedRecord,
     getProfile,
@@ -71,15 +74,19 @@ urlpatterns = [
         "entities/<int:id>/embedded/", entityDetailEmbedded, name="entity_detail_html"
     ),
     path("entities/api/<int:id>/", entityDetail, name="entity_detail_embedded"),
-    # path('entities/json_ld/<int:id>/', getEntityJsonLd, name='entity_json_ld'),
     path("contact_suggestion_menu/<int:contact_id>/", contactSuggestionMenu),
     path("contact_suggestion_menu/", contactSuggestionMenu),
+    path("contact_menu/<int:contact_id>/", contactMenu),
+    path("contact_menu/", contactMenu),
     path(
         "record_suggestion_form/<int:contact_id>/<int:record_id>/", recordSuggestionForm
     ),
     path("record_suggestion_form/<int:contact_id>/", recordSuggestionForm),
+    path("contact_record_form/<int:contact_id>/<int:record_id>/", recordContactForm),
+    path("contact_record_form/<int:contact_id>/", recordContactForm),
     path("delete_suggested_contact/<int:contact_id>/", deleteSuggestedContact),
     path("delete_suggested_record/<int:record_id>/", deleteSuggestedRecord),
+    path("delete_record/<int:contact_id>/<int:record_id>/", deleteRecord),
     path(
         "profile/password_change/",
         changePassword.as_view(

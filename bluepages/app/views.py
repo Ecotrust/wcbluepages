@@ -33,6 +33,7 @@ from app.models import (
 )
 from app.forms import (
     ContactSuggestionForm,
+    RecordForm,
     RecordSuggestionForm,
     UserProfileForm,
     ContactForm,
@@ -410,7 +411,6 @@ def getSuggestionMenu(request):
         .order_by("status", "last_name", "first_name", "date_modified", "date_created")
     ):
         user_suggestions.append(formatSuggestionMenuEntry(contact_suggestion))
-    print("self_contact", self_contact)
     return render(
         request,
         "suggestion_menu.html",
@@ -423,6 +423,7 @@ def getSuggestionMenu(request):
 
 @login_required
 def contactSuggestionMenu(request, contact_id=None):
+    print("contactSuggestionMenu called with contact_id", contact_id)
     if request.method == "POST":
         pass
     else:
@@ -442,6 +443,29 @@ def contactSuggestionMenu(request, contact_id=None):
                     ),
                     "description": contact_suggestion.description,
                     "status": contact_suggestion.status,
+                }
+            }
+            return render(request, "contact_suggestion_menu.html", context)
+        else:
+            pass
+
+@login_required
+def contactMenu(request, contact_id=None):
+    if request.method == "POST":
+        pass
+    else:
+        if contact_id:
+            contact = Contact.objects.get(pk=contact_id)
+            context = {
+                "contact": {
+                    "id": contact.pk,
+                    "name": contact.full_name,
+                    "job_title": contact.job_title,
+                    "entity_name": str(contact.entity),
+                    "email": contact.email,
+                    "phone": contact.phone,
+                    "address": contact.full_address(),
+                    "records": contact.record_set.all().order_by("topic"),
                 }
             }
             return render(request, "contact_suggestion_menu.html", context)
@@ -472,6 +496,14 @@ def deleteSuggestedRecord(request, record_id=None):
         {"status": 200, "success": True, "message": "Topic Record deleted."}
     )
 
+@login_required
+def deleteRecord(request, contact_id=None, record_id=None):
+    record_matches = Record.objects.filter(pk=record_id, contact__id=contact_id)
+    for match in record_matches:
+        match.delete()
+    return JsonResponse(
+        {"status": 200, "success": True, "message": "Topic Record deleted."}
+     )
 
 @login_required
 def contactForm(request, contact_id=None):
@@ -501,6 +533,7 @@ def contactForm(request, contact_id=None):
                     "contact": {
                         "id": contact.id,
                         "name": str(contact),
+                        "full_name": contact.full_name,
                         "job_title": contact.job_title,
                         "entity_name": str(contact.entity),
                         "email": contact.email,
@@ -528,17 +561,20 @@ def contactSuggestionForm(request, contact_id=None):
         if len(contact_suggestion_record_matches) == 1:
             contact_suggestion_record = contact_suggestion_record_matches[0]
     if request.method == "POST":
+        print("contact_suggestion_record", contact_suggestion_record)
         if contact_suggestion_record:
             contact_form = ContactSuggestionForm(
                 request.POST, instance=contact_suggestion_record
             )
         else:
             contact_form = ContactSuggestionForm(request.POST)
+        print("contact_form errors", contact_form.errors)
         if contact_form.is_valid():
             contact_suggestion = contact_form.save()
+            print("contact_suggestion", contact_suggestion)
             return JsonResponse(
                 {
-                    "contact_suggestion": {
+                    "contact": {
                         "id": contact_suggestion.id,
                         "name": str(contact_suggestion),
                         "contact_name": contact_suggestion.contact_name,
@@ -563,6 +599,7 @@ def contactSuggestionForm(request, contact_id=None):
 @login_required
 def recordSuggestionForm(request, contact_id, record_id=None):
     contact_suggestion = ContactSuggestion.objects.get(pk=contact_id)
+    print("contact_suggestion", contact_suggestion)
     record_suggestion = False
     action = "/record_suggestion_form/{}/".format(contact_id)
     if record_id:
@@ -573,25 +610,35 @@ def recordSuggestionForm(request, contact_id, record_id=None):
             record_suggestion = record_suggestion_matches[0]
             action += "{}/".format(record_suggestion.pk)
     if request.method == "POST":
+        form_data = request.POST.copy()
+        # These fields are derived from the URL/session and enforced server-side.
+        form_data["contact_suggestion"] = str(contact_suggestion.pk)
+        form_data["user"] = str(request.user.pk)
+        form_data["status"] = form_data.get("status") or "Pending"
         if record_suggestion:
-            record_form = RecordSuggestionForm(request.POST, instance=record_suggestion)
+            record_form = RecordSuggestionForm(form_data, instance=record_suggestion)
         else:
-            record_form = RecordSuggestionForm(request.POST)
+            record_form = RecordSuggestionForm(form_data)
         if record_form.is_valid():
             record_form.save()
+            print("valid form saved")
+            suggestion_payload = {
+                "id": contact_suggestion.id,
+                "name": str(contact_suggestion),
+                "contact_name": contact_suggestion.contact_name,
+                "topics": [
+                    {"id": x.pk, "topic": str(x.topic), "topic_id": x.topic.pk}
+                    for x in contact_suggestion.recordsuggestion_set.all()
+                ],
+            }
             return JsonResponse(
                 {
-                    "contact_suggestion": {
-                        "id": contact_suggestion.id,
-                        "name": str(contact_suggestion),
-                        "contact_name": contact_suggestion.contact_name,
-                        "topics": [
-                            {"id": x.pk, "topic": str(x.topic), "topic_id": x.topic.pk}
-                            for x in contact_suggestion.recordsuggestion_set.all()
-                        ],
-                    }
+                    "contact": suggestion_payload,
+                    "contact_suggestion": suggestion_payload,
                 }
             )
+        else:
+            print("record form errors", record_form.errors)
 
     else:
         if record_suggestion:
@@ -612,6 +659,65 @@ def recordSuggestionForm(request, contact_id, record_id=None):
         "action": action,
     }
     return render(request, "record_suggestion_form.html", context)
+
+@login_required
+def recordContactForm(request, contact_id, record_id=None):
+    contact = Contact.objects.get(pk=contact_id, user=request.user)
+    record = None
+    action = f"/contact_record_form/{contact_id}/"
+    if record_id:
+        record_matches = Record.objects.filter(pk=record_id, contact=contact)
+        if len(record_matches) == 1:
+            record = record_matches[0]
+            record_id = record.pk
+            action += f"{record_id}/"
+    if request.method == "POST":
+        form_data = request.POST.copy()
+        # Contact is derived from the URL and enforced server-side.
+        form_data["contact"] = str(contact.pk)
+        if record:
+            record_form = RecordForm(form_data, instance=record)
+        else:
+            record_form = RecordForm(form_data)
+
+        if record_form.is_valid():
+            new_record = record_form.save(commit=False)
+            new_record.contact = contact
+            new_record.save()
+            print(f"new record: {new_record}")
+            return JsonResponse(
+                {
+                    "contact": {
+                        "id": new_record.id,
+                        "contact_id": contact_id,
+                        "topic": str(new_record.topic),
+                        "topics": [
+                            {
+                                "id": new_record.topic.pk,
+                                "topic": str(new_record.topic),
+                                "topic_id": new_record.topic.pk,
+                            }
+                        ],
+                    },
+                }
+            )
+        else:
+            print("record form errors", record_form.errors)
+    else: 
+        if record:
+            record_form = RecordForm(instance=record)
+        else:
+            record_form = RecordForm(initial={"user": request.user, "contact": contact})
+
+    context = {
+        "contact_name": contact.full_name,
+        "contact_id": contact.pk,
+        "record_form": record_form,
+        "action": action,
+    }
+    return render(request, "record_form.html", context)
+
+
 
 
 def wireframe(request):

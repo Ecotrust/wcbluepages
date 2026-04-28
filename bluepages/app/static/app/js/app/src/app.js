@@ -13,8 +13,14 @@ import Fill from 'ol/style/Fill';
 import Text from 'ol/style/Text';
 import GeoJSON from 'ol/format/GeoJSON';
 
-
+/////////////////////////////
+// Modal display functions //
+/////////////////////////////
 app.showModal = modal => {
+    // check to see if the modal we want to show is already shown. If so, do nothing; if not, hide all modals and show the one we want.
+    if (modal._isShown) {
+        return;
+    }
     app.allModals.forEach(m => m.hide());
     modal.show();
 }
@@ -24,6 +30,7 @@ app.showAccountModal = () => {
 }
 
 app.showSuggestionMenuModal = () => {
+    console.log("in showSuggestionMenuModal");
     app.showModal(app.suggestionMenuModal);
 }
 
@@ -39,10 +46,17 @@ app.showRecordSuggestionFormModal = () => {
     app.showModal(app.recordSuggestionModal);
 }
 
+app.showRecordModal = () => {
+    app.showModal(app.selfRecordModal);
+}
+
 app.showExploreModal = () => {
     app.showModal(app.exploreModal);
 }
 
+/////////////////////////////////
+// Registration form functions //
+/////////////////////////////////
 app.checkRegistrationFormValidity = () => {
     if ($('#registration-form').checkValidity()) {
         $('#registration-form-submit').removeAttribute('disabled');
@@ -85,6 +99,9 @@ app.handleRegistrationReturn = result => {
     }
 }
 
+//////////////////////////
+// Login form functions //
+//////////////////////////
 app.loadForgotCredentials = () => {
     $.ajax({
         url: "/accounts/forgot/",
@@ -147,6 +164,9 @@ app.submitLoginForm = () => {
     $.post(submitAction, login_form.serialize(), app.handleLoginReturn);
 }
 
+/////////////////////////////
+// Profile form functions //
+////////////////////////////
 app.loadAccountModal = () => {
     $.ajax({
         url: "/profile/",
@@ -210,30 +230,21 @@ app.handlePasswordChangeReturn = result => {
     app.showAccountModal();
 }
 
+
+///////////////////////////////
+// Suggestion form functions //
+///////////////////////////////
 app.loadSuggestionForm = (contact_suggestion_id) => {
     let url = "/suggestion_form/";
     if (contact_suggestion_id) {
         url = url + contact_suggestion_id + "/";
     }
+    console.log("loading suggestion form with url", url);
     $.ajax({
         url: url,
         success: form => {
             $("#suggestionModalWrapper").html(form);
             app.showSuggestionFormModal();
-        }
-    })
-}
-
-app.loadSelfContactForm = (contact_id) => {
-    let url = "/contact_form/";
-    if (contact_id) {
-        url = url + contact_id + "/";
-    }
-    $.ajax({
-        url: url,
-        success: form => {
-            $("#selfContactModalWrapper").html(form);
-            app.showContactFormModal();
         }
     })
 }
@@ -245,7 +256,6 @@ app.confirmSuggestionDeletion = (contact_id) => {
             success: window.setTimeout(app.loadSuggestionMenu, 200) 
         })
     }
-
 }
 
 app.submitContactSuggestion = () => {
@@ -253,22 +263,10 @@ app.submitContactSuggestion = () => {
     let submitAction = contact_form.attr('action');
 
     // TODO: Validate form
-    $.post(submitAction, contact_form.serialize(), app.prepContactMenuModal)
+    $.post(submitAction, contact_form.serialize(), app.prepContactSuggestionMenuModal)
         .fail(error_form => {
             alert("error");
             $("#suggestionModalWrapper").html(error_form);
-        });
-}
-
-app.submitContactForm = () => {
-    let contact_form = $("#contact-form");
-    let submitAction = contact_form.attr('action');
-
-    // TODO: Validate form
-    $.post(submitAction, contact_form.serialize(), app.afterContactSubmission)
-        .fail(error_form => {
-            alert("error");
-            $("#selfContactModalWrapper").html(error_form);
         });
 }
 
@@ -282,28 +280,26 @@ app.loadSuggestionMenu = () => {
     })
 }
 
-app.prepContactMenuModal = (data) => {
-    if (typeof(data) == 'string') {
+app.loadContactSuggestionMenu = (suggestionId) => {
+    $.ajax({
+        url: "/contact_suggestion_menu/" + suggestionId + "/",
+        success: app.loadContactMenuModal
+    });
+}
+
+app.prepContactSuggestionMenuModal = (data) => {
+    console.log("in prepContactSuggestionMenuModal with data", data);
+    if (typeof(data) === 'string') {
         // Form contained an error and was returned to us
         $("#suggestionModalWrapper").html(data);
-    } else {
-        app.suggested_contact = data.contact_suggestion;
-        app.loadSuggestionMenu();
+    } else if (data.contact && data.contact.id) {
+        app.suggested_contact = data.contact;
+        app.loadContactSuggestionMenu(data.contact.id);
     }
 }
-
-// after submitting a contact form, we want to show the contact menu for the new/edited contact, so we use the same callback as after submitting a suggestion form
-app.afterContactSubmission = (data) => {
-    if (typeof(data) == 'string') {
-        // Form contained an error and was returned to us
-        $("#selfContactModalWrapper").html(data);
-    } else {
-        app.loadSuggestionMenu();
-    }
-}
-
 
 app.loadContactMenuModal = (form_html) => {
+    console.log("in loadContactMenuModal");
     $('#suggestionMenuModalWrapper').html(form_html);
     app.showSuggestionMenuModal();
 }
@@ -320,21 +316,112 @@ app.prepRecordSuggestions = (contact_id, record_id) => {
 }
 
 app.loadRecordSuggestionModal = (data) => {
+    console.log("in loadRecordSuggestionModal with data", data);
     if (typeof(data) === 'string') {
         $('#recordSuggestionModalWrapper').html(data);
         $("#topicSuggestionContactName").html(app.suggested_contact.contact_name);
         app.loadRecordSuggestionForm();
         app.showRecordSuggestionFormModal();
-    } else {
+    } else if (data.contact_suggestion && data.contact_suggestion.id) {
         app.suggested_contact = data.contact_suggestion;
-        $.ajax({
-            url:"contact_suggestion_menu/" + data.contact_suggestion.id + "/",
-            success: app.loadContactMenuModal
-        })
+        app.loadContactSuggestionMenu(data.contact_suggestion.id);
     }
     
 }
 
+/////////////////////////////
+// Contact form functions //
+///////////////////////////
+app.loadContactForm = (contact_id) => {
+    let url = "/contact_form/";
+    if (contact_id) {
+        url = url + contact_id + "/";
+    }
+    $.ajax({
+        url: url,
+        success: form => {
+            $("#contactModalWrapper").html(form);
+            app.showContactFormModal();
+        }
+    })
+}
+
+app.submitContactForm = () => {
+    let contact_form = $("#contact-form");
+    let submitAction = contact_form.attr('action');
+
+    // TODO: Validate form
+    $.post(submitAction, contact_form.serialize(), app.afterContactSubmission)
+        .fail(error_form => {
+            alert("error");
+            $("#contactModalWrapper").html(error_form);
+        });
+}
+
+app.afterContactSubmission = (data) => {
+    if (typeof(data) ==='string') {
+        // Form contained an error and was returned to us
+        console.log("form contained an error");
+        $("#contactModalWrapper").html(data);
+    } else {
+        // load topic form 
+        app.current_contact = data.contact.full_name
+        app.loadSuggestionMenu();
+    }
+}
+
+app.prepContactRecord = (contact_id, record_id) => {
+    let url = "/contact_record_form/" + contact_id + "/";
+    if (record_id){
+        url += record_id + "/";
+    }
+    $.ajax({
+        url: url,
+        success: app.loadRecordModal
+    })
+}
+
+app.loadRecordModal = (data) => {
+    console.log("in loadRecordModal with data", data);
+    if (typeof(data) === 'string') {
+        $('#selfRecordModalWrapper').html(data);
+        $("#selfRecordModalContactName").html(app.current_contact);
+        app.loadRecordSuggestionForm();
+        app.showRecordModal();
+
+    } else {
+        $.ajax({
+            url: "/contact_suggestion_menu/" + data.contact.id + "/",
+            success: app.loadContactMenuModal
+        });
+    }
+}
+
+app.submitRecord = () => {
+    let record_form = $("#record-form");
+    let submitAction = record_form.attr('action');
+
+    $.post(submitAction, record_form.serialize(), app.loadSuggestionMenu)
+        .fail(function(error_form) {
+            alert("error");
+            $("#selfRecordModalWrapper").html(error_form);
+        });
+}
+
+app.deleteContactRecord = (contact_id, record_id) => {
+    if (window.confirm("Are you sure you wish to delete this Topic?")) {
+            $.ajax({
+                url: `/delete_record/${contact_id}/${record_id}/`,
+                success: window.setTimeout(function() {
+                    app.loadSuggestionMenu();
+                }, 200) 
+            })
+    }
+}
+
+/////////////////////////////
+// Explore modal functions //
+/////////////////////////////
 app.prepExploreModal = (key) => {
     let url = "/explore/" + key.toLowerCase() + "/embedded/";
     $.ajax({
@@ -353,12 +440,12 @@ app.prepExploreDetailsModal = (type, id) => {
     app.exploreType = type;
     $.ajax({
         url: url,
-        success: app.loadExploreDetailsModal
+        success: (data) => app.loadExploreDetailsModal(data, type)
     })
 }
 
-app.loadExploreDetailsModal = (data) => {
-    if (this.url.indexOf('entities') >= 0) {
+app.loadExploreDetailsModal = (data, type) => {
+    if (type === 'entities') {
         let back_button = '<div><button class="btn btn-light detail-back-button" onclick="app.prepExploreModal(\'' + app.exploreType + '\')"> <i class="bi bi-chevron-left explore-entity-chevron"></i>Back to All Entities</button></div>';
         $('#exploreModalWrapper').html(back_button + data);
     } else {
@@ -367,6 +454,9 @@ app.loadExploreDetailsModal = (data) => {
     app.showExploreModal();
 }
 
+///////////////////////
+// Filter functions //
+//////////////////////
 app.toggleFilter = (key) => {
     app.updateState('open', key);
     let chevron = $("#filter-category-chevron-" + key);
@@ -433,8 +523,9 @@ app.loadSearchResults = (results, status) => {
         '</table>';
     $("#results-column div.contact-results").html(results_col_html);
     $('#contact-results-table').DataTable();
-    $('#contact-results-table tbody').on('click', 'tr', () => {
-        app.prepExploreDetailsModal('contacts', this.id.replace(/contact-row-/g, ''));
+    $('#contact-results-table tbody').on('click', 'tr', function () {
+        const contactId = this.id.replace(/contact-row-/g, '');
+        app.prepExploreDetailsModal('contacts', contactId);
     })
     
 }
@@ -459,6 +550,10 @@ app.updateState = (filter, value) => {
     }
 }
 
+
+//////////////////////////
+// Map state functions //
+/////////////////////////
 app.getMapLabel = (feature) => {
     let text = feature.get('name');
     return text;
@@ -672,7 +767,6 @@ app.getSearchResults = () => {
     });
 }
 
-
 app.exportToCSV = () => {
     // let text_search_array = $("#contact-results-table_filter input").value.split(' ');
     // jquery with webpack is funky. Switching to vanilla JS for this:
@@ -705,12 +799,16 @@ app.exportToCSV = () => {
     });
 }
 
+/////////////////
+// App state  //
+////////////////
 app.accountModal = null;
 app.suggestionMenuModal = null;
 app.suggestionModal = null;
 app.exploreModal = null;
 app.recordSuggestionModal = null;
 app.selfContactModal = null;
+app.selfRecordModal = null;
 app.allModals = [];
 
 app.filter_state = {
@@ -732,7 +830,8 @@ $(document).ready(() => {
     app.exploreModal = initModal('exploreModal');
     app.recordSuggestionModal = initModal('recordSuggestionModal');
     app.selfContactModal = initModal('selfContactModal');
-    app.allModals = [app.accountModal, app.suggestionMenuModal, app.suggestionModal, app.exploreModal, app.recordSuggestionModal, app.selfContactModal].filter(Boolean);
+    app.selfRecordModal = initModal('selfRecordModal');
+    app.allModals = [app.accountModal, app.suggestionMenuModal, app.suggestionModal, app.exploreModal, app.recordSuggestionModal, app.selfContactModal, app.selfRecordModal].filter(Boolean);
 
     app.loadMapFilter();
     app.getSearchResults();

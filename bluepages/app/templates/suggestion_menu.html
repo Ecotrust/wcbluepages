@@ -19,16 +19,35 @@
       <button
         type="button"
         class="btn btn-primary"
-        onclick="app.loadSelfContactForm({{ self_contact.id }})"
+        onclick="app.loadContactForm({{ self_contact.id }})"
       >
         View
       </button>
     </div>
+    <div class="topics-section">
+    <h4 class="lead">Topics:</h4>
+    {% with self_records=self_contact.record_set.all %}
+    {% if self_records|length == 0 %}
+        <p class="no-topics-details">Contact has no associated topics.</p>
+    {% endif %}
+        <button id="add-topic-button" type="button" class="btn btn-outline-secondary" onclick="app.prepContactRecord({{ self_contact.id }}, false)">
+            + Add Topic
+        </button>
+    {% for record in self_records %}
+    <div class="contact-record-menu-entry row" >
+        <div class="record_{{ record.status }}"><b>{{ record.topic }}</b></div>
+        <div>
+          <button class="btn btn-light btn-sm" onclick="app.prepContactRecord({{ self_contact.id }}, {{ record.id }})">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="app.deleteContactRecord({{ self_contact.id }}, {{ record.id }})">Delete Topic</button>
+        </div>
+    </div>
+    {% endfor %}
+    {% endwith %}
     {% elif self_contact is None %}
     <button
     type="button"
     class="btn btn-primary"
-    onclick="app.loadSelfContactForm()">
+    onclick="app.loadContactForm()">
       Add your contact information
     </button>
     {% endif %}
@@ -82,7 +101,7 @@
             <button
               type="button"
               class="btn btn-standard"
-              onclick="app.prepContactMenuModal({contact_suggestion: {{ suggestion }} })"
+              onclick="app.loadContactSuggestionMenu({{ suggestion.id }})"
             >
               View
             </button>

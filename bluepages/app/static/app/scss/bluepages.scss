@@ -446,7 +446,8 @@ form#password-form button {
 /* Suggestion Modal Overrides */
 div#suggestionModal,
 div#recordSuggestionModal,
-div#suggestionMenuModal {
+div#suggestionMenuModal,
+div#selfRecordModal {
   div.modal-dialog {
     width: 80vw;
     min-width: 80vw;

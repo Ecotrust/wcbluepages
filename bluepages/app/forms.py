@@ -189,3 +189,15 @@ class RecordForm(ModelForm):
     class Meta:
         model = Record
         exclude = ["date_create", "date_modified"]
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = "record-form"
+        self.helper.form_method = "post"
+        self.helper.form_show_errors = True
+        self.helper.form_show_labels = True
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Fieldset("Topic Selection", "topic", css_class="well"),
+        )
