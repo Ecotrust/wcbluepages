@@ -24,6 +24,7 @@ services:
     build: .
     container_name: bluepages_web
     volumes:
+      - ./bluepages:/app/bluepages
       - js_dist:/app/bluepages/app/static/app/js/dist
       - static_volume:/app/bluepages/static_root
       - media_volume:/app/bluepages/media_root

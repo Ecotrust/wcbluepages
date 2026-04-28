@@ -423,7 +423,6 @@ def getSuggestionMenu(request):
 
 @login_required
 def contactSuggestionMenu(request, contact_id=None):
-    print("contactSuggestionMenu called with contact_id", contact_id)
     if request.method == "POST":
         pass
     else:
@@ -561,17 +560,14 @@ def contactSuggestionForm(request, contact_id=None):
         if len(contact_suggestion_record_matches) == 1:
             contact_suggestion_record = contact_suggestion_record_matches[0]
     if request.method == "POST":
-        print("contact_suggestion_record", contact_suggestion_record)
         if contact_suggestion_record:
             contact_form = ContactSuggestionForm(
                 request.POST, instance=contact_suggestion_record
             )
         else:
             contact_form = ContactSuggestionForm(request.POST)
-        print("contact_form errors", contact_form.errors)
         if contact_form.is_valid():
             contact_suggestion = contact_form.save()
-            print("contact_suggestion", contact_suggestion)
             return JsonResponse(
                 {
                     "contact": {
@@ -599,7 +595,6 @@ def contactSuggestionForm(request, contact_id=None):
 @login_required
 def recordSuggestionForm(request, contact_id, record_id=None):
     contact_suggestion = ContactSuggestion.objects.get(pk=contact_id)
-    print("contact_suggestion", contact_suggestion)
     record_suggestion = False
     action = "/record_suggestion_form/{}/".format(contact_id)
     if record_id:
@@ -621,7 +616,6 @@ def recordSuggestionForm(request, contact_id, record_id=None):
             record_form = RecordSuggestionForm(form_data)
         if record_form.is_valid():
             record_form.save()
-            print("valid form saved")
             suggestion_payload = {
                 "id": contact_suggestion.id,
                 "name": str(contact_suggestion),
@@ -637,8 +631,6 @@ def recordSuggestionForm(request, contact_id, record_id=None):
                     "contact_suggestion": suggestion_payload,
                 }
             )
-        else:
-            print("record form errors", record_form.errors)
 
     else:
         if record_suggestion:
@@ -684,7 +676,6 @@ def recordContactForm(request, contact_id, record_id=None):
             new_record.contact = contact
             new_record.save()
             record_form.save_m2m()
-            print(f"new record: {new_record}")
             return JsonResponse(
                 {
                     "contact": {
@@ -701,8 +692,6 @@ def recordContactForm(request, contact_id, record_id=None):
                     },
                 }
             )
-        else:
-            print("record form errors", record_form.errors)
     else: 
         if record:
             record_form = RecordForm(instance=record)
