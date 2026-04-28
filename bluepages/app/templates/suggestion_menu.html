@@ -1,4 +1,14 @@
-<h3>Your Contact Information</h3>
+<div class="flex_header">
+  <h3>Your Contact Information</h3>
+  {% if not self_contact %}
+    <button
+      type="button"
+      class="btn btn-primary"
+      onclick="app.loadContactForm()">
+        + Add Contact Information
+      </button>
+  {% endif %}
+</div>
 {% if self_contact %}
 <div class="section_container">
   <section>
@@ -46,17 +56,24 @@
     {% endfor %}
     {% endwith %}
     {% elif self_contact is None %}
-    <button
-    type="button"
-    class="btn btn-primary"
-    onclick="app.loadContactForm()">
-      Add your contact information
-    </button>
+    <div class="no-suggestions">
+      <p>
+        No contact information yet. Click the "+ Add Contact Information" button above to add your contact information.
+      </p>
+    </div>
     {% endif %}
   </section>
 </div>
-
+  <div class="flex_header">
     <h3>Your Suggestions</h3>
+    <button
+      type="button"
+      class="btn btn-primary"
+      onclick="app.loadSuggestionForm()"
+    >
+      + Add Suggestion
+    </button>
+  </div>
     <p id="suggestion-menu-details">
       Your suggestions will be made available to the Blue Pages administrators
       to decide whether to include in the database. You can use these
@@ -65,13 +82,7 @@
       use this form, select your contact, and explain your recommendation and
       reasoning in the "notes" section.
     </p>
-    <button
-      type="button"
-      class="btn btn-primary"
-      onclick="app.loadSuggestionForm()"
-    >
-      + Add Suggestion
-    </button>
+    
     <div>
       {% if suggestions|length > 0 %} {% for suggestion in suggestions %}
       <div class="section_container">
