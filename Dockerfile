@@ -1,11 +1,19 @@
 # Stage 1: Build JS assets
 FROM node:20-slim AS js-builder
 
-WORKDIR /js
+WORKDIR /js/app
 COPY bluepages/app/static/app/js/app/package*.json ./
 RUN npm ci
 COPY bluepages/app/static/app/js/app/ ./
-RUN mkdir -p /dist && npm run build
+RUN mkdir -p /js/dist && npm run build
+
+FROM node:20-slim AS record-suggestion-builder
+
+WORKDIR /js/record_suggestion
+COPY bluepages/app/static/app/js/record_suggestion/package*.json ./
+RUN npm ci
+COPY bluepages/app/static/app/js/record_suggestion/ ./
+RUN npx webpack --mode=development
 
 # Stage 2: Python application
 # Use Python 3.11 slim image as base
@@ -44,7 +52,10 @@ RUN pip install --upgrade pip && \
 COPY . /app/
 
 # Copy compiled JS assets from js-builder stage
-COPY --from=js-builder /dist/ /app/bluepages/app/static/app/js/dist/
+COPY --from=js-builder /js/dist/ /app/bluepages/app/static/app/js/dist/
+COPY --from=record-suggestion-builder /js/record_suggestion/dist/ /app/bluepages/app/static/app/js/dist/
+RUN mkdir -p /opt/bluepages-js-dist && \
+    cp -a /app/bluepages/app/static/app/js/dist/. /opt/bluepages-js-dist/
 
 # Make entrypoint script executable
 RUN chmod +x /app/entrypoint.sh
