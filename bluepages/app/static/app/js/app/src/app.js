@@ -30,7 +30,6 @@ app.showAccountModal = () => {
 }
 
 app.showSuggestionMenuModal = () => {
-    console.log("in showSuggestionMenuModal");
     app.showModal(app.suggestionMenuModal);
 }
 
@@ -239,7 +238,6 @@ app.loadSuggestionForm = (contact_suggestion_id) => {
     if (contact_suggestion_id) {
         url = url + contact_suggestion_id + "/";
     }
-    console.log("loading suggestion form with url", url);
     $.ajax({
         url: url,
         success: form => {
@@ -288,18 +286,21 @@ app.loadContactSuggestionMenu = (suggestionId) => {
 }
 
 app.prepContactSuggestionMenuModal = (data) => {
-    console.log("in prepContactSuggestionMenuModal with data", data);
     if (typeof(data) === 'string') {
         // Form contained an error and was returned to us
         $("#suggestionModalWrapper").html(data);
     } else if (data.contact && data.contact.id) {
-        app.suggested_contact = data.contact;
+        app.setSuggestedContactState(data.contact);
         app.loadContactSuggestionMenu(data.contact.id);
     }
 }
 
-app.loadContactMenuModal = (form_html) => {
-    console.log("in loadContactMenuModal");
+app.setSuggestedContactState = contact => {
+    app.suggested_contact = contact;
+}
+
+app.loadContactMenuModal = (form_html, data) => {
+    
     $('#suggestionMenuModalWrapper').html(form_html);
     app.showSuggestionMenuModal();
 }
@@ -316,17 +317,16 @@ app.prepRecordSuggestions = (contact_id, record_id) => {
 }
 
 app.loadRecordSuggestionModal = (data) => {
-    console.log("in loadRecordSuggestionModal with data", data);
     if (typeof(data) === 'string') {
         $('#recordSuggestionModalWrapper').html(data);
-        $("#topicSuggestionContactName").html(app.suggested_contact.contact_name);
+        const suggestedName = app.suggested_contact?.contact_name || app.suggested_contact?.name || app.suggested_contact?.full_name || '';
+        $("#topicSuggestionContactName").html(suggestedName);
         app.loadRecordSuggestionForm();
         app.showRecordSuggestionFormModal();
-    } else if (data.contact_suggestion && data.contact_suggestion.id) {
-        app.suggested_contact = data.contact_suggestion;
-        app.loadContactSuggestionMenu(data.contact_suggestion.id);
+        return;
     }
-    
+    app.setSuggestedContactState(data.contact_suggestion);
+    app.loadContactSuggestionMenu(data.contact_suggestion.id);    
 }
 
 /////////////////////////////
@@ -361,7 +361,6 @@ app.submitContactForm = () => {
 app.afterContactSubmission = (data) => {
     if (typeof(data) ==='string') {
         // Form contained an error and was returned to us
-        console.log("form contained an error");
         $("#contactModalWrapper").html(data);
     } else {
         // load topic form 
@@ -382,7 +381,6 @@ app.prepContactRecord = (contact_id, record_id) => {
 }
 
 app.loadRecordModal = (data) => {
-    console.log("in loadRecordModal with data", data);
     if (typeof(data) === 'string') {
         $('#selfRecordModalWrapper').html(data);
         $("#selfRecordModalContactName").html(app.current_contact);

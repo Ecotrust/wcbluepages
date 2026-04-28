@@ -103,7 +103,7 @@ app.recordMapUpdateFilters = function() {
     if ($('#middepth').is(":checked")) { depths.push('M')};
     if ($('#nearshore').is(":checked")) { depths.push('N')};
 
-    if (states.length == 0 || states.length == 3) {
+    if (states.length === 0 || states.length === 3) {
         filtered_regions = regions;
     } else {
         for (var region_idx = 0; region_idx < regions.length; region_idx++) {
@@ -118,21 +118,21 @@ app.recordMapUpdateFilters = function() {
     }
 
     let final_regions = [];
-    if (depths.length == 0 || depths.length == 3) {
+    if (depths.length === 0 || depths.length === 3) {
         final_regions = filtered_regions;
     } else {
         for (var region_idx = 0; region_idx < filtered_regions.length; region_idx++) {
             var region = filtered_regions[region_idx];
             for (let depth_idx = 0; depth_idx < depths.length; depth_idx++) {
                 var depth = depths[depth_idx];
-                if (region.get('depth') == depth && final_regions.indexOf(region) < 0) {
+                if (region.get('depth') === depth && final_regions.indexOf(region) < 0) {
                     final_regions.push(region);
                 }
             }
         }
     }
 
-    if (states.length == 0 && depths.length == 0) {
+    if (states.length === 0 && depths.length === 0) {
         final_regions = [];
     }
 
@@ -169,7 +169,6 @@ app.recordMapZoomToBufferedExtent = function(extent, buffer) {
 app.submitRecordSuggestion = function() {
     let record_form = $("#record-suggestion-form");
     let submitAction = record_form.attr('action');
-    console.log("Submitting record suggestion with action", submitAction, "and data", record_form.serialize());
     $.post(submitAction, record_form.serialize(), app.loadRecordSuggestionModal)
         .fail(function(error_form) {
             alert("error");
@@ -183,7 +182,7 @@ app.recordMapLoadSelectedFeatures = function() {
     for (var sel_idx=0; sel_idx < selected.length; sel_idx++) {
         var feature_id = selected[sel_idx].value;
         for (var feat_idx=0; feat_idx < features.length; feat_idx++){
-            if (feature_id == features[feat_idx].get('id')){
+            if (feature_id === features[feat_idx].get('id')){
                 app.recordMapToggleFeatureSelection(features[feat_idx])
                 break;
             }

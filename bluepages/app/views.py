@@ -679,11 +679,11 @@ def recordContactForm(request, contact_id, record_id=None):
             record_form = RecordForm(form_data, instance=record)
         else:
             record_form = RecordForm(form_data)
-
         if record_form.is_valid():
             new_record = record_form.save(commit=False)
             new_record.contact = contact
             new_record.save()
+            record_form.save_m2m()
             print(f"new record: {new_record}")
             return JsonResponse(
                 {
