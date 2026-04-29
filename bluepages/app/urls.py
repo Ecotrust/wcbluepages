@@ -79,9 +79,9 @@ urlpatterns = [
     path("contact_menu/<int:contact_id>/", contactMenu, name="contact_menu"),
     path("contact_menu/", contactMenu, name="contact_menu"),
     path(
-        "record_suggestion_form/<int:contact_id>/<int:record_id>/", recordSuggestionForm
+        "record_suggestion_form/<int:contact_id>/<int:record_id>/", recordSuggestionForm, name="record_suggestion_form"
     ),
-    path("record_suggestion_form/<int:contact_id>/", recordSuggestionForm),
+    path("record_suggestion_form/<int:contact_id>/", recordSuggestionForm, name="record_suggestion_form"),
     path("contact_record_form/<int:contact_id>/<int:record_id>/", recordContactForm, name="record_contact_form"),
     path("contact_record_form/<int:contact_id>/", recordContactForm, name="record_contact_form"),
     path("delete_suggested_contact/<int:contact_id>/", deleteSuggestedContact),

@@ -107,7 +107,7 @@ class GetSuggestionMenuTestCase(TestCase):
         self.assertEqual(formatted['description'], 'Test description')
         self.assertEqual(formatted['topics'], [])
 
-class contactMenuTestCase(TestCase):
+class ContactMenuTestCase(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create_user(
@@ -158,7 +158,7 @@ class contactMenuTestCase(TestCase):
         self.assertIn('contact', response.context)
         self.assertEqual(response.context['contact']['id'], contact_id)
 
-class deleteRecordTestCase(TestCase):
+class DeleteRecordTestCase(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create_user(
@@ -188,7 +188,7 @@ class deleteRecordTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse(self.contact.record_set.filter(id=self.record.id).exists())
 
-class contactFormTestCase(TestCase):
+class ContactFormTestCase(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create_user(
@@ -235,7 +235,7 @@ class contactFormTestCase(TestCase):
         self.assertEqual(response_data['contact']['id'], self.contact.id)
         self.assertEqual(response_data['contact']['email'], 'john.doe@example.com')
 
-class contactSuggestionFormTestCase(TestCase):
+class ContactSuggestionFormTestCase(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create_user(
@@ -282,7 +282,7 @@ class contactSuggestionFormTestCase(TestCase):
         self.assertEqual(response_data['contact']['id'], self.contact_suggestion.id)
         self.assertEqual(response_data['contact']['contact_name'], 'new (Doee, John)')
 
-class recordContactFormTestCase(TestCase):
+class RecordContactFormTestCase(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create_user(
@@ -330,4 +330,48 @@ class recordContactFormTestCase(TestCase):
         response_data = response.json()
         self.assertEqual(response_data['contact']['id'], self.record.id)
         self.assertEqual(response_data['contact']['topic'], self.other_topic.name)
+
+class RecordSuggestionFormTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username='testuser',
+            password='testpass123'
+        )
+        self.contact_suggestion = ContactSuggestion.objects.create(
+            user=self.user,
+            first_name='John',
+            last_name='Doe',
+            status='Pending'
+        )
+        self.topic = Topic.objects.create(name='Test Topic')
+        self.region = Region.objects.create(id='N001', name='Test Region')
+
+    def test_recordSuggestionForm_unauthenticated(self):
+        """Test that unauthenticated users cannot access record suggestion form"""
+        response = self.client.get(reverse('record_suggestion_form', args=[self.contact_suggestion.id, 1]))
+        self.assertEqual(response.status_code, 302)
     
+    def test_recordSuggestionForm_authenticated(self):
+        """Test that authenticated users can access record suggestion form"""
+        self.client.login(username='testuser', password='testpass123')
+        response = self.client.get(reverse('record_suggestion_form', args=[self.contact_suggestion.id, 1]))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('form', response.context)
+    
+    def test_recordSuggestionForm_post_request_valid_data(self):
+        """Test submitting valid data to record suggestion form creates record suggestion"""
+        self.client.login(username='testuser', password='testpass123')
+        self.other_topic = Topic.objects.create(name='Other Topic')
+        response = self.client.post(reverse('record_suggestion_form', args=[self.contact_suggestion.id, 1]), {
+            'topic': self.other_topic.id,
+            'regions': [self.region.id],
+        })
+        self.assertEqual(response.status_code, 200)
+        record_suggestion = self.contact_suggestion.recordsuggestion_set.first()
+        self.assertIsNotNone(record_suggestion)
+        self.assertEqual(record_suggestion.topic, self.other_topic)
+
+        response_data = response.json()
+        self.assertEqual(response_data['contact_suggestion']['id'], record_suggestion.id)
+        self.assertEqual(response_data['contact_suggestion']['topics'][0]['topic'], self.other_topic.name)
