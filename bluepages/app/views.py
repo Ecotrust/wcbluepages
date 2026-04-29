@@ -627,7 +627,6 @@ def recordSuggestionForm(request, contact_id, record_id=None):
             }
             return JsonResponse(
                 {
-                    "contact": suggestion_payload,
                     "contact_suggestion": suggestion_payload,
                 }
             )
