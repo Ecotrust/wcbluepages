@@ -5,8 +5,12 @@
 
   <!-- Hidden fields for user and status -->
   <div class="hidden-fields">
-    {{ form.user.errors }} {{ form.user.label_tag }} {{ form.user }} {{
-    form.status.errors }} {{ form.status.label_tag }} {{ form.status }}
+    {{ form.user.errors }}
+    {{ form.user.label_tag }}
+    {{ form.user }}
+    {{ form.status.errors }}
+    {{ form.status.label_tag }}
+    {{ form.status }}
   </div>
 
   {% crispy form %}
