@@ -23,6 +23,7 @@ from app.views import (
     recordSuggestionForm,
     recordContactForm,
     deleteRecord,
+    deleteContact,
     deleteSuggestedContact,
     deleteSuggestedRecord,
     getProfile,
@@ -87,6 +88,7 @@ urlpatterns = [
     path("delete_suggested_contact/<int:contact_id>/", deleteSuggestedContact),
     path("delete_suggested_record/<int:record_id>/", deleteSuggestedRecord),
     path("delete_record/<int:contact_id>/<int:record_id>/", deleteRecord, name="delete_record"),
+    path("delete_contact/<int:contact_id>/", deleteContact, name="delete_contact"),
     path(
         "profile/password_change/",
         changePassword.as_view(

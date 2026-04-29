@@ -705,7 +705,16 @@ def recordContactForm(request, contact_id, record_id=None):
     }
     return render(request, "record_form.html", context)
 
-
+@login_required
+def deleteContact(request, contact_id=None):
+    contact_matches = Contact.objects.filter(
+        pk=contact_id, user=request.user
+    )
+    for match in contact_matches:
+        match.delete()
+    return JsonResponse(
+        {"status": 200, "success": True, "message": "Contact deleted."}
+    )
 
 
 def wireframe(request):

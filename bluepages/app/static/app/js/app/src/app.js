@@ -251,7 +251,7 @@ app.confirmSuggestionDeletion = (contact_id) => {
     if (window.confirm("Are you sure you wish to remove this suggestion? Please note that if this contact is in the database, only your suggestion will be removed; the contact will not be removed or changed.")) {
         $.ajax({
             url: "/delete_suggested_contact/" + contact_id + "/",
-            success: window.setTimeout(app.loadSuggestionMenu, 200) 
+            success: () => app.loadSuggestionMenu(),
         })
     }
 }
@@ -410,9 +410,16 @@ app.deleteContactRecord = (contact_id, record_id) => {
     if (window.confirm("Are you sure you wish to delete this Topic?")) {
             $.ajax({
                 url: `/delete_record/${contact_id}/${record_id}/`,
-                success: window.setTimeout(function() {
-                    app.loadSuggestionMenu();
-                }, 200) 
+                success: () => app.loadSuggestionMenu(),
+            })
+    }
+}
+
+app.deleteContact = (contact_id) => {
+    if (window.confirm("Are you sure you wish to delete this Contact?")) {
+            $.ajax({
+                url: `/delete_contact/${contact_id}/`,
+                success: () => app.loadSuggestionMenu(),
             })
     }
 }
