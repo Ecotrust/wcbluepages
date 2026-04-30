@@ -140,3 +140,9 @@ package-lock.json
 
 # Pyre type checker
 .pyre/
+
+# OpenTofu/Terraform
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+*.tfvars
