@@ -37,39 +37,6 @@ services:
       db:
         condition: service_healthy
 
-  js-watch:
-    image: node:20-slim
-    container_name: bluepages_js_watch
-    working_dir: /workspace
-    volumes:
-      - .:/workspace
-      - js_dist:/workspace/bluepages/app/static/app/js/dist
-      - app_node_modules:/workspace/bluepages/app/static/app/js/app/node_modules
-      - record_suggestion_node_modules:/workspace/bluepages/app/static/app/js/record_suggestion/node_modules
-      - region_picker_node_modules:/workspace/bluepages/app/static/app/js/region_picker/node_modules
-    environment:
-      WATCHPACK_POLLING: "true"
-    command: >-
-      sh -lc '
-        set -e;
-        mkdir -p /workspace/bluepages/app/static/app/js/dist;
-
-        cd /workspace/bluepages/app/static/app/js/app;
-        npm ci;
-        cp ./node_modules/datatables/media/css/jquery.dataTables.min.css ../dist/;
-
-        cd /workspace/bluepages/app/static/app/js/record_suggestion;
-        npm ci;
-
-        cd /workspace/bluepages/app/static/app/js/region_picker;
-        npm ci;
-
-        cd /workspace/bluepages/app/static/app/js/app && npx webpack --mode=development --watch --output-path ../dist &
-        cd /workspace/bluepages/app/static/app/js/record_suggestion && npx webpack --mode=development --watch --output-path ../dist &
-        cd /workspace/bluepages/app/static/app/js/region_picker && npx webpack --mode=development --watch --output-path ../dist &
-        wait
-      '
-
 volumes:
   postgres_data:
   static_volume:
