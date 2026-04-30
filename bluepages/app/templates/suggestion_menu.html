@@ -1,4 +1,5 @@
 <div class="flex_header">
+  {% csrf_token %}
   <h3>Your Contact Information</h3>
   {% if not self_contact %}
     <button

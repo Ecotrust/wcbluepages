@@ -3,7 +3,7 @@ FROM node:20-slim AS js-app-builder
 
 WORKDIR /js/app
 COPY bluepages/app/static/app/js/app/package*.json ./
-RUN npm ci
+RUN npm i
 COPY bluepages/app/static/app/js/app/ ./
 RUN mkdir -p /js/dist && npm run build
 

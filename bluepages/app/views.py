@@ -2,6 +2,7 @@ import csv
 from datetime import datetime
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import PasswordChangeForm
@@ -450,6 +451,7 @@ def contactSuggestionMenu(request, contact_id=None):
 
 
 @login_required
+@require_http_methods(["POST"])
 def deleteSuggestedContact(request, contact_id=None):
     contact_suggestion_matches = ContactSuggestion.objects.filter(
         pk=contact_id, user=request.user
@@ -462,6 +464,7 @@ def deleteSuggestedContact(request, contact_id=None):
 
 
 @login_required
+@require_http_methods(["POST"])
 def deleteSuggestedRecord(request, record_id=None):
     record_suggestion_matches = RecordSuggestion.objects.filter(
         pk=record_id, user=request.user
@@ -474,8 +477,9 @@ def deleteSuggestedRecord(request, record_id=None):
 
 
 @login_required
+@require_http_methods(["POST"])
 def deleteRecord(request, contact_id=None, record_id=None):
-    record_matches = Record.objects.filter(pk=record_id, contact__id=contact_id)
+    record_matches = Record.objects.filter(pk=record_id, contact__id=contact_id, contact__user=request.user)
     for match in record_matches:
         match.delete()
     return JsonResponse(
@@ -689,6 +693,7 @@ def recordContactForm(request, contact_id, record_id=None):
 
 
 @login_required
+@require_http_methods(["POST"])
 def deleteContact(request, contact_id=None):
     contact_matches = Contact.objects.filter(pk=contact_id, user=request.user)
     for match in contact_matches:

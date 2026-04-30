@@ -12,6 +12,9 @@ import Stroke from 'ol/style/Stroke';
 import Fill from 'ol/style/Fill';
 import Text from 'ol/style/Text';
 import GeoJSON from 'ol/format/GeoJSON';
+import Cookies from 'js-cookie';
+
+const csrftoken = Cookies.get('csrftoken');
 
 /////////////////////////////
 // Modal display functions //
@@ -249,9 +252,13 @@ app.loadSuggestionForm = (contact_suggestion_id) => {
 
 app.confirmSuggestionDeletion = (contact_id) => {
     if (window.confirm("Are you sure you wish to remove this suggestion? Please note that if this contact is in the directory, only your suggestion will be removed; the contact will not be removed or changed.")) {
-        $.ajax({
-            url: "/delete_suggested_contact/" + contact_id + "/",
+        $.post({
+            url: `/delete_suggested_contact/${contact_id}/`,
             success: () => app.loadSuggestionMenu(),
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            mode: 'same-origin',
         })
     }
 }
@@ -408,19 +415,27 @@ app.submitRecord = () => {
 
 app.deleteContactRecord = (contact_id, record_id) => {
     if (window.confirm("Are you sure you wish to delete this Topic?")) {
-            $.ajax({
-                url: `/delete_record/${contact_id}/${record_id}/`,
-                success: () => app.loadSuggestionMenu(),
-            })
+        $.post({
+            url: `/delete_record/${contact_id}/${record_id}/`,
+            success: () => app.loadSuggestionMenu(),
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            mode: 'same-origin',
+        })
     }
 }
-
+    
 app.deleteContact = (contact_id) => {
     if (window.confirm("Are you sure you wish to delete this Contact?")) {
-            $.ajax({
-                url: `/delete_contact/${contact_id}/`,
-                success: () => app.loadSuggestionMenu(),
-            })
+        $.post({
+            url: `/delete_contact/${contact_id}/`,
+            success: () => app.loadSuggestionMenu(),
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            mode: 'same-origin',
+        })
     }
 }
 
