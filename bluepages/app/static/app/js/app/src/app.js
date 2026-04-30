@@ -303,7 +303,7 @@ app.prepContactSuggestionMenuModal = (data) => {
 }
 
 app.setSuggestedContactState = contact => {
-    app.suggested_contact = contact;
+    app.suggestedContact = contact;
 }
 
 app.loadContactMenuModal = (form_html, data) => {
@@ -326,7 +326,7 @@ app.prepRecordSuggestions = (contact_id, record_id) => {
 app.loadRecordSuggestionModal = (data) => {
     if (typeof(data) === 'string') {
         $('#recordSuggestionModalWrapper').html(data);
-        const suggestedName = app.suggested_contact?.contact_name || app.suggested_contact?.name || app.suggested_contact?.full_name || '';
+        const suggestedName = app.suggestedContact?.contact_name || app.suggestedContact?.name || app.suggestedContact?.full_name || '';
         $("#topicSuggestionContactName").html(suggestedName);
         app.loadRecordSuggestionForm();
         app.showRecordSuggestionFormModal();
@@ -339,6 +339,30 @@ app.loadRecordSuggestionModal = (data) => {
 /////////////////////////////
 // Contact form functions //
 ///////////////////////////
+
+app.setCurrentContact = contact => {
+    app.currentContact = contact;
+}
+
+app.loadCurrentContactById = (contact_id, callback) => {
+    $.ajax({
+        url: `/contacts/api/${contact_id}/`,
+        success: data => {
+            const contactName = data.full_name || data.name || '';
+            app.setCurrentContact(contactName);
+            if (callback) {
+                callback(data);
+            }
+        },
+        error: () => {
+            app.setCurrentContact('');
+            if (callback) {
+                callback(null);
+            }
+        }
+    });
+}
+
 app.loadContactForm = (contact_id) => {
     let url = "/contact_form/";
     if (contact_id) {
@@ -371,26 +395,31 @@ app.afterContactSubmission = (data) => {
         $("#contactModalWrapper").html(data);
     } else {
         // load topic form 
-        app.current_contact = data.contact.full_name
+        app.setCurrentContact(data.contact.full_name);
         app.loadSuggestionMenu();
     }
 }
 
+
 app.prepContactRecord = (contact_id, record_id) => {
     let url = "/contact_record_form/" + contact_id + "/";
+
     if (record_id){
         url += record_id + "/";
     }
-    $.ajax({
-        url: url,
-        success: app.loadRecordModal
-    })
+
+    app.loadCurrentContactById(contact_id, () => {
+        $.ajax({
+            url: url,
+            success: app.loadRecordModal
+        })
+    });
 }
 
 app.loadRecordModal = (data) => {
     if (typeof(data) === 'string') {
         $('#selfRecordModalWrapper').html(data);
-        $("#selfRecordModalContactName").html(app.current_contact);
+        $("#selfRecordModalContactName").html(app.currentContact);
         app.loadRecordSuggestionForm();
         app.showRecordModal();
 
