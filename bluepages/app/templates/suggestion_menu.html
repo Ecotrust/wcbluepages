@@ -19,13 +19,7 @@
     <div class="suggestion_container">
     <div>
       <div class="d-flex flex-row align-items-baseline gap-2 mb-0">
-        <h3 class="lead mb-0">
-          {{ self_contact.first_name }} {{ self_contact.last_name }}
-        </h3>
-        <span
-          class="badge rounded-pill align-baseline status-{{ self_contact.status }} "
-          >{{ self_contact.status }}</span
-        >
+        <h3 class="lead mb-0">{{ self_contact.first_name }} {{ self_contact.last_name }}</h3>
       </div>
       <p class="m-0">Created: {{ self_contact.date_created }}</p>
       <p class="m-0">Modified: {{ self_contact.date_modified }}</p>
