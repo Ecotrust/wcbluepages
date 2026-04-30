@@ -58,7 +58,7 @@
         </button>
     {% for record in self_records %}
     <div class="contact-record-menu-entry row" >
-        <div class="record_{{ record.status }}"><b>{{ record.topic }}</b></div>
+        <div><b>{{ record.topic }}</b></div>
         <div>
           <button class="btn btn-light btn-sm" onclick="app.prepContactRecord({{ self_contact.id }}, {{ record.id }})">Edit</button>
           <button class="btn btn-danger btn-sm" onclick="app.deleteContactRecord({{ self_contact.id }}, {{ record.id }})">Delete Topic</button>
