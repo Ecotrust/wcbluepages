@@ -450,30 +450,6 @@ def contactSuggestionMenu(request, contact_id=None):
 
 
 @login_required
-def contactMenu(request, contact_id=None):
-    if request.method == "POST":
-        pass
-    else:
-        if contact_id:
-            contact = Contact.objects.get(pk=contact_id)
-            context = {
-                "contact": {
-                    "id": contact.pk,
-                    "name": contact.full_name,
-                    "job_title": contact.job_title,
-                    "entity_name": str(contact.entity),
-                    "email": contact.email,
-                    "phone": contact.phone,
-                    "address": contact.full_address(),
-                    "records": contact.record_set.all().order_by("topic"),
-                }
-            }
-            return render(request, "contact_suggestion_menu.html", context)
-        else:
-            pass
-
-
-@login_required
 def deleteSuggestedContact(request, contact_id=None):
     contact_suggestion_matches = ContactSuggestion.objects.filter(
         pk=contact_id, user=request.user

@@ -93,57 +93,6 @@ class GetSuggestionMenuTestCase(TestCase):
         self.assertEqual(formatted["topics"], [])
 
 
-class ContactMenuTestCase(TestCase):
-    def setUp(self):
-        self.client = Client()
-        self.user = User.objects.create_user(
-            username="testuser", password="testpass123"
-        )
-        self.other_user = User.objects.create_user(
-            username="otheruser", password="testpass123"
-        )
-
-    def test_contactMenu_unauthenticated(self):
-        """Test that unauthenticated users are redirected"""
-        response = self.client.get(reverse("contact_menu"))
-        self.assertEqual(response.status_code, 302)
-
-    def test_contactMenu_authenticated(self):
-        """Test that authenticated users can access contactMenu"""
-        self.client.login(username="testuser", password="testpass123")
-
-        Contact.objects.create(
-            user=self.user,
-            first_name="John",
-            last_name="Doe",
-        )
-        contact_id = Contact.objects.first().id
-        response = self.client.get(reverse("contact_menu", args=[contact_id]))
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("contact", response.context)
-        self.assertEqual(response.context["contact"]["id"], contact_id)
-
-    def test_contactMenu_user_only_sees_own_contacts(self):
-        """Test that users only see their own contacts in contactMenu"""
-        self.client.login(username="testuser", password="testpass123")
-
-        Contact.objects.create(
-            user=self.user,
-            first_name="John",
-            last_name="Doe",
-        )
-        Contact.objects.create(
-            user=self.other_user,
-            first_name="Jane",
-            last_name="Smith",
-        )
-        contact_id = Contact.objects.filter(user=self.user).first().id
-        response = self.client.get(reverse("contact_menu", args=[contact_id]))
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("contact", response.context)
-        self.assertEqual(response.context["contact"]["id"], contact_id)
-
-
 class DeleteRecordTestCase(TestCase):
     def setUp(self):
         self.client = Client()

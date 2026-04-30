@@ -17,7 +17,6 @@ from app.views import (
     regionPicker,
     wireframe,
     getSuggestionMenu,
-    contactMenu,
     contactSuggestionMenu,
     contactSuggestionForm,
     recordSuggestionForm,
@@ -81,8 +80,6 @@ urlpatterns = [
     path("entities/api/<int:id>/", entityDetail, name="entity_detail_embedded"),
     path("contact_suggestion_menu/<int:contact_id>/", contactSuggestionMenu),
     path("contact_suggestion_menu/", contactSuggestionMenu),
-    path("contact_menu/<int:contact_id>/", contactMenu, name="contact_menu"),
-    path("contact_menu/", contactMenu, name="contact_menu"),
     path(
         "record_suggestion_form/<int:contact_id>/<int:record_id>/",
         recordSuggestionForm,
