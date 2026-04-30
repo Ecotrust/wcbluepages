@@ -448,6 +448,7 @@ def contactSuggestionMenu(request, contact_id=None):
         else:
             pass
 
+
 @login_required
 def contactMenu(request, contact_id=None):
     if request.method == "POST":
@@ -495,6 +496,7 @@ def deleteSuggestedRecord(request, record_id=None):
         {"status": 200, "success": True, "message": "Topic Record deleted."}
     )
 
+
 @login_required
 def deleteRecord(request, contact_id=None, record_id=None):
     record_matches = Record.objects.filter(pk=record_id, contact__id=contact_id)
@@ -502,7 +504,8 @@ def deleteRecord(request, contact_id=None, record_id=None):
         match.delete()
     return JsonResponse(
         {"status": 200, "success": True, "message": "Topic Record deleted."}
-     )
+    )
+
 
 @login_required
 def contactForm(request, contact_id=None):
@@ -510,7 +513,9 @@ def contactForm(request, contact_id=None):
     contact_record = None
     if contact_id:
         action = action + "{}/".format(contact_id)
-        contact_record = Contact.objects.filter(pk=contact_id, user=request.user).first()
+        contact_record = Contact.objects.filter(
+            pk=contact_id, user=request.user
+        ).first()
     else:
         # Keep one contact record per user and edit it if it already exists.
         contact_record = Contact.objects.filter(user=request.user).first()
@@ -651,6 +656,7 @@ def recordSuggestionForm(request, contact_id, record_id=None):
     }
     return render(request, "record_suggestion_form.html", context)
 
+
 @login_required
 def recordContactForm(request, contact_id, record_id=None):
     contact = Contact.objects.get(pk=contact_id, user=request.user)
@@ -691,7 +697,7 @@ def recordContactForm(request, contact_id, record_id=None):
                     },
                 }
             )
-    else: 
+    else:
         if record:
             record_form = RecordForm(instance=record)
         else:
@@ -705,16 +711,13 @@ def recordContactForm(request, contact_id, record_id=None):
     }
     return render(request, "record_form.html", context)
 
+
 @login_required
 def deleteContact(request, contact_id=None):
-    contact_matches = Contact.objects.filter(
-        pk=contact_id, user=request.user
-    )
+    contact_matches = Contact.objects.filter(pk=contact_id, user=request.user)
     for match in contact_matches:
         match.delete()
-    return JsonResponse(
-        {"status": 200, "success": True, "message": "Contact deleted."}
-    )
+    return JsonResponse({"status": 200, "success": True, "message": "Contact deleted."})
 
 
 def wireframe(request):

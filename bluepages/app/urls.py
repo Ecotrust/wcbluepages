@@ -56,7 +56,11 @@ urlpatterns = [
     path("explore/entities/", exploreEntitiesPage, name="explore_entities"),
     re_path(r"^regions.json", regionJSON),
     path("get_suggestion_menu/", getSuggestionMenu, name="get_suggestion_menu"),
-    path("suggestion_form/<int:contact_id>/", contactSuggestionForm, name="contact_suggestion_form"),
+    path(
+        "suggestion_form/<int:contact_id>/",
+        contactSuggestionForm,
+        name="contact_suggestion_form",
+    ),
     re_path(r"^suggestion_form", contactSuggestionForm, name="contact_suggestion_form"),
     path("contact_form/<int:contact_id>/", contactForm, name="contact_form"),
     re_path(r"^contact_form", contactForm, name="contact_form"),
@@ -80,14 +84,32 @@ urlpatterns = [
     path("contact_menu/<int:contact_id>/", contactMenu, name="contact_menu"),
     path("contact_menu/", contactMenu, name="contact_menu"),
     path(
-        "record_suggestion_form/<int:contact_id>/<int:record_id>/", recordSuggestionForm, name="record_suggestion_form"
+        "record_suggestion_form/<int:contact_id>/<int:record_id>/",
+        recordSuggestionForm,
+        name="record_suggestion_form",
     ),
-    path("record_suggestion_form/<int:contact_id>/", recordSuggestionForm, name="record_suggestion_form"),
-    path("contact_record_form/<int:contact_id>/<int:record_id>/", recordContactForm, name="record_contact_form"),
-    path("contact_record_form/<int:contact_id>/", recordContactForm, name="record_contact_form"),
+    path(
+        "record_suggestion_form/<int:contact_id>/",
+        recordSuggestionForm,
+        name="record_suggestion_form",
+    ),
+    path(
+        "contact_record_form/<int:contact_id>/<int:record_id>/",
+        recordContactForm,
+        name="record_contact_form",
+    ),
+    path(
+        "contact_record_form/<int:contact_id>/",
+        recordContactForm,
+        name="record_contact_form",
+    ),
     path("delete_suggested_contact/<int:contact_id>/", deleteSuggestedContact),
     path("delete_suggested_record/<int:record_id>/", deleteSuggestedRecord),
-    path("delete_record/<int:contact_id>/<int:record_id>/", deleteRecord, name="delete_record"),
+    path(
+        "delete_record/<int:contact_id>/<int:record_id>/",
+        deleteRecord,
+        name="delete_record",
+    ),
     path("delete_contact/<int:contact_id>/", deleteContact, name="delete_contact"),
     path(
         "profile/password_change/",

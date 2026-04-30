@@ -21,7 +21,9 @@ class Command(BaseCommand):
         users_by_email = {}
         duplicate_user_emails = set()
 
-        for user in User.objects.exclude(email__isnull=True).exclude(email="").iterator():
+        for user in (
+            User.objects.exclude(email__isnull=True).exclude(email="").iterator()
+        ):
             normalized = user.email.strip().lower()
             if not normalized:
                 continue
@@ -31,7 +33,9 @@ class Command(BaseCommand):
             users_by_email[normalized] = user.id
 
         used_user_ids = set(
-            Contact.objects.exclude(user_id__isnull=True).values_list("user_id", flat=True)
+            Contact.objects.exclude(user_id__isnull=True).values_list(
+                "user_id", flat=True
+            )
         )
 
         contacts = (
@@ -101,8 +105,12 @@ class Command(BaseCommand):
         self.stdout.write(summary_style("Summary"))
         self.stdout.write(summary_style(f"Examined contacts: {examined}"))
         self.stdout.write(summary_style(f"Linked contacts: {linked}"))
-        self.stdout.write(summary_style(f"Skipped (no user email match): {skipped_no_match}"))
-        self.stdout.write(summary_style(f"Skipped (user already linked): {skipped_used_user}"))
+        self.stdout.write(
+            summary_style(f"Skipped (no user email match): {skipped_no_match}")
+        )
+        self.stdout.write(
+            summary_style(f"Skipped (user already linked): {skipped_used_user}")
+        )
         self.stdout.write(
             summary_style(
                 f"Skipped (duplicate user emails): {skipped_duplicate_user_email}"

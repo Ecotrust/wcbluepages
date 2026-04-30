@@ -189,7 +189,7 @@ class RecordForm(ModelForm):
     class Meta:
         model = Record
         exclude = ["date_create", "date_modified"]
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
