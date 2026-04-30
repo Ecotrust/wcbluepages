@@ -21,7 +21,7 @@ class ContactSuggestionForm(ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             HTML(
-                "<p>Your suggestions will be made available to the Blue Pages administrators to decide whether to include in the database. You can use these suggestions to recommend adding new contacts or to recommend updates to existing contacts in Blue Pages.</p><hr />"
+                "<p>Your suggestions will be made available to the Blue Pages administrators to decide whether to include in the directory. You can use these suggestions to recommend adding new contacts or to recommend updates to existing contacts in Blue Pages.</p><hr />"
             ),
             Fieldset(
                 "Contact Person",

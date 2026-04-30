@@ -110,6 +110,7 @@ urlpatterns = [
                 "form_id": "profile-form",
                 "submit_function": "app.submitProfileForm()",
                 "generic_form_header": "Update Your Profile",
+                "generic_form_description": "Update your name and email address. This is the information about your user account, not the information in your contact information in the Blue Pages directory.",
             },
         ),
     ),

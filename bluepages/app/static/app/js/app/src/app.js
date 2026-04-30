@@ -248,7 +248,7 @@ app.loadSuggestionForm = (contact_suggestion_id) => {
 }
 
 app.confirmSuggestionDeletion = (contact_id) => {
-    if (window.confirm("Are you sure you wish to remove this suggestion? Please note that if this contact is in the database, only your suggestion will be removed; the contact will not be removed or changed.")) {
+    if (window.confirm("Are you sure you wish to remove this suggestion? Please note that if this contact is in the directory, only your suggestion will be removed; the contact will not be removed or changed.")) {
         $.ajax({
             url: "/delete_suggested_contact/" + contact_id + "/",
             success: () => app.loadSuggestionMenu(),
