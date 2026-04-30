@@ -479,7 +479,12 @@ def deleteSuggestedRecord(request, record_id=None):
 @login_required
 @require_http_methods(["POST"])
 def deleteRecord(request, contact_id=None, record_id=None):
-    record_matches = Record.objects.filter(pk=record_id, contact__id=contact_id, contact__user=request.user)
+    record_matches = Record.objects.filter(
+        pk=record_id, contact__id=contact_id, contact__user=request.user
+    )
+
+    if len(record_matches) == 0:
+        return JsonResponse({"status": 404, "success": False, "message": "Not found."})
     for match in record_matches:
         match.delete()
     return JsonResponse(
@@ -579,7 +584,7 @@ def contactSuggestionForm(request, contact_id=None):
 
 @login_required
 def recordSuggestionForm(request, contact_id, record_id=None):
-    contact_suggestion = ContactSuggestion.objects.get(pk=contact_id)
+    contact_suggestion = ContactSuggestion.objects.get(pk=contact_id, user=request.user)
     record_suggestion = False
     action = "/record_suggestion_form/{}/".format(contact_id)
     if record_id:

@@ -126,6 +126,29 @@ class DeleteRecordTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse(self.contact.record_set.filter(id=self.record.id).exists())
 
+    def test_deleteRecord_cannot_delete_others_records(self):
+        """Test that authenticated users receive 404 when trying to delete records that do not belong to them"""
+        other_user = User.objects.create_user(
+            username="otheruser", password="testpass123"
+        )
+        other_contact = Contact.objects.create(
+            user=other_user,
+            first_name="Jane",
+            last_name="Smith",
+        )
+        other_record = Record.objects.create(
+            topic=self.topic,
+            contact=other_contact,
+        )
+
+        self.client.login(username="testuser", password="testpass123")
+        response = self.client.post(
+            reverse("delete_record", args=[other_contact.id, other_record.id])
+        )
+
+        self.assertEqual(response.json()["status"], 404)
+        self.assertTrue(other_contact.record_set.filter(id=other_record.id).exists())
+
 
 class ContactFormTestCase(TestCase):
     def setUp(self):
@@ -263,7 +286,7 @@ class RecordContactFormTestCase(TestCase):
             reverse("record_contact_form", args=[self.contact.id, self.record.id])
         )
         self.assertEqual(response.status_code, 200)
-        self.assertIn("form", response.context)
+        self.assertIn("record_form", response.context)
 
     def test_recordContactForm_post_request_valid_data(self):
         """Test submitting valid data to record contact form creates/updates record"""
@@ -326,12 +349,12 @@ class RecordSuggestionFormTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         record_suggestion = self.contact_suggestion.recordsuggestion_set.first()
+
         self.assertIsNotNone(record_suggestion)
         self.assertEqual(record_suggestion.topic, self.other_topic)
-
         response_data = response.json()
         self.assertEqual(
-            response_data["contact_suggestion"]["id"], record_suggestion.id
+            response_data["contact_suggestion"]["id"], self.contact_suggestion.id
         )
         self.assertEqual(
             response_data["contact_suggestion"]["topics"][0]["topic"],
