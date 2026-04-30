@@ -1,0 +1,29 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "search and browse logic for West Coast Blue Pages",
+  "main": "./dist/app.min.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --mode=production",
+    "postbuild": "mv ./dist/* ../dist/; cp ./node_modules/datatables/media/css/jquery.dataTables.min.css ../dist/",
+    "devbuild": "webpack --mode=development",
+    "postdevbuild": "mv ./dist/* ../dist/; cp ./node_modules/datatables/media/css/jquery.dataTables.min.css ../dist/"
+  },
+  "author": "ksdev@ecotrust.org",
+  "license": "MIT",
+  "dependencies": {
+    "bootstrap": "^5.3.8",
+    "bootstrap-icons": "^1.10.3",
+    "datatables": "^1.10.18",
+    "jquery": "^3.6.2",
+    "ol": "^10.7.0",
+    "webpack": "^5.75.0"
+  },
+  "devDependencies": {
+    "webpack-cli": "^5.0.1"
+  }
+}

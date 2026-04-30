@@ -1,0 +1,22 @@
+{
+  "name": "region_picker",
+  "main": "./dist/region_picker.min.js",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "jquery": "^3.6.1",
+    "npm-build": "^0.0.1",
+    "ol": "^10.7.0",
+    "webpack": "^5.75.0"
+  },
+  "scripts": {
+    "build": "webpack --mode=production",
+    "postbuild": "mv ./dist/* ../dist/",
+    "devbuild": "webpack --mode=development",
+    "postdevbuild": "mv ./dist/* ../dist/"
+  },
+  "devDependencies": {
+    "webpack-cli": "^5.0.1"
+  }
+}

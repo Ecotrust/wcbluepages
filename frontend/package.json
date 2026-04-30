@@ -1,0 +1,9 @@
+{
+    "scripts": {
+        "build": "npm --prefix ./region_picker/ run build; npm --prefix ./app/ run build; npm --prefix ./record_suggestion/ run build; npm --prefix ./admin/ run build; cp ./app/node_modules/ol/ol.css ./dist/; cp ./app/node_modules/bootstrap/dist/css/bootstrap.min.css ./dist/; cp ./app/node_modules/bootstrap-icons/font/bootstrap-icons.min.css ./dist/; cp -r ./app/node_modules/bootstrap-icons/font/fonts ./dist/; cp ./app/node_modules/bootstrap/LICENSE ./dist/LICENSE-bootstrap.txt; cp ./app/node_modules/bootstrap-icons/LICENSE ./dist/LICENSE-bootstrap-icons.txt; cp ./app/node_modules/ol/LICENSE.md ./dist/LICENSE-openlayers.txt",
+        "install": "npm --prefix ./region_picker/ install; npm --prefix ./app/ install; npm --prefix ./record_suggestion/ install; npm --prefix ./admin/ install"
+    },
+    "dependencies": {
+        "ol": "^10.7.0"
+    }
+}

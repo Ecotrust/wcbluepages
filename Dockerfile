@@ -1,3 +1,21 @@
+# Stage 1: Build JS assets 
+FROM node:20-slim AS js-builder
+
+WORKDIR /frontend
+COPY frontend/package.json .
+# Copy each submodule's package.json first for better layer caching
+COPY frontend/app/package.json ./app/
+COPY frontend/region_picker/package.json ./region_picker/
+COPY frontend/record_suggestion/package.json ./record_suggestion/
+COPY frontend/admin/package.json ./admin/
+
+RUN npm run install
+
+# Now copy all source files and build
+COPY frontend/ .
+RUN npm run build
+
+# Stage 2: Build Python/Django image
 # Use Python 3.11 slim image as base
 FROM python:3.11-slim-bookworm
 
@@ -30,7 +48,10 @@ COPY requirements.txt /app/
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
-# Copy project files
+# Copy only the compiled dist output from the JS builder
+COPY --from=js-builder /frontend/dist/ /app/bluepages/app/static/app/js/dist/
+
+# Copy the rest of the project (no node_modules, no JS source)
 COPY . /app/
 
 # Make entrypoint script executable
