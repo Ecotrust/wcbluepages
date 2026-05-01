@@ -551,6 +551,9 @@ class ContactBase(models.Model):
 
 class Contact(ContactBase):
     is_test_data = models.BooleanField(default=False)
+    user = models.OneToOneField(
+        "auth.User", on_delete=models.SET_NULL, null=True, blank=True, default=None
+    )
 
     def to_dict(
         self,
@@ -645,11 +648,6 @@ class ContactSuggestion(ContactBase):
         on_delete=models.SET_NULL,
         verbose_name="Contact to edit",
         help_text="If suggesting edits for an existing contact, identify them here.",
-    )
-    self_suggestion = models.BooleanField(
-        default=False,
-        verbose_name="I am the contact",
-        help_text="this record is my own information about me",
     )
     last_name = models.CharField(
         max_length=254, blank=True, default="", verbose_name="Last/Family Name"

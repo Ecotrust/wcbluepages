@@ -2,6 +2,7 @@ import csv
 from datetime import datetime
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import PasswordChangeForm
@@ -33,6 +34,7 @@ from app.models import (
 )
 from app.forms import (
     ContactSuggestionForm,
+    RecordForm,
     RecordSuggestionForm,
     UserProfileForm,
     ContactForm,
@@ -397,6 +399,7 @@ def formatSuggestionMenuEntry(contact_suggestion):
 
 @login_required
 def getSuggestionMenu(request):
+    self_contact = Contact.objects.filter(user=request.user).first()
     user_suggestions = [
         formatSuggestionMenuEntry(contact_suggestion)
         for contact_suggestion in ContactSuggestion.objects.filter(
@@ -409,12 +412,14 @@ def getSuggestionMenu(request):
         .order_by("status", "last_name", "first_name", "date_modified", "date_created")
     ):
         user_suggestions.append(formatSuggestionMenuEntry(contact_suggestion))
-    if len(user_suggestions) > 0:
-        return render(
-            request, "suggestion_menu.html", {"suggestions": user_suggestions}
-        )
-    else:
-        return render(request, "suggestion_menu.html", {"suggestions": []})
+    return render(
+        request,
+        "suggestion_menu.html",
+        {
+            "suggestions": user_suggestions if len(user_suggestions) > 0 else [],
+            "self_contact": self_contact if self_contact else None,
+        },
+    )
 
 
 @login_required
@@ -446,6 +451,7 @@ def contactSuggestionMenu(request, contact_id=None):
 
 
 @login_required
+@require_http_methods(["POST"])
 def deleteSuggestedContact(request, contact_id=None):
     contact_suggestion_matches = ContactSuggestion.objects.filter(
         pk=contact_id, user=request.user
@@ -458,6 +464,7 @@ def deleteSuggestedContact(request, contact_id=None):
 
 
 @login_required
+@require_http_methods(["POST"])
 def deleteSuggestedRecord(request, record_id=None):
     record_suggestion_matches = RecordSuggestion.objects.filter(
         pk=record_id, user=request.user
@@ -467,6 +474,68 @@ def deleteSuggestedRecord(request, record_id=None):
     return JsonResponse(
         {"status": 200, "success": True, "message": "Topic Record deleted."}
     )
+
+
+@login_required
+@require_http_methods(["POST"])
+def deleteRecord(request, contact_id=None, record_id=None):
+    record_matches = Record.objects.filter(
+        pk=record_id, contact__id=contact_id, contact__user=request.user
+    )
+
+    if len(record_matches) == 0:
+        return JsonResponse({"status": 404, "success": False, "message": "Not found."})
+    for match in record_matches:
+        match.delete()
+    return JsonResponse(
+        {"status": 200, "success": True, "message": "Topic Record deleted."}
+    )
+
+
+@login_required
+def contactForm(request, contact_id=None):
+    action = "/contact_form/"
+    contact_record = None
+    if contact_id:
+        action = action + "{}/".format(contact_id)
+        contact_record = Contact.objects.filter(
+            pk=contact_id, user=request.user
+        ).first()
+    else:
+        # Keep one contact record per user and edit it if it already exists.
+        contact_record = Contact.objects.filter(user=request.user).first()
+
+    if request.method != "POST":
+        form = ContactForm(instance=contact_record) if contact_record else ContactForm()
+
+    if request.method == "POST":
+        if contact_record:
+            form = ContactForm(request.POST, instance=contact_record)
+        else:
+            form = ContactForm(request.POST)
+        if form.is_valid():
+            contact = form.save(commit=False)
+            contact.user = request.user
+            contact.save()
+            return JsonResponse(
+                {
+                    "contact": {
+                        "id": contact.id,
+                        "name": str(contact),
+                        "full_name": contact.full_name,
+                        "job_title": contact.job_title,
+                        "entity_name": str(contact.entity),
+                        "email": contact.email,
+                        "phone": str(contact.phone),
+                        "address": contact.full_address(),
+                    }
+                }
+            )
+        else:
+            pass
+
+    context = {"form": form, "contact_id": contact_id, "action": action}
+    return render(request, "contact_form.html", context)
 
 
 @login_required
@@ -491,7 +560,7 @@ def contactSuggestionForm(request, contact_id=None):
             contact_suggestion = contact_form.save()
             return JsonResponse(
                 {
-                    "contact_suggestion": {
+                    "contact": {
                         "id": contact_suggestion.id,
                         "name": str(contact_suggestion),
                         "contact_name": contact_suggestion.contact_name,
@@ -515,7 +584,7 @@ def contactSuggestionForm(request, contact_id=None):
 
 @login_required
 def recordSuggestionForm(request, contact_id, record_id=None):
-    contact_suggestion = ContactSuggestion.objects.get(pk=contact_id)
+    contact_suggestion = ContactSuggestion.objects.get(pk=contact_id, user=request.user)
     record_suggestion = False
     action = "/record_suggestion_form/{}/".format(contact_id)
     if record_id:
@@ -526,23 +595,29 @@ def recordSuggestionForm(request, contact_id, record_id=None):
             record_suggestion = record_suggestion_matches[0]
             action += "{}/".format(record_suggestion.pk)
     if request.method == "POST":
+        form_data = request.POST.copy()
+        # These fields are derived from the URL/session and enforced server-side.
+        form_data["contact_suggestion"] = str(contact_suggestion.pk)
+        form_data["user"] = str(request.user.pk)
+        form_data["status"] = form_data.get("status") or "Pending"
         if record_suggestion:
-            record_form = RecordSuggestionForm(request.POST, instance=record_suggestion)
+            record_form = RecordSuggestionForm(form_data, instance=record_suggestion)
         else:
-            record_form = RecordSuggestionForm(request.POST)
+            record_form = RecordSuggestionForm(form_data)
         if record_form.is_valid():
             record_form.save()
+            suggestion_payload = {
+                "id": contact_suggestion.id,
+                "name": str(contact_suggestion),
+                "contact_name": contact_suggestion.contact_name,
+                "topics": [
+                    {"id": x.pk, "topic": str(x.topic), "topic_id": x.topic.pk}
+                    for x in contact_suggestion.recordsuggestion_set.all()
+                ],
+            }
             return JsonResponse(
                 {
-                    "contact_suggestion": {
-                        "id": contact_suggestion.id,
-                        "name": str(contact_suggestion),
-                        "contact_name": contact_suggestion.contact_name,
-                        "topics": [
-                            {"id": x.pk, "topic": str(x.topic), "topic_id": x.topic.pk}
-                            for x in contact_suggestion.recordsuggestion_set.all()
-                        ],
-                    }
+                    "contact_suggestion": suggestion_payload,
                 }
             )
 
@@ -565,6 +640,70 @@ def recordSuggestionForm(request, contact_id, record_id=None):
         "action": action,
     }
     return render(request, "record_suggestion_form.html", context)
+
+
+@login_required
+def recordContactForm(request, contact_id, record_id=None):
+    contact = Contact.objects.get(pk=contact_id, user=request.user)
+    record = None
+    action = f"/contact_record_form/{contact_id}/"
+    if record_id:
+        record_matches = Record.objects.filter(pk=record_id, contact=contact)
+        if len(record_matches) == 1:
+            record = record_matches[0]
+            record_id = record.pk
+            action += f"{record_id}/"
+    if request.method == "POST":
+        form_data = request.POST.copy()
+        # Contact is derived from the URL and enforced server-side.
+        form_data["contact"] = str(contact.pk)
+        if record:
+            record_form = RecordForm(form_data, instance=record)
+        else:
+            record_form = RecordForm(form_data)
+        if record_form.is_valid():
+            new_record = record_form.save(commit=False)
+            new_record.contact = contact
+            new_record.save()
+            record_form.save_m2m()
+            return JsonResponse(
+                {
+                    "contact": {
+                        "id": new_record.id,
+                        "contact_id": contact_id,
+                        "topic": str(new_record.topic),
+                        "topics": [
+                            {
+                                "id": new_record.topic.pk,
+                                "topic": str(new_record.topic),
+                                "topic_id": new_record.topic.pk,
+                            }
+                        ],
+                    },
+                }
+            )
+    else:
+        if record:
+            record_form = RecordForm(instance=record)
+        else:
+            record_form = RecordForm(initial={"user": request.user, "contact": contact})
+
+    context = {
+        "contact_name": contact.full_name,
+        "contact_id": contact.pk,
+        "record_form": record_form,
+        "action": action,
+    }
+    return render(request, "record_form.html", context)
+
+
+@login_required
+@require_http_methods(["POST"])
+def deleteContact(request, contact_id=None):
+    contact_matches = Contact.objects.filter(pk=contact_id, user=request.user)
+    for match in contact_matches:
+        match.delete()
+    return JsonResponse({"status": 200, "success": True, "message": "Contact deleted."})
 
 
 def wireframe(request):

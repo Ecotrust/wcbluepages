@@ -1,34 +1,45 @@
 {% load crispy_forms_tags %}
 
 <form method="post" action="{{action}}" id="contact-suggestion-form">
-    {% csrf_token %}
-    
-    <!-- Hidden fields for user and status -->
-    <div class="hidden-fields">
-        {{ contact_form.user.errors }}
-        {{ contact_form.user.label_tag }}
-        {{ contact_form.user }}
-        
-        {{ contact_form.status.errors }}
-        {{ contact_form.status.label_tag }}
-        {{ contact_form.status }}
-    </div>
-    
-    {% crispy contact_form %}
+  {% csrf_token %}
+
+  <!-- Hidden fields for user and status -->
+  <div class="hidden-fields">
+    {{ contact_form.user.errors }} 
+    {{ contact_form.user.label_tag }} 
+    {{ contact_form.user }} 
+    {{ contact_form.status.errors }} 
+    {{ contact_form.status.label_tag }} 
+    {{ contact_form.status }}
+  </div>
+
+  {% crispy contact_form %}
 </form>
 
 <div class="mt-3">
-    <button type="button" class="btn btn-primary modal-submit-button" onclick="app.submitContactSuggestion()">
-        Submit
-    </button>
+  <button
+    type="button"
+    class="btn btn-primary modal-submit-button"
+    onclick="app.submitContactSuggestion()"
+  >
+    Submit
+  </button>
 
-    {% if contact_id %}
-        <button type="button" class="btn btn-secondary" onclick="app.prepContactMenuModal({'contact_suggestion': {'id': {{ contact_id }}  } })">
-            <i class="bi bi-chevron-left"></i> Back
-        </button>
-    {% else %}
-        <button type="button" class="btn btn-secondary modal-submit-button" onclick="app.loadSuggestionMenu()">
-            <i class="bi bi-chevron-left"></i> Back
-        </button>
-    {% endif %}
+  {% if contact_id %}
+  <button
+    type="button"
+    class="btn btn-secondary"
+    onclick="app.prepContactSuggestionMenuModal({'contact': {'id': {{ contact_id }}  } })"
+  >
+    <i class="bi bi-chevron-left"></i> Back
+  </button>
+  {% else %}
+  <button
+    type="button"
+    class="btn btn-secondary modal-submit-button"
+    onclick="app.loadSuggestionMenu()"
+  >
+    <i class="bi bi-chevron-left"></i> Back
+  </button>
+  {% endif %}
 </div>

@@ -1,71 +1,146 @@
-<p id="suggestion-menu-details">
-  Your suggestions will be made available to the Blue Pages administrators to
-  decide whether to include in the database. You can use these suggestions to
-  recommend adding new contacts or to recommend updates to existing contacts in
-  Blue Pages. If a contact should be removed, please use this form, select your
-  contact, and explain your recommendation and reasoning in the "notes" section.
-</p>
-<button
-  type="button"
-  class="btn btn-primary"
-  onclick="app.loadSuggestionForm()"
->
-  + Add Suggestion
-</button>
-<div>
-  {% if suggestions|length > 0 %} {% for suggestion in suggestions %}
-  <div class="section_container">
-    <section class="suggestion_container">
-      <div>
-        <div class="d-flex flex-row align-items-baseline gap-2 mb-0">
-          <h3 class="lead mb-0">{{ suggestion.contact_name }}</h3>
-          <span
-            class="badge rounded-pill align-baseline status-{{ suggestion.status }} "
-            >{{ suggestion.status }}</span
-          >
-        </div>
-        <p class="m-0">Created: {{ suggestion.date_created }}</p>
-        <p class="m-0">Modified: {{ suggestion.date_modified }}</p>
-        {% if suggestion.topics|length > 0 %} Topics:
-        <ul>
-          {% for record in suggestion.topics %}
-          <li>
-            {{ record.topic }}
-            <span class="badge rounded-pill status-{{ record.status }}"
-              >{{ record.status }}</span
-            >
-          </li>
-          {% endfor %}
-        </ul>
-        {% else %} 
-            No topics provided. 
-        {% endif %}
-      </div>
-      <div>
-        <button
-          type="button"
-          class="btn btn-standard"
-          onclick="app.prepContactMenuModal({contact_suggestion: {{ suggestion }} })"
-        >
-          View
-        </button>
-        <button
-          type="button"
-          class="btn btn-danger"
-          onclick="app.confirmSuggestionDeletion({{ suggestion.id }})"
-        >
-          Remove Suggestion
-        </button>
-      </div>
-    </section>
-  </div>
-  {% endfor %} 
-  {% else %}
-  <div class="no-suggestions">
-    <p>
-      No suggestions yet. Click the "Add Suggestion" button above to submit a
-      suggestion.
-    </p>
-  </div>
+<div class="flex_header">
+  {% csrf_token %}
+  <h3>Your Contact Information</h3>
+  {% if not self_contact %}
+    <button
+      type="button"
+      class="btn btn-primary"
+      onclick="app.loadContactForm()">
+        + Add Contact Information
+      </button>
   {% endif %}
+</div>
+<p id="suggestion-menu-details">
+  Your contact information that is visible in the Blue Pages directory. 
+</p>
+{% if self_contact %}
+<div class="section_container">
+  <section>
+    <div class="suggestion_container">
+    <div>
+      <div class="d-flex flex-row align-items-baseline gap-2 mb-0">
+        <h3 class="lead mb-0">{{ self_contact.first_name }} {{ self_contact.last_name }}</h3>
+      </div>
+      <p class="m-0">Created: {{ self_contact.date_created }}</p>
+      <p class="m-0">Modified: {{ self_contact.date_modified }}</p>
+    </div>
+    <div>
+      <button
+        type="button"
+        class="btn btn-primary"
+        onclick="app.loadContactForm({{ self_contact.id }})"
+      >
+        Edit
+      </button>
+      <button
+        type="button"
+        class="btn btn-danger"
+        onclick="app.deleteContact({{ self_contact.id }})"
+      >
+        Delete
+      </button>
+    </div>
+    </div>
+    <div class="topics-section">
+    <h4 class="lead">Topics:</h4>
+    {% with self_records=self_contact.record_set.all %}
+    {% if self_records|length == 0 %}
+        <p class="no-topics-details">Contact has no associated topics.</p>
+    {% endif %}
+        <button id="add-topic-button" type="button" class="btn btn-outline-secondary" onclick="app.prepContactRecord({{ self_contact.id }}, false)">
+            + Add Topic
+        </button>
+    {% for record in self_records %}
+    <div class="contact-record-menu-entry row" >
+        <div><b>{{ record.topic }}</b></div>
+        <div>
+          <button class="btn btn-light btn-sm" onclick="app.prepContactRecord({{ self_contact.id }}, {{ record.id }})">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="app.deleteContactRecord({{ self_contact.id }}, {{ record.id }})">Delete Topic</button>
+        </div>
+    </div>
+    {% endfor %}
+    {% endwith %}
+    {% elif self_contact is None %}
+    <div class="no-suggestions">
+      <p>
+        No contact information yet. Click the "+ Add Contact Information" button above to add your contact information.
+      </p>
+    </div>
+    {% endif %}
+  </section>
+</div>
+  <div class="flex_header">
+    <h3>Your Suggestions</h3>
+    <button
+      type="button"
+      class="btn btn-primary"
+      onclick="app.loadSuggestionForm()"
+    >
+      + Add Suggestion
+    </button>
+  </div>
+    <p id="suggestion-menu-details">
+      Your suggestions will be made available to the Blue Pages administrators
+      to decide whether to include in the directory. You can use these
+      suggestions to recommend adding new contacts or to recommend updates to
+      existing contacts in Blue Pages. If a contact should be removed, please
+      use this form, select your contact, and explain your recommendation and
+      reasoning in the "notes" section.
+    </p>
+    
+    <div>
+      {% if suggestions|length > 0 %} {% for suggestion in suggestions %}
+      <div class="section_container">
+        <section class="suggestion_container">
+          <div>
+            <div class="d-flex flex-row align-items-baseline gap-2 mb-0">
+              <h3 class="lead mb-0">{{ suggestion.contact_name }}</h3>
+              <span
+                class="badge rounded-pill align-baseline status-{{ suggestion.status }} "
+                >{{ suggestion.status }}</span
+              >
+            </div>
+            <p class="m-0">Created: {{ suggestion.date_created }}</p>
+            <p class="m-0">Modified: {{ suggestion.date_modified }}</p>
+            {% if suggestion.topics|length > 0 %} Topics:
+            <ul>
+              {% for record in suggestion.topics %}
+              <li>
+                {{ record.topic }}
+                <span class="badge rounded-pill status-{{ record.status }}"
+                  >{{ record.status }}</span
+                >
+              </li>
+              {% endfor %}
+            </ul>
+            {% else %} No topics provided. {% endif %}
+          </div>
+          <div>
+            <button
+              type="button"
+              class="btn btn-standard"
+              onclick="app.loadContactSuggestionMenu({{ suggestion.id }})"
+            >
+              View
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger"
+              onclick="app.confirmSuggestionDeletion({{ suggestion.id }})"
+            >
+              Remove Suggestion
+            </button>
+          </div>
+        </section>
+      </div>
+      {% endfor %} {% else %}
+      <div class="no-suggestions">
+        <p>
+          No suggestions yet. Click the "Add Suggestion" button above to submit
+          a suggestion.
+        </p>
+      </div>
+      {% endif %}
+    </div>
+  </section>
 </div>

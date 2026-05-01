@@ -1,28 +1,18 @@
 {% load crispy_forms_tags %}
 
-<form method="post" action="{{action}}" id="record-suggestion-form">
+<form method="post" action="{{action}}" id="record-form">
   {% csrf_token %}
 
-  <!-- Hidden fields for user and status -->
+  <!-- Hidden fields for contact and regions -->
   <div class="hidden-fields">
     <div class="fieldWrapper">
-      {{ record_form.user.errors }} 
-      {{ record_form.user.label_tag }} 
-      {{ record_form.user }}
+      {{ record_form.contact.errors }}
+      {{ record_form.contact.label_tag }}
+      {{ record_form.contact }}
     </div>
     <div class="fieldWrapper">
-      {{ record_form.status.errors }} 
-      {{ record_form.status.label_tag }} 
-      {{ record_form.status }}
-    </div>
-    <div class="fieldWrapper">
-      {{ record_form.contact_suggestion.errors }} 
-      {{ record_form.contact_suggestion.label_tag }} 
-      {{ record_form.contact_suggestion }}
-    </div>
-    <div class="fieldWrapper">
-      {{ record_form.regions.errors }} 
-      {{ record_form.regions.label_tag }} 
+      {{ record_form.regions.errors }}
+      {{ record_form.regions.label_tag }}
       {{ record_form.regions }}
     </div>
   </div>
@@ -39,9 +29,8 @@
     <div class="disclaimer-container">
       <i class="bi bi-info-circle"></i>
       <p>
-        You can select specific regions to define the proposed contact's area of
-        interest for the given topic using the map and either of the two methods
-        below:
+        You can select specific regions to define the contact's area of interest
+        for the given topic using the map and either of the two methods below:
       </p>
     </div>
 
@@ -139,14 +128,14 @@
     <button
       type="button"
       class="btn btn-danger"
-      onclick="app.prepContactSuggestionMenuModal({'contact': {'id': {{ contact_id }}  } })"
+      onclick="app.loadSuggestionMenu()"
     >
       <i class="bi bi-chevron-left"></i> Cancel
     </button>
     <button
       type="button"
       class="btn btn-primary modal-submit-button"
-      onclick="app.submitRecordSuggestion()"
+      onclick="app.submitRecord()"
     >
       Submit
     </button>

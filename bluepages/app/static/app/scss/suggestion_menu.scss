@@ -2,6 +2,15 @@
 
 #suggestionMenuModalWrapper {
 
+    .flex_header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        h3 {
+            margin: 0;
+        }
+    }
+
     .section_container {
         padding: 0.75rem;
         margin: 0.75rem 0;
@@ -10,7 +19,7 @@
     }
 
     p#suggestion-menu-details {
-        font-size: 12px;
+        font-size: 14px;
     }
 
     #edit-contact-suggestion-btn {

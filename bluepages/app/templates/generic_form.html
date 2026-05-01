@@ -1,5 +1,8 @@
 <form method="post" action="{{action}}" id="{{ form_id }}">
     <h3>{{ generic_form_header }}</h3>
+    {% if generic_form_description %}
+        <p>{{ generic_form_description }}</p>
+    {% endif %}
     {% csrf_token %}
     {{ form }}
     {{ message|safe }}
