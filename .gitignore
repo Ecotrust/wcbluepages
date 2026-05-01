@@ -149,3 +149,9 @@ package-lock.json
 bluepages/app/static/app/js/dist/
 
 .env.prod
+
+# OpenTofu/Terraform
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+*.tfvars
