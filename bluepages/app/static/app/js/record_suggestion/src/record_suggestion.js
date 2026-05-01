@@ -9,7 +9,9 @@ import Stroke from 'ol/style/Stroke';
 import Fill from 'ol/style/Fill';
 import Text from 'ol/style/Text';
 import GeoJSON from 'ol/format/GeoJSON';
+import Cookies from 'js-cookie';
 
+const csrftoken = Cookies.get('csrftoken');
 var $ = require( "jquery" );
 
 app.getRecordMapLabel = function(feature) {
@@ -241,12 +243,15 @@ app.loadRecordSuggestionForm = function() {
 
 app.deleteRecordSuggestions = function(contact_id, record_id) {
     if (window.confirm("Are you sure you wish to delete this Topic?")) {
-        $.ajax({
-            url: "/delete_suggested_record/" + record_id + "/",
-            success: window.setTimeout(function() {
-                app.prepContactSuggestionMenuModal({'contact': {'id': contact_id}});
-            }, 200) 
+        $.post({
+            url: `/delete_suggested_record/${record_id}/`,
+            success: () => app.prepContactSuggestionMenuModal({'contact': {'id': contact_id}}),
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            mode: 'same-origin'
         })
+        
     }
 
 }

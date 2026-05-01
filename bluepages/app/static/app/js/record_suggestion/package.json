@@ -5,6 +5,7 @@
     "dist"
   ],
   "dependencies": {
+    "js-cookie": "3.0.5",
     "jquery": "^3.6.1",
     "npm-build": "^0.0.1",
     "ol": "^10.7.0",

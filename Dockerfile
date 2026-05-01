@@ -11,7 +11,7 @@ FROM node:20-slim AS record-suggestion-builder
 
 WORKDIR /js/record_suggestion
 COPY bluepages/app/static/app/js/record_suggestion/package*.json ./
-RUN npm ci
+RUN npm i
 COPY bluepages/app/static/app/js/record_suggestion/ ./
 RUN npx webpack --mode=development
 
