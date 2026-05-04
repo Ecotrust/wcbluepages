@@ -1,6 +1,7 @@
 services:
   db:
     image: postgis/postgis:16-3.4
+    restart: always
     platform: linux/amd64
     container_name: bluepages_db
     environment:
@@ -21,28 +22,45 @@ services:
       retries: 5
 
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
     container_name: bluepages_web
-    command: ["dev"]
+    command: ["prod"]
+    # image: ${BLUEPAGES_GHCR_PATH}:latest
     volumes:
-      - ./bluepages:/app/bluepages
-      - js_dist:/app/bluepages/app/static/app/js/dist
       - static_volume:/app/bluepages/static_root
       - media_volume:/app/bluepages/media_root
-    ports:
-      - "8000:8000"
     env_file:
-      - path: .env
+      - path: .env.prod
         required: true
+    healthcheck:
+      test: ["CMD-SHELL", "python manage.py check --deploy 2>/dev/null || python -c 'import urllib.request; urllib.request.urlopen(\"http://localhost:8000/\")' 2>/dev/null"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     depends_on:
       db:
         condition: service_healthy
+  proxy:
+    # image: ${BLUEPAGES_PROXY_GHCR_PATH}:latest
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "80:8080"
+    env_file:
+      - path: .env.prod
+        required: true
+    volumes:
+      - static_volume:/app/static_root
+      - media_volume:/app/media_root
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - web
 
 volumes:
   postgres_data:
   static_volume:
   media_volume:
-  js_dist:
-  app_node_modules:
-  record_suggestion_node_modules:
-  region_picker_node_modules:

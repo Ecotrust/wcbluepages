@@ -1,29 +1,21 @@
-# Stage 1: Build JS assets (one per package.json)
-FROM node:20-slim AS js-app-builder
+# Stage 1: Build JS assets 
+FROM node:20-slim AS js-builder
 
-WORKDIR /js/app
-COPY bluepages/app/static/app/js/app/package*.json ./
-RUN npm i
-COPY bluepages/app/static/app/js/app/ ./
-RUN mkdir -p /js/dist && npm run build
+WORKDIR /frontend
+COPY frontend/package.json .
+# Copy each submodule's package.json first for better layer caching
+COPY frontend/app/package.json ./app/
+COPY frontend/region_picker/package.json ./region_picker/
+COPY frontend/record_suggestion/package.json ./record_suggestion/
+COPY frontend/admin/package.json ./admin/
 
-FROM node:20-slim AS record-suggestion-builder
+RUN npm run install
 
-WORKDIR /js/record_suggestion
-COPY bluepages/app/static/app/js/record_suggestion/package*.json ./
-RUN npm i
-COPY bluepages/app/static/app/js/record_suggestion/ ./
-RUN npx webpack --mode=development
+# Now copy all source files and build
+COPY frontend/ .
+RUN npm run build
 
-FROM node:20-slim AS region-picker-builder
-
-WORKDIR /js/region_picker
-COPY bluepages/app/static/app/js/region_picker/package*.json ./
-RUN npm ci
-COPY bluepages/app/static/app/js/region_picker/ ./
-RUN npx webpack --mode=development
-
-# Stage 2: Python application
+# Stage 2: Build Python/Django image
 # Use Python 3.11 slim image as base
 FROM python:3.11-slim-bookworm
 
@@ -56,15 +48,12 @@ COPY requirements.txt /app/
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
-# Copy project files
-COPY . /app/
+# Copy only the compiled dist output from the JS builder
+# Store in a separate location so entrypoint.sh can sync it after the project COPY
+COPY --from=js-builder /frontend/dist/ /opt/bluepages-js-dist/
 
-# Copy compiled JS assets from js-builder stage
-COPY --from=js-app-builder /js/dist/ /app/bluepages/app/static/app/js/dist/
-COPY --from=record-suggestion-builder /js/record_suggestion/dist/ /app/bluepages/app/static/app/js/dist/
-COPY --from=region-picker-builder /js/region_picker/dist/ /app/bluepages/app/static/app/js/dist/
-RUN mkdir -p /opt/bluepages-js-dist && \
-    cp -a /app/bluepages/app/static/app/js/dist/. /opt/bluepages-js-dist/
+# Copy the rest of the project (no node_modules, no JS source)
+COPY . /app/
 
 # Make entrypoint script executable
 RUN chmod +x /app/entrypoint.sh

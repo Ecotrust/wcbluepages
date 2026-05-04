@@ -41,6 +41,12 @@ node_modules/
 .DS_Store
 Thumbs.db
 
+# Node
+**/node_modules
+
+# JS build output (built fresh inside Docker by js-builder stage)
+bluepages/app/static/app/js/dist/
+
 # Vagrant
 .vagrant/
 Vagrantfile
@@ -48,3 +54,7 @@ Vagrantfile
 # Deployment
 deploy/
 *.sql
+
+# node modules
+node_modules/
+frontend/**/node_modules/
