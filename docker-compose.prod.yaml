@@ -12,7 +12,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./db_dump.sql:/tmp/db_dump.sql:ro
-      - ./init-db.sh:/docker-entrypoint-initdb.d/01-init-db.sh
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
     ports:
       - "5432:5432"
     healthcheck:
