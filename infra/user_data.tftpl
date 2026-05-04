@@ -58,9 +58,9 @@ git checkout main
 echo "Pulling latest changes from main branch..."
 git pull origin main
 
-# copy environment variables into the docker directory
+# copy environment variables into the directory
 echo "Creating .env.prod file..."
-cat > docker/.env.prod <<EOF
+cat > .env.prod <<EOF
 DEBUG=0
 SECRET_KEY=${django_secret_key}
 ALLOWED_HOSTS=${django_allowed_hosts}
@@ -87,7 +87,7 @@ sudo docker pull ${web_ghcr_image_uri}:latest
 sudo docker pull ${proxy_ghcr_image_uri}:latest
 
 echo "Starting Docker containers using docker compose ..."
-docker compose --env-file docker/.env.prod -f docker/docker-compose.prod.yaml up -d
+docker compose --env-file .env.prod -f docker-compose.prod.yaml up -d
 
 
 echo "Bluepages setup complete!"
