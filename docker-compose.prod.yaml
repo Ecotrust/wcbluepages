@@ -33,7 +33,7 @@ services:
       - static_volume:/app/bluepages/static_root
       - media_volume:/app/bluepages/media_root
     env_file:
-      - path: .env
+      - path: .env.prod
         required: true
     healthcheck:
       test: ["CMD-SHELL", "python manage.py check --deploy 2>/dev/null || python -c 'import urllib.request; urllib.request.urlopen(\"http://localhost:8000/\")' 2>/dev/null"]
@@ -50,7 +50,6 @@ services:
     restart: unless-stopped
     ports:
       - "80:8080"
-      - "443:8443"
     env_file:
       - path: .env.prod
         required: true

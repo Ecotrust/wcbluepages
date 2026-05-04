@@ -1,5 +1,5 @@
 # source: https://docs.github.com/en/actions/tutorials/publish-packages/publish-docker-images#publishing-images-to-docker-hub-and-github-packages
-name: Create and publish web and proxy Docker images
+name: Create and publish Docker image
 
 on:
   release:
