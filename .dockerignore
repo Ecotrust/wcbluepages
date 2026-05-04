@@ -26,6 +26,10 @@ db.sqlite3-journal
 /static_root/
 /media_root/
 
+# Node
+node_modules/
+**/node_modules/
+
 # IDEs
 .vscode/
 .idea/

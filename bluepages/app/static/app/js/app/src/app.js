@@ -12,50 +12,54 @@ import Stroke from 'ol/style/Stroke';
 import Fill from 'ol/style/Fill';
 import Text from 'ol/style/Text';
 import GeoJSON from 'ol/format/GeoJSON';
+import Cookies from 'js-cookie';
 
-app.showAccountModal = function() {
-    app.suggestionMenuModal.hide();
-    app.exploreModal.hide();
-    app.recordSuggestionModal.hide();
-    app.suggestionModal.hide();
-    app.accountModal.show();
+const csrftoken = Cookies.get('csrftoken');
+
+/////////////////////////////
+// Modal display functions //
+/////////////////////////////
+app.showModal = modal => {
+    // check to see if the modal we want to show is already shown. If so, do nothing; if not, hide all modals and show the one we want.
+    if (modal._isShown) {
+        return;
+    }
+    app.allModals.forEach(m => m.hide());
+    modal.show();
 }
 
-app.showSuggestionMenuModal = function() {
-    app.accountModal.hide();
-    app.exploreModal.hide();
-    app.recordSuggestionModal.hide();
-    app.suggestionModal.hide();
-    app.suggestionMenuModal.show();
+app.showAccountModal = () => {
+    app.showModal(app.accountModal);
 }
 
-app.showSuggestionFormModal = function() {
-    app.accountModal.hide();
-    app.exploreModal.hide();
-    app.recordSuggestionModal.hide();
-    app.suggestionMenuModal.hide();
-    app.suggestionModal.show();
+app.showSuggestionMenuModal = () => {
+    app.showModal(app.suggestionMenuModal);
 }
 
-app.showRecordSuggestionFormModal = function() {
-    app.accountModal.hide();
-    app.exploreModal.hide();
-    app.suggestionMenuModal.hide();
-    app.suggestionModal.hide();
-    app.recordSuggestionModal.show();
+app.showSuggestionFormModal = () => {
+    app.showModal(app.suggestionModal);
 }
 
-app.showExploreModal = function() {
-    app.accountModal.hide();
-    app.recordSuggestionModal.hide();
-    app.suggestionMenuModal.hide();
-    app.suggestionModal.hide();
-    app.exploreModal.show();
+app.showContactFormModal = () => {
+    app.showModal(app.selfContactModal);
 }
 
+app.showRecordSuggestionFormModal = () => {
+    app.showModal(app.recordSuggestionModal);
+}
 
+app.showRecordModal = () => {
+    app.showModal(app.selfRecordModal);
+}
 
-app.checkRegistrationFormValidity = function() {
+app.showExploreModal = () => {
+    app.showModal(app.exploreModal);
+}
+
+/////////////////////////////////
+// Registration form functions //
+/////////////////////////////////
+app.checkRegistrationFormValidity = () => {
     if ($('#registration-form').checkValidity()) {
         $('#registration-form-submit').removeAttribute('disabled');
     } else {
@@ -63,10 +67,10 @@ app.checkRegistrationFormValidity = function() {
     }
 }
 
-app.loadRegistrationForm = function() {
+app.loadRegistrationForm = () => {
     $.ajax({
         url: "/accounts/register/",
-        success: function(registration_form) {
+        success: registration_form => {
             $("#accountModalWrapper").html(registration_form);
             $("#registration-form").change(app.checkRegistrationFormValidity);
             app.showAccountModal();
@@ -74,18 +78,18 @@ app.loadRegistrationForm = function() {
     });
 }
 
-app.submitRegistrationForm = function() {
+app.submitRegistrationForm = () => {
     let registration_form = $("#registration-form");
     let submitAction = registration_form.attr('action');
 
     $.post(submitAction, registration_form.serialize(), app.handleRegistrationReturn)
 }
 
-app.handleRegistrationReturn = function(result) {
+app.handleRegistrationReturn = result => {
     if (result.indexOf('id="registration-form">') < 0) {
         $("#accountModalWrapper").html("Registration successful! You will now be logged in...");
         window.setTimeout(
-            function() {
+            () => {
                 window.location.assign('/');
             },
             1000
@@ -97,10 +101,13 @@ app.handleRegistrationReturn = function(result) {
     }
 }
 
-app.loadForgotCredentials = function() {
+//////////////////////////
+// Login form functions //
+//////////////////////////
+app.loadForgotCredentials = () => {
     $.ajax({
         url: "/accounts/forgot/",
-        success: function(forgot_result) {
+        success: forgot_result => {
             $("#accountModalWrapper").html(forgot_result);
             // $("#registration-form").change(app.checkRegistrationFormValidity);
             app.showAccountModal();
@@ -108,14 +115,14 @@ app.loadForgotCredentials = function() {
     });
 }
 
-app.submitPasswordReset = function() {
+app.submitPasswordReset = () => {
     let reset_form = $("#password-reset-form");
     let submitAction = reset_form.attr('action');
 
     $.post(submitAction, reset_form.serialize(), app.handlePasswordResetReturn)
 }
 
-app.handlePasswordResetReturn = function(result) {
+app.handlePasswordResetReturn = (result) => {
     $("#accountModalWrapper").html(
         '<div class="content">' +
             '<div id="content" class="colM">' +
@@ -127,21 +134,21 @@ app.handlePasswordResetReturn = function(result) {
     );
 }
 
-app.loadLoginForm = function() {
+app.loadLoginForm = () => {
     $.ajax({
         url: "/accounts/login/",
-        success: function(login_form) {
+        success: login_form => {
             $("#accountModalWrapper").html(login_form);
             app.showAccountModal();
         }
     });
 }
 
-app.handleLoginReturn = function(result) {
+app.handleLoginReturn = result => {
     if (result.indexOf('id="login-form">') < 0) {
         $("#accountModalWrapper").html("Login successful!");
         window.setTimeout(
-            function() {
+            () => {
                 window.location.assign('/');
             },
             1000
@@ -152,67 +159,70 @@ app.handleLoginReturn = function(result) {
     }
 }
 
-app.submitLoginForm = function() {
+app.submitLoginForm = () => {
     let login_form = $("#login-form");
     let submitAction = login_form.attr('action');
 
     $.post(submitAction, login_form.serialize(), app.handleLoginReturn);
 }
 
-app.loadAccountModal = function() {
+/////////////////////////////
+// Profile form functions //
+////////////////////////////
+app.loadAccountModal = () => {
     $.ajax({
         url: "/profile/",
-        success: function(profile_modal) {
+        success: profile_modal => {
             $("#accountModalWrapper").html(profile_modal);
             app.showAccountModal();
         }
     })
 }
 
-app.loadProfileForm = function() {
+app.loadProfileForm = () => {
     $.ajax({
         url: '/profile/edit/',
-        success: function(profile_form) {
+        success: profile_form => {
             $("#accountModalWrapper").html(profile_form);
             app.showAccountModal();
         }
     })
 }
 
-app.submitProfileForm = function() {
+app.submitProfileForm = () => {
     let profile_form = $("#profile-form");
     let submitAction = profile_form.attr('action');
 
     $.post(submitAction, profile_form.serialize(), app.handleProfileReturn);
 }
 
-app.handleProfileReturn = function(result) {
+app.handleProfileReturn = result => {
     $("#accountModalWrapper").html(result);
     app.showAccountModal();
 }
 
-app.loadPasswordChangeForm = function() {
+app.loadPasswordChangeForm = () => {
     $.ajax({
         url: '/profile/password_change/',
-        success: function(password_form) {
+        success: password_form => {
             $("#accountModalWrapper").html(password_form);
             app.showAccountModal();
         }
     })
 }
 
-app.submitPasswordChangeForm = function() {
+app.submitPasswordChangeForm = () => {
     let password_form = $("#password-form");
     let submitAction = password_form.attr('action');
 
     $.post(submitAction, password_form.serialize(), app.handlePasswordChangeReturn);
 }
 
-app.handlePasswordChangeReturn = function(result) {
+app.handlePasswordChangeReturn = result => {
     $("#accountModalWrapper").html(result);
     if (result.indexOf('<span id="password-reset-success"></span>') >= 0) {
         window.setTimeout(
-            function() {
+            () => {
                 window.location.assign('/');
             },
             3000
@@ -222,72 +232,87 @@ app.handlePasswordChangeReturn = function(result) {
     app.showAccountModal();
 }
 
-app.loadSuggestionForm = function(contact_suggestion_id) {
+
+///////////////////////////////
+// Suggestion form functions //
+///////////////////////////////
+app.loadSuggestionForm = (contact_suggestion_id) => {
     let url = "/suggestion_form/";
     if (contact_suggestion_id) {
         url = url + contact_suggestion_id + "/";
     }
     $.ajax({
         url: url,
-        success: function(form){
+        success: form => {
             $("#suggestionModalWrapper").html(form);
             app.showSuggestionFormModal();
         }
     })
 }
 
-app.confirmSuggestionDeletion = function(contact_id) {
-    if (window.confirm("Are you sure you wish to remove this suggestion? Please note that if this contact is in the database, only your suggestion will be removed; the contact will not be removed or changed.")) {
-        $.ajax({
-            url: "/delete_suggested_contact/" + contact_id + "/",
-            success: window.setTimeout(app.loadSuggestionMenu, 200) 
+app.confirmSuggestionDeletion = (contact_id) => {
+    if (window.confirm("Are you sure you wish to remove this suggestion? Please note that if this contact is in the directory, only your suggestion will be removed; the contact will not be removed or changed.")) {
+        $.post({
+            url: `/delete_suggested_contact/${contact_id}/`,
+            success: () => app.loadSuggestionMenu(),
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            mode: 'same-origin',
         })
     }
-
 }
 
-app.submitContactSuggestion = function() {
+app.submitContactSuggestion = () => {
     let contact_form = $("#contact-suggestion-form");
     let submitAction = contact_form.attr('action');
 
     // TODO: Validate form
-
-    $.post(submitAction, contact_form.serialize(), app.prepContactMenuModal)
-        .fail(function(error_form) {
+    $.post(submitAction, contact_form.serialize(), app.prepContactSuggestionMenuModal)
+        .fail(error_form => {
             alert("error");
             $("#suggestionModalWrapper").html(error_form);
         });
 }
 
-app.loadSuggestionMenu = function() {
+app.loadSuggestionMenu = () => {
     $.ajax({
         url: "/get_suggestion_menu/",
-        success: function(data) {
+        success: data => {
             $("#suggestionMenuModalWrapper").html(data)
             app.showSuggestionMenuModal();
         }
     })
 }
 
-app.prepContactMenuModal = function(data) {
-    if (typeof(data) == 'string') {
-        //Form contained an error and was returned to us
+app.loadContactSuggestionMenu = (suggestionId) => {
+    $.ajax({
+        url: "/contact_suggestion_menu/" + suggestionId + "/",
+        success: app.loadContactMenuModal
+    });
+}
+
+app.prepContactSuggestionMenuModal = (data) => {
+    if (typeof(data) === 'string') {
+        // Form contained an error and was returned to us
         $("#suggestionModalWrapper").html(data);
-    } else {
-        app.suggested_contact = data.contact_suggestion;
-        $.ajax({
-            url:"contact_suggestion_menu/" + data.contact_suggestion.id + "/",
-            success: app.loadContactMenuModal
-        })
+    } else if (data.contact && data.contact.id) {
+        app.setSuggestedContactState(data.contact);
+        app.loadContactSuggestionMenu(data.contact.id);
     }
 }
 
-app.loadContactMenuModal = function(form_html) {
+app.setSuggestedContactState = contact => {
+    app.suggestedContact = contact;
+}
+
+app.loadContactMenuModal = (form_html, data) => {
+    
     $('#suggestionMenuModalWrapper').html(form_html);
     app.showSuggestionMenuModal();
 }
 
-app.prepRecordSuggestions = function(contact_id, record_id) {
+app.prepRecordSuggestions = (contact_id, record_id) => {
     let url = "/record_suggestion_form/" + contact_id + "/";
     if (record_id){
         url += record_id + "/";
@@ -298,23 +323,155 @@ app.prepRecordSuggestions = function(contact_id, record_id) {
     })
 }
 
-app.loadRecordSuggestionModal = function(data) {
-    if (typeof(data) == 'string') {
+app.loadRecordSuggestionModal = (data) => {
+    if (typeof(data) === 'string') {
         $('#recordSuggestionModalWrapper').html(data);
-        $("#topicSuggestionContactName").html(app.suggested_contact.contact_name);
+        const suggestedName = app.suggestedContact?.contact_name || app.suggestedContact?.name || app.suggestedContact?.full_name || '';
+        $("#topicSuggestionContactName").html(suggestedName);
         app.loadRecordSuggestionForm();
         app.showRecordSuggestionFormModal();
-    } else {
-        app.suggested_contact = data.contact_suggestion;
-        $.ajax({
-            url:"contact_suggestion_menu/" + data.contact_suggestion.id + "/",
-            success: app.loadContactMenuModal
-        })
+        return;
     }
-    
+    app.setSuggestedContactState(data.contact_suggestion);
+    app.loadContactSuggestionMenu(data.contact_suggestion.id);    
 }
 
-app.prepExploreModal = function(key) {
+/////////////////////////////
+// Contact form functions //
+///////////////////////////
+
+app.setCurrentContact = contact => {
+    app.currentContact = contact;
+}
+
+app.loadCurrentContactById = (contact_id, callback) => {
+    $.ajax({
+        url: `/contacts/api/${contact_id}/`,
+        success: data => {
+            const contactName = data.full_name || data.name || '';
+            app.setCurrentContact(contactName);
+            if (callback) {
+                callback(data);
+            }
+        },
+        error: () => {
+            app.setCurrentContact('');
+            if (callback) {
+                callback(null);
+            }
+        }
+    });
+}
+
+app.loadContactForm = (contact_id) => {
+    let url = "/contact_form/";
+    if (contact_id) {
+        url = url + contact_id + "/";
+    }
+    $.ajax({
+        url: url,
+        success: form => {
+            $("#contactModalWrapper").html(form);
+            app.showContactFormModal();
+        }
+    })
+}
+
+app.submitContactForm = () => {
+    let contact_form = $("#contact-form");
+    let submitAction = contact_form.attr('action');
+
+    // TODO: Validate form
+    $.post(submitAction, contact_form.serialize(), app.afterContactSubmission)
+        .fail(error_form => {
+            alert("error");
+            $("#contactModalWrapper").html(error_form);
+        });
+}
+
+app.afterContactSubmission = (data) => {
+    if (typeof(data) ==='string') {
+        // Form contained an error and was returned to us
+        $("#contactModalWrapper").html(data);
+    } else {
+        // load topic form 
+        app.setCurrentContact(data.contact.full_name);
+        app.loadSuggestionMenu();
+    }
+}
+
+
+app.prepContactRecord = (contact_id, record_id) => {
+    let url = "/contact_record_form/" + contact_id + "/";
+
+    if (record_id){
+        url += record_id + "/";
+    }
+
+    app.loadCurrentContactById(contact_id, () => {
+        $.ajax({
+            url: url,
+            success: app.loadRecordModal
+        })
+    });
+}
+
+app.loadRecordModal = (data) => {
+    if (typeof(data) === 'string') {
+        $('#selfRecordModalWrapper').html(data);
+        $("#selfRecordModalContactName").html(app.currentContact);
+        app.loadRecordSuggestionForm();
+        app.showRecordModal();
+
+    } else {
+        $.ajax({
+            url: "/contact_suggestion_menu/" + data.contact.id + "/",
+            success: app.loadContactMenuModal
+        });
+    }
+}
+
+app.submitRecord = () => {
+    let record_form = $("#record-form");
+    let submitAction = record_form.attr('action');
+
+    $.post(submitAction, record_form.serialize(), app.loadSuggestionMenu)
+        .fail(function(error_form) {
+            alert("error");
+            $("#selfRecordModalWrapper").html(error_form);
+        });
+}
+
+app.deleteContactRecord = (contact_id, record_id) => {
+    if (window.confirm("Are you sure you wish to delete this Topic?")) {
+        $.post({
+            url: `/delete_record/${contact_id}/${record_id}/`,
+            success: () => app.loadSuggestionMenu(),
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            mode: 'same-origin',
+        })
+    }
+}
+    
+app.deleteContact = (contact_id) => {
+    if (window.confirm("Are you sure you wish to delete this Contact?")) {
+        $.post({
+            url: `/delete_contact/${contact_id}/`,
+            success: () => app.loadSuggestionMenu(),
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            mode: 'same-origin',
+        })
+    }
+}
+
+/////////////////////////////
+// Explore modal functions //
+/////////////////////////////
+app.prepExploreModal = (key) => {
     let url = "/explore/" + key.toLowerCase() + "/embedded/";
     $.ajax({
         url: url,
@@ -322,22 +479,22 @@ app.prepExploreModal = function(key) {
     })
 }
 
-app.loadExploreModal = function(data) {
+app.loadExploreModal = (data) => {
     $('#exploreModalWrapper').html(data);
     app.showExploreModal();
 }
 
-app.prepExploreDetailsModal = function(type, id) {
+app.prepExploreDetailsModal = (type, id) => {
     let url = "/" + type + "/" + id + "/embedded/";
     app.exploreType = type;
     $.ajax({
         url: url,
-        success: app.loadExploreDetailsModal
+        success: (data) => app.loadExploreDetailsModal(data, type)
     })
 }
 
-app.loadExploreDetailsModal = function(data) {
-    if (this.url.indexOf('entities') >= 0) {
+app.loadExploreDetailsModal = (data, type) => {
+    if (type === 'entities') {
         let back_button = '<div><button class="btn btn-light detail-back-button" onclick="app.prepExploreModal(\'' + app.exploreType + '\')"> <i class="bi bi-chevron-left explore-entity-chevron"></i>Back to All Entities</button></div>';
         $('#exploreModalWrapper').html(back_button + data);
     } else {
@@ -346,7 +503,10 @@ app.loadExploreDetailsModal = function(data) {
     app.showExploreModal();
 }
 
-app.toggleFilter = function(key) {
+///////////////////////
+// Filter functions //
+//////////////////////
+app.toggleFilter = (key) => {
     app.updateState('open', key);
     let chevron = $("#filter-category-chevron-" + key);
     if (chevron.hasClass('bi-chevron-down')) {
@@ -358,7 +518,7 @@ app.toggleFilter = function(key) {
     }
 }
 
-app.loadSearchResults = function(results, status) {
+app.loadSearchResults = (results, status) => {
     // pull filter/facets from data results to populate filters on left
     let filter_col_html = '';
     Object.entries(results.filters).forEach(([key, filters]) => {
@@ -401,7 +561,7 @@ app.loadSearchResults = function(results, status) {
                 '</tr>' +
             '</thead>' +
             '<tbody>';
-    results.contacts.forEach( contact => {
+    results.contacts.forEach(contact => {
         results_col_html += '<tr id="contact-row-' + contact.id +'" class="contact-row ">' +
                 '<td>' + contact.name + '</td>' +
                 '<td>' + contact.role + '</td>' +
@@ -412,13 +572,14 @@ app.loadSearchResults = function(results, status) {
         '</table>';
     $("#results-column div.contact-results").html(results_col_html);
     $('#contact-results-table').DataTable();
-    $('#contact-results-table tbody').on('click', 'tr', function() {
-        app.prepExploreDetailsModal('contacts', this.id.replace(/contact-row-/g, ''));
+    $('#contact-results-table tbody').on('click', 'tr', function () {
+        const contactId = this.id.replace(/contact-row-/g, '');
+        app.prepExploreDetailsModal('contacts', contactId);
     })
     
 }
 
-app.updateState = function(filter, value) {
+app.updateState = (filter, value) => {
     if (!isNaN(parseInt(value))) {
         value = parseInt(value);
     }
@@ -438,12 +599,16 @@ app.updateState = function(filter, value) {
     }
 }
 
-app.getMapLabel = function(feature) {
+
+//////////////////////////
+// Map state functions //
+/////////////////////////
+app.getMapLabel = (feature) => {
     let text = feature.get('name');
     return text;
 }
 
-app.mapStyleFunction = function(feature) {
+app.mapStyleFunction = (feature) => {
     var label = app.getMapLabel(feature);
     return new Style({
         stroke: new Stroke({
@@ -477,7 +642,7 @@ app.mapVectorLayer = new VectorLayer({
 //  https://openlayers.org/en/latest/examples/select-features.html
 //  https://openlayers.org/en/latest/examples/select-multiple-features.html
 
-app.mapSelectedStyleFunction = function(feature) {
+app.mapSelectedStyleFunction = (feature) => {
     var label = app.getMapLabel(feature);
     let selectedStyle = new Style({
         fill: new Fill({
@@ -499,7 +664,7 @@ app.mapSelectedStyleFunction = function(feature) {
     return selectedStyle;
 }
 
-app.mapToggleFeatureSelection = function(feature, run_query)  {
+app.mapToggleFeatureSelection = (feature, run_query) => {
     var sel_index = app.filter_state['map_regions'].indexOf(feature.get('id'));
     if ( sel_index < 0){
         feature.setStyle(app.mapSelectedStyleFunction(feature));
@@ -514,7 +679,7 @@ app.mapToggleFeatureSelection = function(feature, run_query)  {
 }
 
 // Map and Form interactions:
-app.mapUpdateFilters = function() {
+app.mapUpdateFilters = () => {
     let regions = app.mapVectorLayer.getSource().getFeatures();
     let filtered_regions = [];
     let states = [];
@@ -576,7 +741,7 @@ app.mapUpdateFilters = function() {
 }
 
 // Load Regions onto map
-app.mapZoomToBufferedExtent = function(extent, buffer) {
+app.mapZoomToBufferedExtent = (extent, buffer) => {
     if (buffer > 1.0) {
       buffer = buffer/100.0;
     }
@@ -592,15 +757,15 @@ app.mapZoomToBufferedExtent = function(extent, buffer) {
     app.map.getView().fit(buffered_extent, {'duration': 1000});
 }
 
-app.loadMapFilter = function(){
+app.loadMapFilter = () => {
     // get map data
     $.ajax({
         url:'/static/app/data/regions.json',
         dataType: 'json'
     })
-    .done(function(data) {
+    .done((data) => {
         window.setTimeout(
-            function(){
+            () => {
                 $("#map").html('');
                 app.map = new Map({
                     layers: [
@@ -621,10 +786,10 @@ app.loadMapFilter = function(){
                 
                 app.mapRegionSource.clear();
                 
-                app.map.on('singleclick', function(e) {
+                app.map.on('singleclick', (e) => {
                     app.map.forEachFeatureAtPixel(e.pixel, app.mapToggleFeatureSelection, true);
                 });
-                var features = new GeoJSON().readFeatures(data);
+                const features = new GeoJSON().readFeatures(data);
                 // Flush any pre-existing features to clear out selection.
                 if (app.mapRegionSource.getFeatures.length < 1) {
                     app.mapRegionSource.addFeatures(features);
@@ -636,7 +801,7 @@ app.loadMapFilter = function(){
     });
 }
 
-app.getSearchResults = function() {
+app.getSearchResults = () => {
     // convert app.filter_state to AJAX query, then call app.loadSearchResults with the data
     $.ajax({
         url: "/filter_contacts",
@@ -651,8 +816,7 @@ app.getSearchResults = function() {
     });
 }
 
-
-app.exportToCSV = function() {
+app.exportToCSV = () => {
     // let text_search_array = $("#contact-results-table_filter input").value.split(' ');
     // jquery with webpack is funky. Switching to vanilla JS for this:
     let text_search_array = document.getElementById("contact-results-table_filter").getElementsByTagName('input')[0].value.split(' ');
@@ -671,7 +835,7 @@ app.exportToCSV = function() {
         mode: 'same-origin',
         data: {'data': JSON.stringify(data)},
         // dataType: "text/csv",
-        success: function(data) {
+        success: (data) => {
             let blob = new Blob([data]);
             let link = document.createElement('a');
             link.href=window.URL.createObjectURL(blob);
@@ -679,16 +843,23 @@ app.exportToCSV = function() {
             link.click();
         }
     })
-    .fail(function(){
+    .fail(() => {
         alert('Unable to export data.')
     });
 }
 
-app.accountModal = new Modal(document.getElementById('accountModal'), {});
-app.suggestionMenuModal = new Modal(document.getElementById('suggestionMenuModal'), {});
-app.suggestionModal = new Modal(document.getElementById('suggestionModal'), {});
-app.exploreModal = new Modal(document.getElementById('exploreModal'), {});
-app.recordSuggestionModal = new Modal(document.getElementById('recordSuggestionModal'), {});
+/////////////////
+// App state  //
+////////////////
+app.accountModal = null;
+app.suggestionMenuModal = null;
+app.suggestionModal = null;
+app.exploreModal = null;
+app.recordSuggestionModal = null;
+app.selfContactModal = null;
+app.selfRecordModal = null;
+app.allModals = [];
+
 app.filter_state = {
     'entities': [],
     'topics': [],
@@ -697,7 +868,20 @@ app.filter_state = {
     'open': []                      // Track whether left-panel filter categories are expanded or collapsed
 };
 
-$(document).ready( function () {
+$(document).ready(() => {
+    const initModal = (id) => {
+        const el = document.getElementById(id);
+        return el ? new Modal(el, {}) : null;
+    };
+    app.accountModal = initModal('accountModal');
+    app.suggestionMenuModal = initModal('suggestionMenuModal');
+    app.suggestionModal = initModal('suggestionModal');
+    app.exploreModal = initModal('exploreModal');
+    app.recordSuggestionModal = initModal('recordSuggestionModal');
+    app.selfContactModal = initModal('selfContactModal');
+    app.selfRecordModal = initModal('selfRecordModal');
+    app.allModals = [app.accountModal, app.suggestionMenuModal, app.suggestionModal, app.exploreModal, app.recordSuggestionModal, app.selfContactModal, app.selfRecordModal].filter(Boolean);
+
     app.loadMapFilter();
     app.getSearchResults();
 

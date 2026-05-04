@@ -49,7 +49,8 @@ RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
 # Copy only the compiled dist output from the JS builder
-COPY --from=js-builder /frontend/dist/ /app/bluepages/app/static/app/js/dist/
+# Store in a separate location so entrypoint.sh can sync it after the project COPY
+COPY --from=js-builder /frontend/dist/ /opt/bluepages-js-dist/
 
 # Copy the rest of the project (no node_modules, no JS source)
 COPY . /app/

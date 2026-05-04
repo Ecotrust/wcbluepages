@@ -182,6 +182,7 @@ class ContactAdmin(VersionAdmin):
                 )
             },
         ),
+        ("User Account", {"fields": ("user",)}),
         ("Additional Information", {"fields": ("notes",)}),
     )
 
@@ -219,7 +220,7 @@ class ContactSuggestionAdmin(VersionAdmin):
                 )
             },
         ),
-        ("Contact", {"fields": ("contact", "self_suggestion")}),
+        ("Contact", {"fields": ["contact"]}),
         (
             "Name",
             {
