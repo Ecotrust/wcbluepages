@@ -28,7 +28,7 @@ services:
     restart: unless-stopped
     container_name: bluepages_web
     command: ["prod"]
-    # image: ${BLUEPAGES_GHCR_PATH}:latest
+    image: ${BLUEPAGES_GHCR_PATH}:latest
     volumes:
       - static_volume:/app/bluepages/static_root
       - media_volume:/app/bluepages/media_root
@@ -45,7 +45,6 @@ services:
       db:
         condition: service_healthy
   proxy:
-    # image: ${BLUEPAGES_PROXY_GHCR_PATH}:latest
     image: nginx:alpine
     restart: unless-stopped
     ports:
