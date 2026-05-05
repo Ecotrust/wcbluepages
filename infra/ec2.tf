@@ -28,6 +28,7 @@ resource "aws_instance" "bluepages" {
     sql_db_password      = var.sql_db_password
     sql_port             = var.sql_port
     django_allowed_hosts = var.django_allowed_hosts
+    db_dump_file_path    = var.db_dump_file_path
   })
 
   root_block_device {

@@ -87,3 +87,8 @@ variable "web_ghcr_image_uri" {
   description = "GitHub Container Registry image URI for the web application"
   type        = string
 }
+
+variable "db_dump_file_path" {
+  description = "S3 path to the SQL dump file (e.g., s3://my-bucket/path/to/dump.sql)"
+  type        = string
+}
