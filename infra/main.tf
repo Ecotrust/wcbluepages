@@ -17,7 +17,7 @@ variable "project_name" {
 variable "bucket_name" {
   description = "S3 bucket name for Terraform state (must be globally unique)"
   type        = string
-  default     = "bluepages-tf-state"
+  default     = "wcbluepages-tf-state"
 }
 
 variable "ec2_instance_type" {
@@ -85,20 +85,5 @@ variable "sql_port" {
 
 variable "web_ghcr_image_uri" {
   description = "GitHub Container Registry image URI for the web application"
-  type        = string
-}
-
-variable "proxy_ghcr_image_uri" {
-  description = "GitHub Container Registry image URI for the proxy"
-  type        = string
-}
-
-variable "domain_name" {
-  description = "Domain name for the application"
-  type        = string
-}
-
-variable "ssl_admin_email" {
-  description = "Admin email for SSL certificate registration (Certbot)"
   type        = string
 }

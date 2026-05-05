@@ -9,9 +9,8 @@ terraform {
   required_version = ">= 1.2"
 
   backend "s3" {
-    bucket  = "bluepages-tf-state"
-    key     = "bluepages/terraform.tfstate"
-    region  = "us-west-2"
-    profile = "default"
+    bucket = "wcbluepages-tf-state"
+    key    = "production/terraform.tfstate"
+    region = "us-west-2"
   }
 }
