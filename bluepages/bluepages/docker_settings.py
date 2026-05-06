@@ -20,9 +20,6 @@ DATABASES = {
 # Debug mode from environment
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-# Allow all hosts in Docker (configure properly for production)
-ALLOWED_HOSTS = ["*"]
-
 # Static and media files
 STATIC_ROOT = "/app/bluepages/static_root"
 MEDIA_ROOT = "/app/bluepages/media_root"
