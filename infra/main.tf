@@ -86,3 +86,13 @@ variable "db_dump_file_path" {
   description = "S3 path to the SQL dump file (e.g., s3://my-bucket/path/to/dump.sql)"
   type        = string
 }
+
+variable "domain_name" {
+  description = "Domain name for the application"
+  type        = string
+}
+
+variable "ssl_admin_email" {
+  description = "Admin email for SSL certificate registration (Certbot)"
+  type        = string
+}
