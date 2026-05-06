@@ -14,12 +14,6 @@ variable "project_name" {
   default     = "bluepages"
 }
 
-variable "bucket_name" {
-  description = "S3 bucket name for Terraform state (must be globally unique)"
-  type        = string
-  default     = "wcbluepages-tf-state"
-}
-
 variable "ec2_instance_type" {
   description = "EC2 instance type"
   type        = string
