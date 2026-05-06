@@ -28,6 +28,10 @@ resource "aws_iam_role_policy" "bluepages_s3_read" {
     ]
   })
 }
+resource "aws_iam_role_policy_attachment" "ssm_core" {
+  role       = aws_iam_role.bluepages_ec2.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
 
 resource "aws_iam_instance_profile" "bluepages" {
   name = "bluepages-ec2-profile"
