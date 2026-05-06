@@ -11,7 +11,7 @@ data "aws_subnets" "default" {
 
 resource "aws_security_group" "bluepages" {
   name        = "${var.project_name}-sg"
-  description = "Security group for Bluepages Production EC2 instance"
+  description = "Security group for Blue Pages Production EC2 instance"
   vpc_id      = data.aws_vpc.default.id
 
   # HTTP

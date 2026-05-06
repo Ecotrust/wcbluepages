@@ -14,12 +14,6 @@ variable "project_name" {
   default     = "bluepages"
 }
 
-variable "bucket_name" {
-  description = "S3 bucket name for Terraform state (must be globally unique)"
-  type        = string
-  default     = "bluepages-tf-state"
-}
-
 variable "ec2_instance_type" {
   description = "EC2 instance type"
   type        = string
@@ -88,17 +82,7 @@ variable "web_ghcr_image_uri" {
   type        = string
 }
 
-variable "proxy_ghcr_image_uri" {
-  description = "GitHub Container Registry image URI for the proxy"
-  type        = string
-}
-
-variable "domain_name" {
-  description = "Domain name for the application"
-  type        = string
-}
-
-variable "ssl_admin_email" {
-  description = "Admin email for SSL certificate registration (Certbot)"
+variable "db_dump_file_path" {
+  description = "S3 path to the SQL dump file (e.g., s3://my-bucket/path/to/dump.sql)"
   type        = string
 }

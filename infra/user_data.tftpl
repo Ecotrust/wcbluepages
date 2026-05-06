@@ -1,6 +1,9 @@
 #!/bin/bash
 sudo apt-get update && sudo apt-get upgrade -y
 
+# install aws cli to pull SQL dump from S3
+sudo snap install aws-cli --classic 
+
 # install docker
 # https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
 sudo apt update -y
@@ -61,33 +64,27 @@ git pull origin main
 # copy environment variables into the directory
 echo "Creating .env.prod file..."
 cat > .env.prod <<EOF
+DOCKER_CONTAINER=1
 DEBUG=0
-SECRET_KEY=${django_secret_key}
 ALLOWED_HOSTS=${django_allowed_hosts}
+SECRET_KEY=${django_secret_key}
 SQL_ENGINE=django.contrib.gis.db.backends.postgis
-SQL_DATABASE=${sql_db_name}
-SQL_USER=${sql_db_user}
-SQL_PASSWORD=${sql_db_password}
-SQL_HOST=${sql_host}
-SQL_PORT=${sql_port}
+DB_NAME=${sql_db_name}
+DB_USER=${sql_db_user}
+DB_PASSWORD=${sql_db_password}
+DB_HOST=${sql_host}
+DB_PORT=${sql_port}
 BLUEPAGES_GHCR_PATH=${web_ghcr_image_uri}
-BLUEPAGES_PROXY_GHCR_PATH=${proxy_ghcr_image_uri}
-DOMAIN_NAME=${domain_name}
 EOF
 
-echo "Logging in to GitHub Container Registry for web image..."
-echo ${web_ghcr_image_uri} | sudo docker login ghcr.io --username USERNAME --password-stdin
-
-
-echo "Logging in to GitHub Container Registry for proxy image..."
-echo ${proxy_ghcr_image_uri} | sudo docker login ghcr.io --username USERNAME --password-stdin
+# Pull the SQL dump from S3 (no credentials needed — uses EC2 IAM role)
+echo "Pulling SQL dump from S3..."
+aws s3 cp ${db_dump_file_path} ./db_dump.sql --region ${aws_region}
 
 echo "Pulling latest Docker images..."
 sudo docker pull ${web_ghcr_image_uri}:latest
-sudo docker pull ${proxy_ghcr_image_uri}:latest
 
 echo "Starting Docker containers using docker compose ..."
 docker compose --env-file .env.prod -f docker-compose.prod.yaml up -d
-
 
 echo "Bluepages setup complete!"

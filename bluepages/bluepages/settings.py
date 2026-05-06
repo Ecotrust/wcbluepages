@@ -28,9 +28,10 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "your-secret-key")
 DEBUG = os.environ.get("DEBUG", "False")
 DEBUG_JS = DEBUG
 
-ALLOWED_HOSTS = [
-    "*",
-]
+ALLOWED_HOSTS = []
+ALLOWED_HOSTS_ENV = os.environ.get("ALLOWED_HOSTS")
+if ALLOWED_HOSTS_ENV:
+    ALLOWED_HOSTS.extend(ALLOWED_HOSTS_ENV.split(","))
 
 
 # Application definition
