@@ -1,0 +1,66 @@
+name: Deploy to EC2 Production
+
+on:
+    workflow_dispatch:
+
+jobs:
+    deploy:
+        name: Deploy to EC2 Production
+        runs-on: ubuntu-latest
+        permissions:
+            id-token: write
+        steps:
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v5
+              with:
+                role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+                aws-region: ${{ secrets.AWS_REGION }}
+            - name: get EC2 Instance ID
+              id: get-instance
+              run: |
+                INSTANCE_ID=$(aws ec2 describe-instances \
+                    --filters "Name=tag:Name,Values=${{ secrets.PROD_EC2_INSTANCE_NAME }}" \
+                            "Name=instance-state-name,Values=running" \
+                    --query "Reservations[0].Instances[0].InstanceId" \
+                    --output text)
+                echo "instance_id=$INSTANCE_ID" >> $GITHUB_OUTPUT
+            - name: Deploy to EC2 via SSM
+              id: ssm-deploy
+              run: |
+                COMMAND_ID=$(aws ssm send-command \
+                    --instance-ids "${{ steps.get-instance.outputs.instance_id }}" \
+                    --document-name "AWS-RunShellScript" \
+                    --parameters 'commands=[
+                    "cd /wcbluepages/wcbluepages && git pull origin main",
+                    "docker pull ${{ secrets.WEB_GHCR_IMAGE_URI }}:latest",
+                    "docker compose -f docker-compose.prod.yaml down",
+                    "docker compose --env-file .env.prod -f docker-compose.prod.yaml up -d",
+                    "sleep 5",
+                    "docker ps --filter name=bluepages_web --format \"{{.Status}}\"",
+                    "docker image prune -f"
+                    ]' \
+                    --timeout-seconds 300 \
+                    --comment "Deploy ${{ github.sha }}" \
+                    --query "Command.CommandId" \
+                    --output text)
+                echo "command_id=$COMMAND_ID" >> $GITHUB_OUTPUT
+            - name: Wait for deployment to complete
+              run: |
+                aws ssm wait command-executed \
+                    --command-id ${{ steps.ssm-deploy.outputs.command_id }} \
+                    --instance-id ${{ steps.get-instance.outputs.instance_id }}
+            - name: Verify deployment result
+              run: |
+                RESULT=$(aws ssm get-command-invocation \
+                    --command-id ${{ steps.ssm-deploy.outputs.command_id }} \
+                    --instance-id ${{ steps.get-instance.outputs.instance_id }} \
+                    --query "{Status:Status,Output:StandardOutputContent,Error:StandardErrorContent}" \
+                    --output json)
+                echo "$RESULT" | jq .
+                STATUS=$(echo "$RESULT" | jq -r '.Status')
+                if [ "$STATUS" != "Success" ]; then
+                    echo "::error::Deployment failed with status: $STATUS"
+                    exit 1
+                fi
+                echo "Deployment succeeded."
+
