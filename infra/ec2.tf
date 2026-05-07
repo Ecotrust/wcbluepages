@@ -31,6 +31,7 @@ resource "aws_instance" "bluepages" {
     db_dump_file_path    = var.db_dump_file_path
     domain_name          = var.domain_name
     ssl_admin_email      = var.ssl_admin_email
+    csrf_trusted_origins = var.csrf_trusted_origins
   })
 
   root_block_device {

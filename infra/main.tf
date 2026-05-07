@@ -96,3 +96,8 @@ variable "ssl_admin_email" {
   description = "Admin email for SSL certificate registration (Certbot)"
   type        = string
 }
+
+variable "csrf_trusted_origins" {
+  description = "Comma-separated list of trusted origins for CSRF protection in Django"
+  type        = string
+}
