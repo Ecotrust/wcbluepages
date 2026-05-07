@@ -31,6 +31,7 @@ jobs:
                     --instance-ids "${{ steps.get-instance.outputs.instance_id }}" \
                     --document-name "AWS-RunShellScript" \
                     --parameters 'commands=[
+                    "echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io --username ${{ secrets.GHCR_USERNAME }} --password-stdin",
                     "cd /wcbluepages/wcbluepages && git pull origin main",
                     "docker pull ${{ secrets.WEB_GHCR_IMAGE_URI }}:latest",
                     "docker compose -f docker-compose.prod.yaml down",
