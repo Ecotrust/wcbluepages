@@ -21,7 +21,8 @@
     "datatables": "^1.10.18",
     "jquery": "^3.6.2",
     "ol": "^10.7.0",
-    "webpack": "^5.75.0"
+    "webpack": "^5.75.0",
+    "js-cookie": "^3.0.5"
   },
   "devDependencies": {
     "webpack-cli": "^5.0.1"
