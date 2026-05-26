@@ -65,7 +65,7 @@ git pull origin main
 echo "Creating .env.prod file..."
 cat > .env.prod <<EOF
 DOCKER_CONTAINER=1
-DEBUG=0
+DEBUG=True
 ALLOWED_HOSTS=${django_allowed_hosts}
 SECRET_KEY=${django_secret_key}
 SQL_ENGINE=django.contrib.gis.db.backends.postgis
