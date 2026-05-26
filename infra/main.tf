@@ -101,3 +101,19 @@ variable "csrf_trusted_origins" {
   description = "Comma-separated list of trusted origins for CSRF protection in Django"
   type        = string
 }
+
+variable "email_host" {
+  description = "SMTP host for sending emails (e.g., your SES SMTP endpoint)"
+  type        = string
+}
+
+variable "email_host_user" {
+  description = "SMTP username for sending emails (e.g., your SES SMTP username)"
+  type        = string
+}
+
+variable "email_host_password" {
+  description = "SMTP password for sending emails (e.g., your SES SMTP password)"
+  type        = string
+  sensitive   = true
+}
