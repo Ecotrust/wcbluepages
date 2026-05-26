@@ -76,6 +76,9 @@ DB_HOST=${sql_host}
 DB_PORT=${sql_port}
 BLUEPAGES_GHCR_PATH=${web_ghcr_image_uri}
 CSRF_TRUSTED_ORIGINS=${csrf_trusted_origins}
+EMAIL_HOST=${email_host}
+EMAIL_HOST_USER=${email_host_user}
+EMAIL_HOST_PASSWORD=${email_host_password}
 EOF
 
 # Pull the SQL dump from S3 (no credentials needed — uses EC2 IAM role)

@@ -32,6 +32,9 @@ resource "aws_instance" "bluepages" {
     domain_name          = var.domain_name
     ssl_admin_email      = var.ssl_admin_email
     csrf_trusted_origins = var.csrf_trusted_origins
+    email_host           = var.email_host
+    email_host_user      = var.email_host_user
+    email_host_password  = var.email_host_password
   })
 
   root_block_device {
