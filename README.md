@@ -15,7 +15,7 @@ cd wcbluepages
 
 - Create copy of the `.env.dev` file  as `.env` in the `wcbluepages` directory. Add your environment variables to that file.
 
-- If your first time running the containers, build them first: `docker compose build`
+- If it is your first time running the containers, build them first: `docker compose build`
 
 - Run the containers: `docker compose up`
 
@@ -23,7 +23,7 @@ cd wcbluepages
 
 ## Building a New Image
 
-This project publishes Docker images to [Github Packages](https://github.com/Ecotrust/wcbluepages/pkgs/container/wcbluepages). To create a new Docker image, create a new [release](https://github.com/Ecotrust/wcbluepages/releases) with the semver version you would like. The new image will be taged with `latest` and the semver verion you chose. 
+This project publishes Docker images to [Github Packages](https://github.com/Ecotrust/wcbluepages/pkgs/container/wcbluepages). To create a new Docker image, create a new [release](https://github.com/Ecotrust/wcbluepages/releases) with the semver version you would like. The [Github Action](https://github.com/Ecotrust/wcbluepages/blob/main/.github/workflows/create-and-publish-docker-images.yaml) will create new image will be taged with `latest` and the semver verion you chose. 
 
 ## Deploying to Production 
 
