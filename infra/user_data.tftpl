@@ -98,7 +98,7 @@ TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" \
   -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
 EXPECTED_IP=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" \
   http://169.254.169.254/latest/meta-data/public-ipv4)
-for i in $(seq 1 20); do
+for i in $(seq 1 2880); do
   RESOLVED_IP=$(dig +short ${domain_name} | tail -1)
   if [ "$RESOLVED_IP" = "$EXPECTED_IP" ]; then
     echo "DNS resolved correctly to $EXPECTED_IP"
